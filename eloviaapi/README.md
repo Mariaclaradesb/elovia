@@ -18,6 +18,8 @@ Antes de rodar localmente, defina sua senha no PowerShell:
 $env:DATABASE_URL="jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require"
 $env:DATABASE_USERNAME="postgres.citxmlurmzvkokjbtnhh"
 $env:DATABASE_PASSWORD="SUA_SENHA_REAL"
+$env:DATABASE_POOL_SIZE="3"
+$env:DATABASE_POOL_MIN_IDLE="0"
 ```
 
 Depois rode:
@@ -50,6 +52,8 @@ Environment variables:
 DATABASE_URL=jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require
 DATABASE_USERNAME=postgres.citxmlurmzvkokjbtnhh
 DATABASE_PASSWORD=SUA_SENHA_REAL
+DATABASE_POOL_SIZE=3
+DATABASE_POOL_MIN_IDLE=0
 ```
 
 No Expo/mobile, use somente a URL publica do Koyeb, por exemplo:
