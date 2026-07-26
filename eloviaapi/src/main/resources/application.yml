@@ -23,7 +23,7 @@ spring:
     open-in-view: false
 
   flyway:
-    enabled: ${FLYWAY_ENABLED:false}
+    enabled: ${FLYWAY_ENABLED:true}
 
 management:
   health:
