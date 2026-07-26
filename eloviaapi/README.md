@@ -79,16 +79,70 @@ Essa combinacao e mais segura: o banco muda por migrations versionadas, nao por 
 
 ```text
 GET    /api/test/ping
+POST   /api/auth/login
+GET    /api/auth/me
+PATCH  /api/auth/alterar-senha
+POST   /api/auth/esqueci-senha
+POST   /api/auth/redefinir-senha
+
+GET    /api/mediadores
+GET    /api/mediadores/{id}
+POST   /api/mediadores
+PUT    /api/mediadores/{id}
+PATCH  /api/mediadores/{id}/desativar
+PATCH  /api/mediadores/{id}/redefinir-senha
+
 GET    /api/alunos
 GET    /api/alunos/{id}
 POST   /api/alunos
 PUT    /api/alunos/{id}
 DELETE /api/alunos/{id}
+POST   /api/alunos/{id}/mediadores
+DELETE /api/alunos/{id}/mediadores/{mediadorId}
+
 POST   /api/sessoes
 GET    /api/sessoes/aluno/{alunoId}
 PATCH  /api/sessoes/{id}/finalizar
 GET    /api/sessoes/{sessaoId}/eventos
 POST   /api/sessoes/{sessaoId}/eventos
+```
+
+As rotas de auth, mediadores, alunos e dashboard tambem aceitam o formato sem `/api`, por exemplo `/auth/login`.
+
+## Dados de teste
+
+Quando `TEST_DATA_ENABLED=true`, a aplicacao cria cadastros de teste automaticamente:
+
+```text
+Administrador
+Email: admin@elovia.test
+Senha: Admin12345
+Primeiro acesso: false
+
+Mediador
+Email: mediador@elovia.test
+Senha: Mediador12345
+Primeiro acesso: true
+```
+
+Tambem cria um `Aluno Demo` associado ao `Mediador Demo` se ainda nao houver alunos no banco.
+
+Para testar login:
+
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@elovia.test",
+  "senha": "Admin12345"
+}
+```
+
+Use o token retornado nas rotas protegidas:
+
+```text
+Authorization: Bearer SEU_TOKEN
 ```
 
 ## Northflank

@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,6 +17,21 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity<Map<String, Object>> handleNotFound(NotFoundException exception) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body(exception.getMessage()));
+	}
+
+	@ExceptionHandler(BusinessException.class)
+	public ResponseEntity<Map<String, Object>> handleBusiness(BusinessException exception) {
+		return ResponseEntity.badRequest().body(body(exception.getMessage()));
+	}
+
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException exception) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body("Email ou senha invalidos"));
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException exception) {
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body("Acesso negado"));
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)

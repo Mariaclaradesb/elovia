@@ -14,13 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import elovia.eloviaapi.dto.AssociarMediadoresRequest;
 import elovia.eloviaapi.dto.AlunoRequest;
 import elovia.eloviaapi.dto.AlunoResponse;
 import elovia.eloviaapi.service.AlunoService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/alunos")
+@RequestMapping({"/api/alunos", "/alunos"})
 public class AlunoController {
 
 	private final AlunoService alunoService;
@@ -53,6 +54,19 @@ public class AlunoController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> archive(@PathVariable UUID id) {
 		alunoService.archive(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{id}/mediadores")
+	public AlunoResponse associarMediadores(
+			@PathVariable UUID id,
+			@RequestBody AssociarMediadoresRequest request) {
+		return alunoService.associarMediadores(id, request);
+	}
+
+	@DeleteMapping("/{id}/mediadores/{mediadorId}")
+	public ResponseEntity<Void> removerMediador(@PathVariable UUID id, @PathVariable UUID mediadorId) {
+		alunoService.removerMediador(id, mediadorId);
 		return ResponseEntity.noContent().build();
 	}
 }

@@ -33,3 +33,13 @@ management:
     web:
       exposure:
         include: health,info
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:troque-este-segredo-em-producao-com-pelo-menos-32-caracteres}
+    expiration-minutes: ${JWT_EXPIRATION_MINUTES:480}
+  admin:
+    email: ${ADMIN_EMAIL:admin@elovia.test}
+    password: ${ADMIN_PASSWORD:Admin12345}
+  test-data:
+    enabled: ${TEST_DATA_ENABLED:true}
