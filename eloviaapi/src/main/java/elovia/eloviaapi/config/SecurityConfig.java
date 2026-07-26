@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,8 +23,23 @@ import elovia.eloviaapi.security.JwtAuthenticationFilter;
 public class SecurityConfig {
 
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter)
+	SecurityFilterChain securityFilterChain(
+			HttpSecurity http,
+			JwtAuthenticationFilter jwtAuthenticationFilter,
+			@Value("${app.security.enabled:true}") boolean securityEnabled)
 			throws Exception {
+		if (!securityEnabled) {
+			return http
+					.csrf(csrf -> csrf.disable())
+					.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+					.formLogin(form -> form.disable())
+					.httpBasic(basic -> basic.disable())
+					.logout(logout -> logout.disable())
+					.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+					.authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+					.build();
+		}
+
 		return http
 				.csrf(csrf -> csrf.disable())
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))

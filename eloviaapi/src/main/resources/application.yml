@@ -35,6 +35,8 @@ management:
         include: health,info
 
 app:
+  security:
+    enabled: ${SECURITY_ENABLED:true}
   jwt:
     secret: ${JWT_SECRET:troque-este-segredo-em-producao-com-pelo-menos-32-caracteres}
     expiration-minutes: ${JWT_EXPIRATION_MINUTES:480}
