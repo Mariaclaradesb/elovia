@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +20,21 @@ import elovia.eloviaapi.security.JwtAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
+
+	@Bean
+	WebSecurityCustomizer webSecurityCustomizer() {
+		return web -> web.ignoring().requestMatchers(
+				"/",
+				"/actuator/health",
+				"/actuator/info",
+				"/api/test/**",
+				"/api/auth/login",
+				"/auth/login",
+				"/api/auth/esqueci-senha",
+				"/auth/esqueci-senha",
+				"/api/auth/redefinir-senha",
+				"/auth/redefinir-senha");
+	}
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter)
