@@ -55,6 +55,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/", "/actuator/health", "/actuator/info", "/api/test/**").permitAll()
 						.requestMatchers("/api/auth/login", "/auth/login").permitAll()
+						.requestMatchers("/api/auth/cadastrar-admin", "/auth/cadastrar-admin").permitAll()
 						.requestMatchers(HttpMethod.POST,
 								"/api/auth/esqueci-senha", "/auth/esqueci-senha",
 								"/api/auth/redefinir-senha", "/auth/redefinir-senha").permitAll()

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import elovia.eloviaapi.dto.AlterarSenhaRequest;
+import elovia.eloviaapi.dto.CadastrarAdminRequest;
 import elovia.eloviaapi.dto.EsqueciSenhaRequest;
 import elovia.eloviaapi.dto.LoginRequest;
 import elovia.eloviaapi.dto.LoginResponse;
@@ -30,6 +31,11 @@ public class AuthController {
 	@PostMapping("/login")
 	public LoginResponse login(@Valid @RequestBody LoginRequest request) {
 		return authService.login(request);
+	}
+
+	@PostMapping("/cadastrar-admin")
+	public LoginResponse cadastrarAdmin(@Valid @RequestBody CadastrarAdminRequest request) {
+		return authService.cadastrarAdmin(request);
 	}
 
 	@GetMapping("/me")

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import elovia.eloviaapi.dto.AlterarSenhaRequest;
+import elovia.eloviaapi.dto.CadastrarAdminRequest;
 import elovia.eloviaapi.dto.EsqueciSenhaRequest;
 import elovia.eloviaapi.dto.LoginRequest;
 import elovia.eloviaapi.dto.LoginResponse;
@@ -16,6 +17,7 @@ import elovia.eloviaapi.dto.RedefinirSenhaRequest;
 import elovia.eloviaapi.dto.UsuarioResponse;
 import elovia.eloviaapi.exception.BusinessException;
 import elovia.eloviaapi.model.Usuario;
+import elovia.eloviaapi.model.Role;
 import elovia.eloviaapi.repository.UsuarioRepository;
 import elovia.eloviaapi.security.JwtService;
 
@@ -50,6 +52,37 @@ public class AuthService {
 
 		usuario.setUltimoLogin(Instant.now());
 		return new LoginResponse(jwtService.generate(usuario), UsuarioResponse.from(usuario));
+	}
+
+	@Transactional
+	public LoginResponse cadastrarAdmin(CadastrarAdminRequest request) {
+		if (!request.senha().equals(request.confirmarSenha())) {
+			throw new BusinessException("A confirmacao da senha nao confere");
+		}
+
+		if (usuarioRepository.existsByEmailIgnoreCase(request.email())) {
+			throw new BusinessException("Email ja cadastrado");
+		}
+
+		if (usuarioRepository.existsByCpf(request.cpf())) {
+			throw new BusinessException("CPF ja cadastrado");
+		}
+
+		var usuario = new Usuario();
+		usuario.setNome(request.nome());
+		usuario.setCpf(request.cpf());
+		usuario.setEmail(request.email());
+		usuario.setTelefone(request.telefone());
+		usuario.setEscola(request.escola());
+		usuario.setCargo("Administrador");
+		usuario.setSenha(passwordEncoder.encode(request.senha()));
+		usuario.setRole(Role.ADMIN);
+		usuario.setPrimeiroAcesso(false);
+		usuario.setAtivo(true);
+		usuario.setUltimoLogin(Instant.now());
+
+		var salvo = usuarioRepository.save(usuario);
+		return new LoginResponse(jwtService.generate(salvo), UsuarioResponse.from(salvo));
 	}
 
 	public UsuarioResponse me() {
