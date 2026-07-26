@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,29 +22,22 @@ import elovia.eloviaapi.security.JwtAuthenticationFilter;
 public class SecurityConfig {
 
 	@Bean
-	WebSecurityCustomizer webSecurityCustomizer() {
-		return web -> web.ignoring().requestMatchers(
-				"/",
-				"/actuator/health",
-				"/actuator/info",
-				"/api/test/**",
-				"/api/auth/login",
-				"/auth/login",
-				"/api/auth/esqueci-senha",
-				"/auth/esqueci-senha",
-				"/api/auth/redefinir-senha",
-				"/auth/redefinir-senha");
-	}
-
-	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter)
 			throws Exception {
 		return http
 				.csrf(csrf -> csrf.disable())
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+				.formLogin(form -> form.disable())
+				.httpBasic(basic -> basic.disable())
+				.logout(logout -> logout.disable())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.exceptionHandling(exception -> exception
+						.authenticationEntryPoint((request, response, authException) ->
+								response.sendError(HttpStatus.UNAUTHORIZED.value(), "Nao autenticado"))
+						.accessDeniedHandler((request, response, accessDeniedException) ->
+								response.sendError(HttpStatus.FORBIDDEN.value(), "Acesso negado")))
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/actuator/health", "/actuator/info", "/api/test/**").permitAll()
+						.requestMatchers("/", "/actuator/health", "/actuator/info", "/api/test/**").permitAll()
 						.requestMatchers("/api/auth/login", "/auth/login").permitAll()
 						.requestMatchers(HttpMethod.POST,
 								"/api/auth/esqueci-senha", "/auth/esqueci-senha",
