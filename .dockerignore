@@ -1,0 +1,5 @@
+.git
+node_modules
+mobile/node_modules
+eloviaapi/target
+*.log
