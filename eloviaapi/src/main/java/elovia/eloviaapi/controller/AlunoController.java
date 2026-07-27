@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import elovia.eloviaapi.dto.AssociarMediadoresRequest;
+import elovia.eloviaapi.dto.AlunoObservacoesRequest;
 import elovia.eloviaapi.dto.AlunoRequest;
 import elovia.eloviaapi.dto.AlunoResponse;
 import elovia.eloviaapi.service.AlunoService;
@@ -62,6 +63,11 @@ public class AlunoController {
 	public ResponseEntity<Void> deactivate(@PathVariable UUID id) {
 		alunoService.archive(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PatchMapping("/{id}/observacoes")
+	public AlunoResponse updateObservacoes(@PathVariable UUID id, @RequestBody AlunoObservacoesRequest request) {
+		return alunoService.updateObservacoes(id, request);
 	}
 
 	@PostMapping("/{id}/mediadores")

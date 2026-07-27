@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import elovia.eloviaapi.dto.AssociarMediadoresRequest;
+import elovia.eloviaapi.dto.AlunoObservacoesRequest;
 import elovia.eloviaapi.dto.AlunoRequest;
 import elovia.eloviaapi.dto.AlunoResponse;
 import elovia.eloviaapi.exception.BusinessException;
@@ -71,6 +72,20 @@ public class AlunoService {
 	public void archive(UUID id) {
 		var aluno = findEntityById(id);
 		aluno.setAtivo(false);
+	}
+
+	@Transactional
+	public AlunoResponse updateObservacoes(UUID id, AlunoObservacoesRequest request) {
+		var aluno = findEntityById(id);
+		aluno.setObservacoesIniciais(request.observacoesIniciais());
+		aluno.setEstrategias(request.estrategias());
+		aluno.setGatilhos(request.gatilhos());
+		aluno.setPreferencias(request.preferencias());
+		aluno.setInteresses(request.interesses());
+		aluno.setObjetivosPdi(request.objetivosPdi());
+		aluno.setFormaComunicacao(request.formaComunicacao());
+		aluno.setObservacoes(request.observacoes());
+		return AlunoResponse.from(aluno);
 	}
 
 	Aluno findEntityById(UUID id) {
