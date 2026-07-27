@@ -13,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -87,6 +88,9 @@ public class Aluno {
 
 	@Column(columnDefinition = "text")
 	private String observacoes;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Usuario administrador;
 
 	@Column(nullable = false)
 	private boolean ativo = true;
@@ -282,6 +286,14 @@ public class Aluno {
 
 	public void setObservacoes(String observacoes) {
 		this.observacoes = observacoes;
+	}
+
+	public Usuario getAdministrador() {
+		return administrador;
+	}
+
+	public void setAdministrador(Usuario administrador) {
+		this.administrador = administrador;
 	}
 
 	public boolean isAtivo() {

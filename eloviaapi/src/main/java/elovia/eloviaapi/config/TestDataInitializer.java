@@ -89,6 +89,7 @@ public class TestDataInitializer implements ApplicationRunner {
 		mediador.setEscola("Escola Demo");
 		mediador.setCargo("Mediador Escolar");
 		mediador.setMatricula("MED-001");
+		usuarioRepository.findByEmailIgnoreCase(adminEmail).ifPresent(mediador::setAdministrador);
 		return usuarioRepository.save(mediador);
 	}
 
@@ -107,6 +108,7 @@ public class TestDataInitializer implements ApplicationRunner {
 		aluno.setCid("F84.0");
 		aluno.setNecessitaMediador(true);
 		aluno.setObservacoesIniciais("Cadastro de teste criado automaticamente.");
+		usuarioRepository.findByEmailIgnoreCase(adminEmail).ifPresent(aluno::setAdministrador);
 		return alunoRepository.save(aluno);
 	}
 }

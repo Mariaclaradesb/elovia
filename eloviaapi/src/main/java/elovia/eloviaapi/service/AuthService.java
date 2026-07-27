@@ -96,7 +96,8 @@ public class AuthService {
 		}
 
 		var usuario = currentUserService.getCurrentUser();
-		if (!passwordEncoder.matches(request.senhaAtual(), usuario.getSenha())) {
+		if (!usuario.isPrimeiroAcesso()
+				&& (request.senhaAtual() == null || !passwordEncoder.matches(request.senhaAtual(), usuario.getSenha()))) {
 			throw new BadCredentialsException("Senha atual invalida");
 		}
 

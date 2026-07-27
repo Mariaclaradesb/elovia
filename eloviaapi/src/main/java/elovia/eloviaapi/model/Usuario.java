@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -60,6 +61,9 @@ public class Usuario {
 
 	@Column(length = 40)
 	private String matricula;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Usuario administrador;
 
 	@Column(nullable = false, updatable = false)
 	private Instant dataCriacao;
@@ -168,6 +172,14 @@ public class Usuario {
 
 	public void setMatricula(String matricula) {
 		this.matricula = matricula;
+	}
+
+	public Usuario getAdministrador() {
+		return administrador;
+	}
+
+	public void setAdministrador(Usuario administrador) {
+		this.administrador = administrador;
 	}
 
 	public Instant getDataCriacao() {

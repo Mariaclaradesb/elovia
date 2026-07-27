@@ -12,8 +12,19 @@ public interface AlunoRepository extends JpaRepository<Aluno, UUID> {
 
 	List<Aluno> findByAtivoTrueOrderByNomeAsc();
 
+	List<Aluno> findByAdministradorIdOrderByNomeAsc(UUID administradorId);
+
+	List<Aluno> findByAtivoTrueAndAdministradorIdOrderByNomeAsc(UUID administradorId);
+
+	List<Aluno> findByAtivoTrueAndMediadoresIdOrderByNomeAsc(UUID mediadorId);
+
 	long countByAtivoTrue();
+
+	long countByAtivoTrueAndAdministradorId(UUID administradorId);
 
 	@Query("select count(a) from Aluno a where a.ativo = true and a.mediadores is empty")
 	long countAlunosSemMediador();
+
+	@Query("select count(a) from Aluno a where a.ativo = true and a.administrador.id = :administradorId and a.mediadores is empty")
+	long countAlunosSemMediadorByAdministradorId(UUID administradorId);
 }

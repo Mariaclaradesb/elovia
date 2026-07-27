@@ -23,15 +23,21 @@ public class AlunoService {
 
 	private final AlunoRepository alunoRepository;
 	private final UsuarioRepository usuarioRepository;
+	private final CurrentUserService currentUserService;
 
-	public AlunoService(AlunoRepository alunoRepository, UsuarioRepository usuarioRepository) {
+	public AlunoService(AlunoRepository alunoRepository, UsuarioRepository usuarioRepository, CurrentUserService currentUserService) {
 		this.alunoRepository = alunoRepository;
 		this.usuarioRepository = usuarioRepository;
+		this.currentUserService = currentUserService;
 	}
 
 	@Transactional(readOnly = true)
 	public List<AlunoResponse> findAll() {
-		return alunoRepository.findByAtivoTrueOrderByNomeAsc().stream()
+		var usuario = currentUserService.getCurrentUser();
+		var alunos = usuario.getRole() == Role.ADMIN
+				? alunoRepository.findByAdministradorIdOrderByNomeAsc(usuario.getId())
+				: alunoRepository.findByAtivoTrueAndMediadoresIdOrderByNomeAsc(usuario.getId());
+		return alunos.stream()
 				.map(AlunoResponse::from)
 				.toList();
 	}
@@ -44,6 +50,7 @@ public class AlunoService {
 	@Transactional
 	public AlunoResponse create(AlunoRequest request) {
 		var aluno = new Aluno();
+		aluno.setAdministrador(currentUserService.getCurrentUser());
 		fillAluno(aluno, request);
 		var savedAluno = alunoRepository.save(aluno);
 		syncMediadores(savedAluno, request.mediadorIds());
@@ -67,8 +74,11 @@ public class AlunoService {
 	}
 
 	Aluno findEntityById(UUID id) {
+		var usuario = currentUserService.getCurrentUser();
 		return alunoRepository.findById(id)
-				.filter(Aluno::isAtivo)
+				.filter(aluno -> usuario.getRole() == Role.ADMIN
+						? aluno.getAdministrador() != null && aluno.getAdministrador().getId().equals(usuario.getId())
+						: aluno.isAtivo() && aluno.getMediadores().stream().anyMatch(mediador -> mediador.getId().equals(usuario.getId())))
 				.orElseThrow(() -> new NotFoundException("Aluno nao encontrado"));
 	}
 
@@ -126,6 +136,9 @@ public class AlunoService {
 			var mediador = usuarioRepository.findById(mediadorId)
 					.filter(Usuario::isAtivo)
 					.filter(usuario -> usuario.getRole() == Role.MEDIADOR)
+					.filter(usuario -> usuario.getAdministrador() != null
+							&& aluno.getAdministrador() != null
+							&& usuario.getAdministrador().getId().equals(aluno.getAdministrador().getId()))
 					.orElseThrow(() -> new BusinessException("Mediador invalido para associacao"));
 			mediador.getAlunos().add(aluno);
 			aluno.getMediadores().add(mediador);

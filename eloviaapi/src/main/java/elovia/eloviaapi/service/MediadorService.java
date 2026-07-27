@@ -24,19 +24,23 @@ public class MediadorService {
 	private final UsuarioRepository usuarioRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final NotificationService notificationService;
+	private final CurrentUserService currentUserService;
 	private final SecureRandom secureRandom = new SecureRandom();
 
 	public MediadorService(
 			UsuarioRepository usuarioRepository,
 			PasswordEncoder passwordEncoder,
-			NotificationService notificationService) {
+			NotificationService notificationService,
+			CurrentUserService currentUserService) {
 		this.usuarioRepository = usuarioRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.notificationService = notificationService;
+		this.currentUserService = currentUserService;
 	}
 
 	public List<MediadorResponse> findAll() {
-		return usuarioRepository.findByRoleAndAtivoTrueOrderByNomeAsc(Role.MEDIADOR).stream()
+		var admin = currentUserService.getCurrentUser();
+		return usuarioRepository.findByRoleAndAdministradorIdOrderByNomeAsc(Role.MEDIADOR, admin.getId()).stream()
 				.map(MediadorResponse::from)
 				.toList();
 	}
@@ -48,9 +52,12 @@ public class MediadorService {
 	@Transactional
 	public MediadorResponse create(MediadorRequest request) {
 		validateUnique(request.email(), request.cpf(), null);
+		var admin = currentUserService.getCurrentUser();
 		var temporaryPassword = generateTemporaryPassword();
 		var mediador = new Usuario();
 		fillMediador(mediador, request);
+		mediador.setEscola(admin.getEscola());
+		mediador.setAdministrador(admin);
 		mediador.setRole(Role.MEDIADOR);
 		mediador.setPrimeiroAcesso(true);
 		mediador.setAtivo(true);
@@ -63,8 +70,10 @@ public class MediadorService {
 	@Transactional
 	public MediadorResponse update(UUID id, MediadorRequest request) {
 		var mediador = findMediador(id);
+		var admin = currentUserService.getCurrentUser();
 		validateUnique(request.email(), request.cpf(), id);
 		fillMediador(mediador, request);
+		mediador.setEscola(admin.getEscola());
 		return MediadorResponse.from(mediador);
 	}
 
@@ -85,8 +94,10 @@ public class MediadorService {
 	}
 
 	private Usuario findMediador(UUID id) {
+		var admin = currentUserService.getCurrentUser();
 		return usuarioRepository.findById(id)
 				.filter(usuario -> usuario.getRole() == Role.MEDIADOR)
+				.filter(usuario -> usuario.getAdministrador() != null && usuario.getAdministrador().getId().equals(admin.getId()))
 				.orElseThrow(() -> new NotFoundException("Mediador nao encontrado"));
 	}
 

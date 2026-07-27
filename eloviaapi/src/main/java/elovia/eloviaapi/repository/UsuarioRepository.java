@@ -21,5 +21,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
 
 	List<Usuario> findByRoleAndAtivoTrueOrderByNomeAsc(Role role);
 
+	List<Usuario> findByRoleAndAdministradorIdOrderByNomeAsc(Role role, UUID administradorId);
+
 	long countByRoleAndAtivoTrue(Role role);
+
+	long countByRoleAndAtivoTrueAndAdministradorId(Role role, UUID administradorId);
 }
