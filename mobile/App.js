@@ -1,135 +1,78 @@
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { ActivityIndicator, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { PaperProvider } from 'react-native-paper';
 
-const API_BASE_URL = 'https://site--elovia-api--5pcsmqsv6df5.code.run';
+import { AuthProvider, useAuth } from './src/context/AuthContext';
+import AdminHomeScreen from './src/screens/admin/AdminHomeScreen';
+import AlunoFormScreen from './src/screens/admin/AlunoFormScreen';
+import AlunosScreen from './src/screens/admin/AlunosScreen';
+import MediadorFormScreen from './src/screens/admin/MediadorFormScreen';
+import MediadoresScreen from './src/screens/admin/MediadoresScreen';
+import FirstAccessScreen from './src/screens/auth/FirstAccessScreen';
+import LoadingScreen from './src/screens/auth/LoadingScreen';
+import LoginScreen from './src/screens/auth/LoginScreen';
+import RegisterScreen from './src/screens/auth/RegisterScreen';
+import MediadorHomeScreen from './src/screens/mediador/MediadorHomeScreen';
+import { appTheme, colors } from './src/theme';
 
-export default function App() {
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState('Toque em um botao para testar a API.');
+const Stack = createNativeStackNavigator();
 
-  async function callApi(path) {
-    setLoading(true);
-    setResult('Chamando backend...');
+function AppNavigator() {
+  const { token, user, booting } = useAuth();
 
-    try {
-      const response = await fetch(`${API_BASE_URL}${path}`);
-      const body = await response.json();
-
-      if (!response.ok) {
-        throw new Error(body?.message || `Erro HTTP ${response.status}`);
-      }
-
-      setResult(JSON.stringify(body, null, 2));
-    } catch (error) {
-      setResult(`Falha ao chamar a API: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
+  if (booting) {
+    return <LoadingScreen />;
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Elovia</Text>
-        <Text style={styles.subtitle}>Teste do front Expo Go com backend Northflank</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>API</Text>
-        <Text style={styles.url}>{API_BASE_URL}</Text>
-      </View>
-
-      <Pressable style={styles.button} onPress={() => callApi('/actuator/health')} disabled={loading}>
-        <Text style={styles.buttonText}>Testar health</Text>
-      </Pressable>
-
-      <Pressable style={styles.buttonSecondary} onPress={() => callApi('/api/test/ping')} disabled={loading}>
-        <Text style={styles.buttonSecondaryText}>Testar ping</Text>
-      </Pressable>
-
-      <View style={styles.resultCard}>
-        <Text style={styles.label}>Resultado</Text>
-        {loading ? <ActivityIndicator color="#3559E0" /> : <Text style={styles.result}>{result}</Text>}
-      </View>
-
-      <StatusBar style="auto" />
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: { backgroundColor: colors.white },
+          headerTintColor: colors.ink,
+          headerTitleStyle: { fontWeight: '800' },
+          contentStyle: { backgroundColor: colors.bg },
+        }}
+      >
+        {!token ? (
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
+          </>
+        ) : user?.primeiroAcesso ? (
+          <Stack.Screen name="PrimeiroAcesso" component={FirstAccessScreen} options={{ headerShown: false }} />
+        ) : user?.role === 'ADMIN' ? (
+          <>
+            <Stack.Screen name="AdminHome" component={AdminHomeScreen} options={{ title: 'Elovia' }} />
+            <Stack.Screen name="Mediadores" component={MediadoresScreen} options={{ title: 'Mediadores' }} />
+            <Stack.Screen
+              name="MediadorForm"
+              component={MediadorFormScreen}
+              options={({ route }) => ({ title: route.params?.mediador ? 'Editar mediador' : 'Novo mediador' })}
+            />
+            <Stack.Screen name="Alunos" component={AlunosScreen} options={{ title: 'Alunos' }} />
+            <Stack.Screen
+              name="AlunoForm"
+              component={AlunoFormScreen}
+              options={({ route }) => ({ title: route.params?.aluno ? 'Editar aluno' : 'Novo aluno' })}
+            />
+          </>
+        ) : (
+          <Stack.Screen name="MediadorHome" component={MediadorHomeScreen} options={{ title: 'Meus alunos' }} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F6F7FB',
-    padding: 20,
-    gap: 16,
-  },
-  header: {
-    marginTop: 24,
-    gap: 6,
-  },
-  title: {
-    color: '#2038A0',
-    fontSize: 32,
-    fontWeight: '800',
-  },
-  subtitle: {
-    color: '#667085',
-    fontSize: 16,
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    padding: 16,
-    gap: 8,
-  },
-  label: {
-    color: '#667085',
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-  },
-  url: {
-    color: '#182230',
-    fontSize: 14,
-  },
-  button: {
-    alignItems: 'center',
-    backgroundColor: '#3559E0',
-    borderRadius: 8,
-    minHeight: 52,
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  buttonSecondary: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderColor: '#3559E0',
-    borderRadius: 8,
-    borderWidth: 1,
-    minHeight: 52,
-    justifyContent: 'center',
-  },
-  buttonSecondaryText: {
-    color: '#3559E0',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  resultCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    flex: 1,
-    gap: 12,
-    padding: 16,
-  },
-  result: {
-    color: '#182230',
-    fontFamily: 'monospace',
-    fontSize: 14,
-  },
-});
+export default function App() {
+  return (
+    <PaperProvider theme={appTheme}>
+      <AuthProvider>
+        <AppNavigator />
+      </AuthProvider>
+      <StatusBar style="dark" />
+    </PaperProvider>
+  );
+}

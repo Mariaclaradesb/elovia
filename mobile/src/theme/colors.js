@@ -1,0 +1,16 @@
+export const colors = {
+  teal: '#29BE9E',
+  tealDark: '#1D8B77',
+  purple: '#7D70BA',
+  lavender: '#DEC1FF',
+  yellow: '#F6C500',
+  ink: '#263238',
+  muted: '#6B7280',
+  line: '#E8ECF3',
+  bg: '#F7FAFC',
+  white: '#FFFFFF',
+  danger: '#B42318',
+  inactive: '#667085',
+  inactiveBg: '#F2F4F7',
+  inactiveBorder: '#D0D5DD',
+};
