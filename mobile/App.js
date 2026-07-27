@@ -6,6 +6,7 @@ import { PaperProvider } from 'react-native-paper';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import AdminHomeScreen from './src/screens/admin/AdminHomeScreen';
 import AlunoFormScreen from './src/screens/admin/AlunoFormScreen';
+import AlunoProfileScreen from './src/screens/admin/AlunoProfileScreen';
 import AlunosScreen from './src/screens/admin/AlunosScreen';
 import MediadorFormScreen from './src/screens/admin/MediadorFormScreen';
 import MediadoresScreen from './src/screens/admin/MediadoresScreen';
@@ -13,6 +14,10 @@ import FirstAccessScreen from './src/screens/auth/FirstAccessScreen';
 import LoadingScreen from './src/screens/auth/LoadingScreen';
 import LoginScreen from './src/screens/auth/LoginScreen';
 import RegisterScreen from './src/screens/auth/RegisterScreen';
+import BibliotecaAlunoScreen from './src/screens/biblioteca/BibliotecaAlunoScreen';
+import DocumentoDetailsScreen from './src/screens/biblioteca/DocumentoDetailsScreen';
+import DocumentoFormScreen from './src/screens/biblioteca/DocumentoFormScreen';
+import DocumentoViewerScreen from './src/screens/biblioteca/DocumentoViewerScreen';
 import MediadorHomeScreen from './src/screens/mediador/MediadorHomeScreen';
 import { appTheme, colors } from './src/theme';
 
@@ -52,14 +57,34 @@ function AppNavigator() {
               options={({ route }) => ({ title: route.params?.mediador ? 'Editar mediador' : 'Novo mediador' })}
             />
             <Stack.Screen name="Alunos" component={AlunosScreen} options={{ title: 'Alunos' }} />
+            <Stack.Screen name="AlunoProfile" component={AlunoProfileScreen} options={{ title: 'Perfil do aluno' }} />
             <Stack.Screen
               name="AlunoForm"
               component={AlunoFormScreen}
               options={({ route }) => ({ title: route.params?.aluno ? 'Editar aluno' : 'Novo aluno' })}
             />
+            <Stack.Screen name="BibliotecaAluno" component={BibliotecaAlunoScreen} options={{ title: 'Biblioteca' }} />
+            <Stack.Screen
+              name="DocumentoForm"
+              component={DocumentoFormScreen}
+              options={({ route }) => ({ title: route.params?.documento ? 'Editar documento' : 'Novo documento' })}
+            />
+            <Stack.Screen name="DocumentoDetails" component={DocumentoDetailsScreen} options={{ title: 'Documento' }} />
+            <Stack.Screen name="DocumentoViewer" component={DocumentoViewerScreen} options={{ title: 'Visualizador' }} />
           </>
         ) : (
-          <Stack.Screen name="MediadorHome" component={MediadorHomeScreen} options={{ title: 'Meus alunos' }} />
+          <>
+            <Stack.Screen name="MediadorHome" component={MediadorHomeScreen} options={{ title: 'Meus alunos' }} />
+            <Stack.Screen name="AlunoProfile" component={AlunoProfileScreen} options={{ title: 'Perfil do aluno' }} />
+            <Stack.Screen name="BibliotecaAluno" component={BibliotecaAlunoScreen} options={{ title: 'Biblioteca' }} />
+            <Stack.Screen
+              name="DocumentoForm"
+              component={DocumentoFormScreen}
+              options={({ route }) => ({ title: route.params?.documento ? 'Editar documento' : 'Novo documento' })}
+            />
+            <Stack.Screen name="DocumentoDetails" component={DocumentoDetailsScreen} options={{ title: 'Documento' }} />
+            <Stack.Screen name="DocumentoViewer" component={DocumentoViewerScreen} options={{ title: 'Visualizador' }} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
