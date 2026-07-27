@@ -22,7 +22,7 @@ import elovia.eloviaapi.service.SessaoService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/sessoes")
+@RequestMapping({"/api/sessoes", "/sessoes"})
 public class SessaoController {
 
 	private final SessaoService sessaoService;
@@ -38,6 +38,16 @@ public class SessaoController {
 		return sessaoService.findByAluno(alunoId);
 	}
 
+	@GetMapping("/ativas")
+	public SessaoResponse findAtiva() {
+		return sessaoService.findAtiva();
+	}
+
+	@GetMapping("/{id}")
+	public SessaoResponse findById(@PathVariable UUID id) {
+		return sessaoService.findById(id);
+	}
+
 	@PostMapping
 	public ResponseEntity<SessaoResponse> create(@Valid @RequestBody SessaoRequest request) {
 		var response = sessaoService.create(request);
@@ -46,6 +56,11 @@ public class SessaoController {
 
 	@PatchMapping("/{id}/finalizar")
 	public SessaoResponse finish(@PathVariable UUID id) {
+		return sessaoService.finish(id);
+	}
+
+	@PatchMapping("/{id}/encerrar")
+	public SessaoResponse encerrar(@PathVariable UUID id) {
 		return sessaoService.finish(id);
 	}
 

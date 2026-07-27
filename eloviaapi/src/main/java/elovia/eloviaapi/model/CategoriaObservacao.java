@@ -1,0 +1,16 @@
+package elovia.eloviaapi.model;
+
+public enum CategoriaObservacao {
+	PARTICIPACAO,
+	COMPORTAMENTO,
+	INTERACAO,
+	COMUNICACAO,
+	ATIVIDADE,
+	ALIMENTACAO,
+	HIGIENE,
+	RECREIO,
+	CRISE,
+	AUTORREGULACAO,
+	TRANSICAO,
+	OUTRO
+}
