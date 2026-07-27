@@ -41,6 +41,17 @@ public class SessaoService {
 	}
 
 	@Transactional(readOnly = true)
+	public List<SessaoResponse> findAll() {
+		var usuario = currentUserService.getCurrentUser();
+		var sessoes = usuario.getRole() == Role.ADMIN
+				? sessaoRepository.findByMediadorAdministradorIdOrderByInicioDesc(usuario.getId())
+				: sessaoRepository.findByMediadorIdOrderByInicioDesc(usuario.getId());
+		return sessoes.stream()
+				.map(this::toResponse)
+				.toList();
+	}
+
+	@Transactional(readOnly = true)
 	public List<SessaoResponse> findByAluno(UUID alunoId) {
 		alunoService.findEntityById(alunoId);
 		return sessaoRepository.findByAlunosIdOrderByInicioDesc(alunoId).stream()

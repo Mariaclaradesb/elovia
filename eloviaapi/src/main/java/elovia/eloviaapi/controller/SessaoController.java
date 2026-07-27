@@ -33,6 +33,11 @@ public class SessaoController {
 		this.eventoService = eventoService;
 	}
 
+	@GetMapping
+	public List<SessaoResponse> findAll() {
+		return sessaoService.findAll();
+	}
+
 	@GetMapping("/aluno/{alunoId}")
 	public List<SessaoResponse> findByAluno(@PathVariable UUID alunoId) {
 		return sessaoService.findByAluno(alunoId);

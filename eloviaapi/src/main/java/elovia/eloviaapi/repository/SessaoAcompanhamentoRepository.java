@@ -14,6 +14,8 @@ public interface SessaoAcompanhamentoRepository extends JpaRepository<SessaoAcom
 
 	List<SessaoAcompanhamento> findByMediadorIdOrderByInicioDesc(UUID mediadorId);
 
+	List<SessaoAcompanhamento> findByMediadorAdministradorIdOrderByInicioDesc(UUID administradorId);
+
 	Optional<SessaoAcompanhamento> findFirstByMediadorIdAndStatusOrderByInicioDesc(UUID mediadorId, elovia.eloviaapi.model.StatusSessao status);
 
 	List<SessaoAcompanhamento> findByAlunosIdOrderByInicioDesc(UUID alunoId);
