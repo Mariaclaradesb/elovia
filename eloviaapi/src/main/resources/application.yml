@@ -31,6 +31,11 @@ spring:
   flyway:
     enabled: ${FLYWAY_ENABLED:true}
 
+  servlet:
+    multipart:
+      max-file-size: ${MAX_UPLOAD_FILE_SIZE:25MB}
+      max-request-size: ${MAX_UPLOAD_REQUEST_SIZE:30MB}
+
 management:
   health:
     db:
