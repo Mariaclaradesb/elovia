@@ -51,3 +51,7 @@ app:
     password: ${ADMIN_PASSWORD:Admin12345}
   test-data:
     enabled: ${TEST_DATA_ENABLED:true}
+  supabase:
+    url: ${SUPABASE_URL:}
+    service-role-key: ${SUPABASE_SERVICE_ROLE_KEY:}
+    storage-bucket: ${SUPABASE_STORAGE_BUCKET:documentos-alunos}
