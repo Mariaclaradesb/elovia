@@ -171,13 +171,13 @@ public class AnamneseDocxService {
 	private void adicionarCabecalho(XWPFDocument document) {
 		var titulo = document.createParagraph();
 		titulo.setAlignment(ParagraphAlignment.CENTER);
-		try {
-			var logo = criarLogo();
-			titulo.createRun().addPicture(new java.io.ByteArrayInputStream(logo),
-					XWPFDocument.PICTURE_TYPE_PNG, "logo-elovia.png", Units.toEMU(150), Units.toEMU(42));
-		} catch (Exception ignored) {
-			// O título textual abaixo mantém a identidade mesmo se a imagem não puder ser renderizada.
-		}
+		// try {
+		// 	var logo = criarLogo();
+		// 	titulo.createRun().addPicture(new java.io.ByteArrayInputStream(logo),
+		// 			XWPFDocument.PICTURE_TYPE_PNG, "logo-elovia.png", Units.toEMU(150), Units.toEMU(42));
+		// } catch (Exception ignored) {
+		// 	// O título textual abaixo mantém a identidade mesmo se a imagem não puder ser renderizada.
+		// }
 		var tituloRun = titulo.createRun();
 		tituloRun.setText("\nELOVIA");
 		tituloRun.setBold(true);

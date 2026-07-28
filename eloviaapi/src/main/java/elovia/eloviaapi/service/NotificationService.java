@@ -29,33 +29,33 @@ public class NotificationService {
 	}
 
 	public void sendTemporaryPassword(Usuario mediador, String senhaTemporaria) {
-		var body = "Ola, " + mediador.getNome() + "!\n\n"
+		var body = "Olá, " + mediador.getNome() + "!\n\n"
 				+ "Seu acesso ao Elovia foi criado.\n"
 				+ "Login: " + mediador.getEmail() + "\n"
-				+ "Senha temporaria: " + senhaTemporaria + "\n\n"
-				+ "No primeiro acesso, o aplicativo solicitara a criacao de uma nova senha.\n"
-				+ "Por seguranca, nao compartilhe esses dados com outras pessoas.";
+				+ "Senha temporária: " + senhaTemporaria + "\n\n"
+				+ "No primeiro acesso, o aplicativo solicitará a criacao de uma nova senha.\n"
+				+ "Por segurança, nao compartilhe esses dados com outras pessoas.";
 		send(mediador.getEmail(), "Seu acesso ao Elovia", body);
 	}
 
 	public void sendPasswordResetCode(Usuario usuario, String codigo, int expirationMinutes) {
-		var body = "Ola, " + usuario.getNome() + "!\n\n"
+		var body = "Olá, " + usuario.getNome() + "!\n\n"
 				+ "Recebemos uma solicitacao para redefinir sua senha no Elovia.\n"
-				+ "Codigo de verificacao: " + codigo + "\n\n"
-				+ "Este codigo expira em " + expirationMinutes + " minutos e pode ser usado apenas uma vez.\n"
-				+ "Se voce nao solicitou a redefinicao, ignore este e-mail.";
-		send(usuario.getEmail(), "Codigo para redefinir sua senha no Elovia", body);
+				+ "Código de verificação: " + codigo + "\n\n"
+				+ "Este código expira em " + expirationMinutes + " minutos e pode ser usado apenas uma vez.\n"
+				+ "Se voce não solicitou a redefinição, ignore este e-mail.";
+		send(usuario.getEmail(), "Código para redefinir sua senha no Elovia", body);
 	}
 
 	private void send(String recipient, String subject, String body) {
 		if (!emailEnabled) {
-			LOGGER.info("Envio de e-mail desativado. Mensagem '{}' destinada a {} nao foi enviada", subject, recipient);
+			LOGGER.info("Envio de e-mail desativado. Mensagem '{}' destinada a {} não foi enviada", subject, recipient);
 			return;
 		}
 
 		var mailSender = mailSenderProvider.getIfAvailable();
 		if (mailSender == null) {
-			LOGGER.error("Envio de e-mail habilitado, mas o JavaMailSender nao esta configurado");
+			LOGGER.error("Envio de e-mail habilitado, mas o JavaMailSender não esta configurado");
 			return;
 		}
 
