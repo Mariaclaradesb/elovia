@@ -84,12 +84,12 @@ export default function PerfilUsuarioScreen({ navigation }) {
       role={role}
       active="more"
       title="Meu perfil"
-      subtitle="Atualize seus dados de acesso e identificacao."
+      subtitle="Atualize seus dados de acesso e identificação."
     >
       <Card style={styles.gradientCard} mode="contained">
         <Card.Content style={styles.formGap}>
           <Text variant="titleLarge" style={styles.gradientCardTitle}>{form.nome || 'Seu perfil'}</Text>
-          <Text style={styles.gradientCardSubtitle}>{role === 'ADMIN' ? 'Administrador' : 'Mediador'} - {form.escola || 'Escola nao informada'}</Text>
+          <Text style={styles.gradientCardSubtitle}>{role === 'ADMIN' ? 'Administrador' : 'Mediador'} - {form.escola || 'Escola não informada'}</Text>
         </Card.Content>
       </Card>
 
@@ -109,7 +109,7 @@ export default function PerfilUsuarioScreen({ navigation }) {
           <TextInput label="Telefone" placeholder="(00) 0 0000-0000" value={form.telefone} onChangeText={(value) => setField('telefone', formatPhone(value))} keyboardType="phone-pad" />
           <TextInput label="Escola" value={form.escola} onChangeText={(value) => setField('escola', value)} />
           <TextInput label="Cargo" value={form.cargo} onChangeText={(value) => setField('cargo', value)} />
-          <TextInput label="Matricula" value={form.matricula} onChangeText={(value) => setField('matricula', value)} />
+          <TextInput label="Matrícula" value={form.matricula} onChangeText={(value) => setField('matricula', value)} />
         </Card.Content>
       </Card>
 

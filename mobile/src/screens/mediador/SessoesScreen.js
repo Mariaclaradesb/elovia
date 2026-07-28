@@ -50,14 +50,14 @@ export default function SessoesScreen({ navigation }) {
       role="MEDIADOR"
       active="sessoes"
       title="Acompanhamento"
-      subtitle="Retome sessoes em andamento ou consulte o historico."
+      subtitle="Retome sessões em andamento ou consulte o histórico."
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.tealDark} />}
       showHero={false}
     >
       <View style={styles.documentHeader}>
         <View style={styles.flex}>
-          <Text variant="headlineSmall" style={styles.title}>Sessoes</Text>
-          <Text style={styles.muted}>Continue uma sessao ativa ou consulte registros anteriores.</Text>
+          <Text variant="headlineSmall" style={styles.title}>Sessões</Text>
+          <Text style={styles.muted}>Continue uma sessão ativa ou consulte registros anteriores.</Text>
         </View>
         <Button mode="contained" icon="plus" onPress={() => navigation.navigate('IniciarSessao')}>
           Nova
@@ -73,8 +73,8 @@ export default function SessoesScreen({ navigation }) {
         </>
       )}
 
-      <Text style={styles.sectionTitle}>Historico</Text>
-      {historico.length === 0 ? <EmptyState text="Nenhuma sessao finalizada." /> : historico.map((sessao) => (
+      <Text style={styles.sectionTitle}>Histórico</Text>
+      {historico.length === 0 ? <EmptyState text="Nenhuma sessão finalizada." /> : historico.map((sessao) => (
         <SessaoCard key={sessao.id} sessao={sessao} onPress={() => navigation.navigate('SessaoAcompanhamento', { sessao })} />
       ))}
     </AppLayout>

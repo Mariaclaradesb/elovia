@@ -46,7 +46,7 @@ export default function FirstAccessScreen() {
       <Card style={styles.card}>
         <Card.Content style={styles.formGap}>
           <Text variant="titleLarge" style={styles.title}>Primeiro acesso</Text>
-          <Text style={styles.muted}>Para sua seguranca, altere sua senha.</Text>
+          <Text style={styles.muted}>Para sua segurança, altere sua senha.</Text>
           <TextInput
             label="Nova senha"
             value={novaSenha}

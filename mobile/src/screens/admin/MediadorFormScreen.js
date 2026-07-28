@@ -94,7 +94,7 @@ export default function MediadorFormScreen({ route, navigation }) {
           <TextInput label="Email" value={form.email} onChangeText={(value) => setField('email', value)} keyboardType="email-address" autoCapitalize="none" />
           <TextInput label="Escola" value={form.escola} editable={false} />
           <TextInput label="Cargo" value={form.cargo} onChangeText={(value) => setField('cargo', value)} />
-          <TextInput label="Matricula" value={form.matricula} onChangeText={(value) => setField('matricula', value)} />
+          <TextInput label="Matrícula" value={form.matricula} onChangeText={(value) => setField('matricula', value)} />
           {!!error && <HelperText type="error" visible>{error}</HelperText>}
           <Button mode="contained" icon="content-save" onPress={save} loading={loading}>Salvar</Button>
           {mediador?.primeiroAcesso && (

@@ -29,6 +29,7 @@ const STUDENT_ACCENTS = [colors.teal, colors.purple, colors.yellow];
 
 function elapsed(inicio, now) {
   const diff = Math.max(0, now - new Date(inicio).getTime());
+
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
@@ -36,7 +37,7 @@ function elapsed(inicio, now) {
 }
 
 function periodLabel(periodo) {
-  const labels = { MANHA: 'Manha', TARDE: 'Tarde', NOITE: 'Noite' };
+  const labels = { MANHA: 'Manhã', TARDE: 'Tarde', NOITE: 'Noite' };
   return labels[periodo] || periodo;
 }
 
@@ -158,14 +159,17 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
   if (!sessao) {
     return (
       <View style={styles.centered}>
-        <Text>Nao foi possivel carregar a sessao.</Text>
+        <Text>Não foi possível carregar a sessão.</Text>
       </View>
     );
   }
 
   return (
     <View style={[styles.flex, styles.sessionPage]}>
-      <ScrollView contentContainerStyle={styles.sessionPageScroll} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={[styles.sessionPageScroll, { gap: 18 }]}
+        keyboardShouldPersistTaps="handled"
+      >
         <LinearGradient
           colors={[colors.teal, colors.purple]}
           start={{ x: 0, y: 0 }}
@@ -175,8 +179,8 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
           <Card style={styles.sessionSummaryCard} mode="contained">
             <Card.Content style={styles.sessionSummaryContent}>
               <View style={styles.flex}>
-                <Text style={styles.sessionMeta}>Periodo: <Text style={styles.sessionMetaStrong}>{periodLabel(sessao.periodo)}</Text></Text>
-                <Text style={styles.sessionMeta}>Inicio: <Text style={styles.sessionMetaStrong}>{startTime(sessao.inicio)}</Text></Text>
+                <Text style={styles.sessionMeta}>Período: <Text style={styles.sessionMetaStrong}>{periodLabel(sessao.periodo)}</Text></Text>
+                <Text style={styles.sessionMeta}>Início: <Text style={styles.sessionMetaStrong}>{startTime(sessao.inicio)}</Text></Text>
               </View>
               <View style={styles.sessionElapsedBox}>
                 <Avatar.Icon size={46} icon="clock-outline" style={styles.sessionClockIcon} color={colors.purple} />
@@ -189,8 +193,8 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
           </Card>
         </LinearGradient>
 
-        <View style={styles.sessionSectionHeader}>
-          <Text variant="titleMedium" style={styles.sectionTitle}>Alunos da sessao</Text>
+        <View style={[styles.sessionSectionHeader, { paddingHorizontal: 16 }]}>
+          <Text variant="titleMedium" style={styles.sectionTitle}>Alunos da sessão</Text>
           <Text style={styles.muted}>{sessao.alunos?.length || 0} selecionado(s)</Text>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sessionStudentsRow}>
@@ -217,8 +221,8 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
 
         {aberta ? (
           <>
-            <View style={styles.sessionSectionHeader}>
-              <Text variant="titleMedium" style={styles.sectionTitle}>Atalhos rapidos</Text>
+            <View style={[styles.sessionSectionHeader, { paddingHorizontal: 16 }]}>
+              <Text variant="titleMedium" style={styles.sectionTitle}>Atalhos rápidos</Text>
             </View>
             <View style={styles.sessionShortcutGrid}>
               {ATALHOS_OBSERVACAO.map((atalho) => {
@@ -235,36 +239,39 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
               })}
             </View>
 
-            <Pressable onPress={() => openNew()}>
-              <LinearGradient
-                colors={[colors.teal, colors.purple]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.newObservationButton}
-              >
-                <Icon source="plus" size={28} color={colors.white} />
-                <Text variant="titleMedium" style={styles.newObservationText}>Nova observacao</Text>
-              </LinearGradient>
-            </Pressable>
+            <View style={{ paddingHorizontal: 16, gap: 10 }}>
+              <Pressable onPress={() => openNew()}>
+                <LinearGradient
+                  colors={[colors.teal, colors.purple]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.newObservationButton}
+                >
+                  <Icon source="plus" size={28} color={colors.white} />
+                  <Text variant="titleMedium" style={styles.newObservationText}>Nova observação</Text>
+                </LinearGradient>
+              </Pressable>
 
-            <Button
-              mode="contained"
-              icon="stop-circle-outline"
-              buttonColor={colors.tealDark}
-              textColor={colors.white}
-              contentStyle={styles.sessionStopButtonContent}
-              style={styles.sessionStopButton}
-              onPress={() => setConfirmEnd(true)}
-            >
-              Encerrar acompanhamento
-            </Button>
+              <Button
+                mode="outlined"
+                icon="stop-circle-outline"
+                textColor={colors.danger}
+                style={[styles.sessionStopButton, { borderColor: colors.danger }]}
+                contentStyle={styles.sessionStopButtonContent}
+                onPress={() => setConfirmEnd(true)}
+              >
+                Encerrar acompanhamento
+              </Button>
+            </View>
           </>
         ) : (
-          <Chip icon="lock-outline" style={styles.inactiveChip}>Sessao finalizada para consulta</Chip>
+          <View style={{ paddingHorizontal: 16 }}>
+            <Chip icon="lock-outline" style={styles.inactiveChip}>Sessão finalizada — somente consulta</Chip>
+          </View>
         )}
 
-        {!!error && <HelperText type="error" visible>{error}</HelperText>}
-        <Text variant="titleMedium" style={styles.sectionTitle}>Timeline de observacoes</Text>
+        {!!error && <HelperText type="error" visible style={{ paddingHorizontal: 16 }}>{error}</HelperText>}
+        <Text variant="titleMedium" style={[styles.sectionTitle, { paddingHorizontal: 16 }]}>Timeline de observações</Text>
         {timeline.length === 0 && <EmptyState text="Nenhuma observação encontrada." />}
         {timeline.map((item) => <TimelineItem key={item.id} item={item} onPress={() => openEdit(item)} />)}
       </ScrollView>
@@ -286,14 +293,15 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
       <Portal>
         <Dialog visible={confirmEnd} onDismiss={() => setConfirmEnd(false)} style={styles.appDialog}>
           <Dialog.Title>Encerrar acompanhamento</Dialog.Title>
-          <Dialog.Content>
+          <Dialog.Content style={styles.appDialogContent}>
+            <Text style={styles.appDialogText}>Resumo de registros desta sessão:</Text>
             {sessao.alunos?.map((aluno) => (
-              <Text key={aluno.id}>{aluno.nome}: {counts[aluno.id] || 0} registros</Text>
+              <Text key={aluno.id} style={styles.appDialogText}>• {aluno.nome}: <Text style={{ fontWeight: '800' }}>{counts[aluno.id] || 0} registro(s)</Text></Text>
             ))}
           </Dialog.Content>
           <Dialog.Actions style={styles.appDialogActions}>
             <Button onPress={() => setConfirmEnd(false)}>Cancelar</Button>
-            <Button mode="contained" buttonColor={colors.tealDark} onPress={finish}>Finalizar sessao</Button>
+            <Button mode="contained" buttonColor={colors.tealDark} onPress={finish}>Finalizar sessão</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -314,7 +322,8 @@ function ObservationSheet({ visible, onDismiss, sessao, multiAluno, form, setFie
         style={styles.sheetBackdrop}
       >
         <ScrollView style={styles.bottomSheet} contentContainerStyle={styles.bottomSheetContent} keyboardShouldPersistTaps="handled">
-          <Text variant="titleLarge" style={styles.title}>{editing ? 'Editar observacao' : 'Nova observacao'}</Text>
+          <Text variant="titleLarge" style={styles.title}>{editing ? 'Editar observação' : 'Nova observação'}</Text>
+
           {multiAluno && (
             <>
               <Text style={styles.sectionTitle}>Aluno</Text>
@@ -329,30 +338,46 @@ function ObservationSheet({ visible, onDismiss, sessao, multiAluno, form, setFie
           )}
 
           <Text style={styles.sectionTitle}>Categoria</Text>
-          <View style={styles.categoryGrid}>
-            {OBSERVACAO_CATEGORIAS.map((categoria) => (
-              <Chip
-                key={categoria.value}
-                selected={form.categoria === categoria.value}
-                icon={categoria.icon}
-                onPress={() => selectCategory(categoria)}
-              >
-                {categoria.label}
-              </Chip>
-            ))}
+          <View style={styles.sessionShortcutGrid}>
+            {OBSERVACAO_CATEGORIAS.map((categoria) => {
+              const color = categoriaObservacaoColor(categoria.value);
+              const selected = form.categoria === categoria.value;
+              return (
+                <Pressable
+                  key={categoria.value}
+                  style={[
+                    styles.sessionShortcutCard,
+                    selected && { borderColor: color, borderWidth: 2, backgroundColor: `${color}14` },
+                  ]}
+                  onPress={() => selectCategory(categoria)}
+                >
+                  <View style={[styles.sessionShortcutIcon, { backgroundColor: `${color}${selected ? '30' : '18'}` }]}>
+                    <Icon source={categoria.icon || 'note-outline'} size={24} color={color} />
+                  </View>
+                  <Text numberOfLines={2} style={[styles.sessionShortcutText, selected && { color }]}>
+                    {categoria.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
 
-          <TextInput label="Descricao" value={form.descricao} onChangeText={(value) => setField('descricao', value)} multiline />
-          <Text style={styles.muted}>Categoria: {categoriaObservacaoLabel(form.categoria)}</Text>
+          <TextInput label="Descrição" value={form.descricao} onChangeText={(value) => setField('descricao', value)} multiline />
           <TextInput label="Disciplina" value={form.disciplina} onChangeText={(value) => setField('disciplina', value)} />
           <TextInput label="Local" value={form.local} onChangeText={(value) => setField('local', value)} />
-          <TextInput label="Estrategia utilizada" value={form.estrategia} onChangeText={(value) => setField('estrategia', value)} />
+          <TextInput label="Estratégia utilizada" value={form.estrategia} onChangeText={(value) => setField('estrategia', value)} />
           <TextInput label="Resultado" value={form.resultado} onChangeText={(value) => setField('resultado', value)} />
-          <TextInput label="Observacao complementar" value={form.observacaoComplementar} onChangeText={(value) => setField('observacaoComplementar', value)} />
+          <TextInput label="Observação complementar" value={form.observacaoComplementar} onChangeText={(value) => setField('observacaoComplementar', value)} />
+
           {!!error && <HelperText type="error" visible>{error}</HelperText>}
-          <Button mode="contained" icon="content-save" onPress={onSave}>Salvar</Button>
-          {editing && <Button mode="outlined" icon="content-copy" onPress={onDuplicate}>Duplicar</Button>}
-          {editing && <Button mode="outlined" icon="delete-outline" onPress={onDelete}>Excluir</Button>}
+
+          <Button mode="contained" icon="content-save" contentStyle={{ minHeight: 52 }} onPress={onSave}>Salvar observação</Button>
+          {editing && (
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <Button mode="outlined" icon="content-copy" style={{ flex: 1 }} onPress={onDuplicate}>Duplicar</Button>
+              <Button mode="outlined" icon="delete-outline" textColor={colors.danger} style={{ flex: 1, borderColor: colors.danger }} onPress={onDelete}>Excluir</Button>
+            </View>
+          )}
           <Button mode="text" onPress={onDismiss}>Cancelar</Button>
         </ScrollView>
       </KeyboardAvoidingView>

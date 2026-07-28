@@ -74,7 +74,7 @@ export default function AdminHomeScreen({ navigation }) {
         <StatCard label="Sem mediador" value={dashboard?.quantidadeAlunosSemMediador ?? '-'} color={colors.yellow} icon="account-alert" />
       </View>
 
-      <SectionTitle title="Acesso rapido" />
+      <SectionTitle title="Acesso rápido" />
       <View style={styles.actionGrid}>
         <QuickActionTile label="Alunos" icon="account-school-outline" color={colors.tealDark} onPress={() => navigation.navigate('Alunos')} />
         <QuickActionTile label="Mediadores" icon="account-heart-outline" onPress={() => navigation.navigate('Mediadores')} />

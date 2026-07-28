@@ -58,9 +58,9 @@ export default function DocumentoDetailsScreen({ route, navigation }) {
               { label: 'Enviado por', value: documento.usuarioUploadNome },
               { label: 'Data do documento', value: isoToDisplayDate(documento.dataDocumento) },
               { label: 'Data do upload', value: isoToDisplayDate(documento.dataUpload) },
-              { label: 'Descricao', value: documento.descricao, full: true },
+              { label: 'Descrição', value: documento.descricao, full: true },
               { label: 'Arquivo', value: documento.nomeArquivo, full: true },
-              { label: 'Ultima edicao', value: documento.usuarioUltimaEdicaoNome ? `${documento.usuarioUltimaEdicaoNome} em ${isoToDisplayDate(documento.dataUltimaEdicao)}` : 'Não editado', full: true },
+              { label: 'Última edição', value: documento.usuarioUltimaEdicaoNome ? `${documento.usuarioUltimaEdicaoNome} em ${isoToDisplayDate(documento.dataUltimaEdicao)}` : 'Não editado', full: true },
             ]}
           />
           {!!error && <Text style={styles.errorText}>{error}</Text>}
@@ -86,7 +86,7 @@ export default function DocumentoDetailsScreen({ route, navigation }) {
         <Dialog visible={confirmDelete} onDismiss={() => setConfirmDelete(false)} style={styles.appDialog}>
           <Dialog.Title>Excluir documento?</Dialog.Title>
           <Dialog.Content>
-            <Text>O documento sera desativado e continuara registrado no historico.</Text>
+            <Text>O documento será desativado e continuará registrado no histórico.</Text>
           </Dialog.Content>
           <Dialog.Actions style={styles.appDialogActions}>
             <Button onPress={() => setConfirmDelete(false)}>Cancelar</Button>

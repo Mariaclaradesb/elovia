@@ -42,7 +42,7 @@ export default function AlunoProfileScreen({ route, navigation }) {
   function renderInfo() {
     const responsaveis = aluno.responsaveis?.length
       ? aluno.responsaveis.map((item, index) => `${index + 1}. ${item.nome} - ${item.telefone || 'sem telefone'}${item.email ? ` - ${item.email}` : ''}`).join('\n')
-      : `${aluno.responsavel || 'Nao informado'}${aluno.telefoneResponsavel ? ` - ${aluno.telefoneResponsavel}` : ''}`;
+      : `${aluno.responsavel || 'Não informado'}${aluno.telefoneResponsavel ? ` - ${aluno.telefoneResponsavel}` : ''}`;
     const comprometimentos = aluno.comprometimentos?.length
       ? aluno.comprometimentos
         .map((item) => `${item.nome}${item.cid ? ` - CID ${item.cid}` : ' - CID não informado'}`)
@@ -55,9 +55,9 @@ export default function AlunoProfileScreen({ route, navigation }) {
           { label: 'Escola', value: aluno.escola },
           { label: 'Turma', value: aluno.turma },
           { label: 'Turno', value: aluno.turno },
-          { label: 'Genero', value: aluno.sexo },
+          { label: 'Gênero', value: aluno.sexo },
           { label: 'Nascimento', value: isoToDisplayDate(aluno.dataNascimento) },
-          { label: 'Responsaveis', value: responsaveis, full: true },
+          { label: 'Responsáveis', value: responsaveis, full: true },
           { label: 'Comprometimentos', value: comprometimentos, full: true },
           ...(aluno.emInvestigacao ? [{ label: 'Situação', value: 'Em investigação', full: true }] : []),
         ]}
@@ -101,16 +101,16 @@ export default function AlunoProfileScreen({ route, navigation }) {
       return (
         <Card style={styles.card}>
           <Card.Content style={styles.formGap}>
-            <ListInput label="Observacoes iniciais" items={observacoesForm.observacoesIniciais} onChange={(items) => setObservationField('observacoesIniciais', items)} />
-            <ListInput label="Estrategias que funcionam" items={observacoesForm.estrategias} onChange={(items) => setObservationField('estrategias', items)} />
+            <ListInput label="Observações iniciais" items={observacoesForm.observacoesIniciais} onChange={(items) => setObservationField('observacoesIniciais', items)} />
+            <ListInput label="Estratégias que funcionam" items={observacoesForm.estrategias} onChange={(items) => setObservationField('estrategias', items)} />
             <ListInput label="Gatilhos" items={observacoesForm.gatilhos} onChange={(items) => setObservationField('gatilhos', items)} />
-            <ListInput label="Preferencias" items={observacoesForm.preferencias} onChange={(items) => setObservationField('preferencias', items)} />
+            <ListInput label="Preferências" items={observacoesForm.preferencias} onChange={(items) => setObservationField('preferencias', items)} />
             <ListInput label="Interesses" items={observacoesForm.interesses} onChange={(items) => setObservationField('interesses', items)} />
             <ListInput label="Objetivos do PDI" items={observacoesForm.objetivosPdi} onChange={(items) => setObservationField('objetivosPdi', items)} />
-            <ListInput label="Forma de comunicacao" items={observacoesForm.formaComunicacao} onChange={(items) => setObservationField('formaComunicacao', items)} />
-            <ListInput label="Observacoes pedagogicas" items={observacoesForm.observacoes} onChange={(items) => setObservationField('observacoes', items)} />
+            <ListInput label="Forma de comunicação" items={observacoesForm.formaComunicacao} onChange={(items) => setObservationField('formaComunicacao', items)} />
+            <ListInput label="Observações pedagógicas" items={observacoesForm.observacoes} onChange={(items) => setObservationField('observacoes', items)} />
             {!!error && <HelperText type="error" visible>{error}</HelperText>}
-            <Button mode="contained" icon="content-save" loading={savingObservacoes} onPress={saveObservacoes}>Salvar observacoes</Button>
+            <Button mode="contained" icon="content-save" loading={savingObservacoes} onPress={saveObservacoes}>Salvar observações</Button>
             <Button mode="text" onPress={() => setEditingObservacoes(false)}>Cancelar</Button>
           </Card.Content>
         </Card>
@@ -121,18 +121,18 @@ export default function AlunoProfileScreen({ route, navigation }) {
       <>
         <InfoGrid
           items={[
-            { label: 'Observacoes iniciais', value: aluno.observacoesIniciais, full: true },
-            { label: 'Estrategias', value: aluno.estrategias, full: true },
+            { label: 'Observações iniciais', value: aluno.observacoesIniciais, full: true },
+            { label: 'Estratégias', value: aluno.estrategias, full: true },
             { label: 'Gatilhos', value: aluno.gatilhos, full: true },
-            { label: 'Preferencias', value: aluno.preferencias, full: true },
+            { label: 'Preferências', value: aluno.preferencias, full: true },
             { label: 'Interesses', value: aluno.interesses, full: true },
             { label: 'Objetivos do PDI', value: aluno.objetivosPdi, full: true },
-            { label: 'Forma de comunicacao', value: aluno.formaComunicacao, full: true },
-            { label: 'Observacoes pedagogicas', value: aluno.observacoes, full: true },
+            { label: 'Forma de comunicação', value: aluno.formaComunicacao, full: true },
+            { label: 'Observações pedagógicas', value: aluno.observacoes, full: true },
           ]}
         />
         <Button mode="outlined" icon="note-edit-outline" onPress={() => setEditingObservacoes(true)}>
-          Editar observacoes
+          Editar observações
         </Button>
       </>
     );
@@ -170,10 +170,10 @@ export default function AlunoProfileScreen({ route, navigation }) {
           setTab(nextTab);
         }}
         buttons={[
-          { value: 'info', label: 'Informacoes' },
-          { value: 'observacoes', label: 'Observacoes' },
+          { value: 'info', label: 'Informações' },
+          { value: 'observacoes', label: 'Observações' },
           { value: 'biblioteca', label: 'Biblioteca' },
-          // { value: 'relatorios', label: 'Relatorios' },
+          // { value: 'relatorios', label: 'Relatórios' },
         ]}
       />
 

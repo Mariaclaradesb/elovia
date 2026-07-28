@@ -67,7 +67,7 @@ export default function MediadoresScreen({ navigation }) {
 
   return (
     <View style={styles.flex}>
-      <AppLayout navigation={navigation} role="ADMIN" active="mediadores" title="Mediadores" subtitle="Equipe vinculada a sua escola." showHero={false}>
+      <AppLayout navigation={navigation} role="ADMIN" active="mediadores" title="Mediadores" subtitle="Equipe vinculada à sua escola." showHero={false}>
         <Searchbar placeholder="Pesquisar" value={search} onChangeText={setSearch} style={styles.search} />
         <SegmentedButtons
           value={order}

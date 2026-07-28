@@ -50,22 +50,22 @@ export default function MediadorHomeScreen({ navigation }) {
       role="MEDIADOR"
       active="home"
       title="Acompanhe, registre e transforme vidas"
-      subtitle="O Elovia esta aqui para apoiar voce no dia a dia."
+      subtitle="O Elovia está aqui para apoiar você no dia a dia."
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.tealDark} />}
     >
       {!!error && <HelperText type="error" visible>{error}</HelperText>}
 
-      <SectionTitle title="Acesso rapido" />
+      <SectionTitle title="Acesso rápido" />
       <View style={styles.actionGrid}>
         <QuickActionTile label="Meus alunos" icon="account-school-outline" color={colors.tealDark} onPress={() => navigation.navigate('MediadorAlunos')} />
-        <QuickActionTile label="Sessoes" icon="calendar-clock" onPress={() => navigation.navigate('Sessoes')} />
+        <QuickActionTile label="Sessões" icon="calendar-clock" onPress={() => navigation.navigate('Sessoes')} />
         <QuickActionTile label="Iniciar" icon="play-circle-outline" color={colors.yellow} onPress={() => navigation.navigate('IniciarSessao')} />
       </View>
 
       {sessaoAtiva ? (
         <Card style={styles.card}>
           <Card.Content style={styles.formGap}>
-            <Text variant="titleLarge" style={styles.title}>Sessao em andamento</Text>
+            <Text variant="titleLarge" style={styles.title}>Sessão em andamento</Text>
             <Text style={styles.muted}>{sessaoAtiva.periodo} - {sessaoAtiva.alunos?.length || 0} aluno(s)</Text>
             <Button mode="contained" icon="play-circle-outline" onPress={() => navigation.navigate('SessaoAcompanhamento', { sessao: sessaoAtiva })}>
               Continuar acompanhamento
@@ -78,7 +78,7 @@ export default function MediadorHomeScreen({ navigation }) {
         </Button>
       )}
       <Button mode="outlined" icon="calendar-clock" onPress={() => navigation.navigate('Sessoes')}>
-        Ver sessoes
+        Ver sessões
       </Button>
       {alunos.length === 0 ? <EmptyState text="Nenhum aluno vinculado." /> : alunos.map((aluno) => (
         <AlunoListItem key={aluno.id} aluno={aluno} onPress={() => navigation.navigate('AlunoProfile', { aluno })} />

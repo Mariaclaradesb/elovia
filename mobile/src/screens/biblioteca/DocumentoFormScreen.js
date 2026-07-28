@@ -58,7 +58,7 @@ export default function DocumentoFormScreen({ route, navigation }) {
   async function takePhoto() {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) {
-      setMessage('Permita o acesso a camera para anexar fotos.');
+      setMessage('Permita o acesso à câmera para anexar fotos.');
       return;
     }
 
@@ -111,9 +111,9 @@ export default function DocumentoFormScreen({ route, navigation }) {
           options={(anamnese ? ANAMNESE_ATTACHMENT_CATEGORIES : DOCUMENT_CATEGORIES).map((item) => ({ value: item.value, label: item.label }))}
           onChange={(value) => setField('categoria', value)}
         />
-        <TextInput label="Titulo" mode="outlined" value={values.titulo} onChangeText={(value) => setField('titulo', value)} />
+        <TextInput label="Título" mode="outlined" value={values.titulo} onChangeText={(value) => setField('titulo', value)} />
         <TextInput
-          label="Descricao"
+          label="Descrição"
           mode="outlined"
           value={values.descricao}
           onChangeText={(value) => setField('descricao', value)}
@@ -126,7 +126,7 @@ export default function DocumentoFormScreen({ route, navigation }) {
       <FormSection title="Arquivo">
         <View style={styles.fileActions}>
           <Button mode="outlined" icon="file-upload-outline" onPress={pickDocument}>Selecionar arquivo</Button>
-          <Button mode="outlined" icon="camera-outline" onPress={takePhoto}>Usar camera</Button>
+          <Button mode="outlined" icon="camera-outline" onPress={takePhoto}>Usar câmera</Button>
         </View>
         {(file || documento?.nomeArquivo) ? (
           <Card mode="outlined" style={styles.card}>

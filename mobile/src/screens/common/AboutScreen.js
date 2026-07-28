@@ -23,9 +23,9 @@ export default function AboutScreen({ navigation }) {
           <Image source={require('../../../assets/logo_completa.png')} style={styles.aboutLogo} resizeMode="contain" />
           <Text variant="titleLarge" style={styles.title}>Elovia</Text>
           <Text style={styles.infoValue}>
-            O Elovia e um aplicativo de acompanhamento escolar criado para organizar cadastros,
-            biblioteca digital, sessoes de mediacao e observacoes do dia a dia de forma simples,
-            visual e acessivel.
+            O Elovia é um aplicativo de acompanhamento escolar criado para organizar cadastros,
+            biblioteca digital, sessões de mediação e observações do dia a dia de forma simples,
+            visual e acessível.
           </Text>
         </Card.Content>
       </Card>

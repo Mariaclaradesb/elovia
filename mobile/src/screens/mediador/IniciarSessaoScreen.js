@@ -61,7 +61,7 @@ export default function IniciarSessaoScreen({ navigation }) {
       <Card style={styles.card}>
         <Card.Content style={styles.formGap}>
           <Text variant="titleLarge" style={styles.title}>Iniciar Acompanhamento</Text>
-          <Text style={styles.muted}>Quantos alunos voce acompanhara nesta sessao?</Text>
+          <Text style={styles.muted}>Quantos alunos você acompanhará nesta sessão?</Text>
           <SegmentedButtons
             value={modo}
             onValueChange={(value) => {
@@ -102,7 +102,7 @@ export default function IniciarSessaoScreen({ navigation }) {
       </Card>
 
       {!!error && <HelperText type="error" visible>{error}</HelperText>}
-      <Button mode="contained" icon="play-circle-outline" loading={loading} onPress={start}>Iniciar Sessao</Button>
+      <Button mode="contained" icon="play-circle-outline" loading={loading} onPress={start}>Iniciar sessão</Button>
     </Screen>
   );
 }

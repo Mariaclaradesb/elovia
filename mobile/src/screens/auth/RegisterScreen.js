@@ -77,7 +77,7 @@ export default function RegisterScreen({ navigation }) {
             <TextInput mode="outlined" label="CPF" value={form.cpf} onChangeText={(value) => setField('cpf', formatCpf(value))} keyboardType="number-pad" left={<TextInput.Icon icon="card-account-details-outline" />} />
             <TextInput mode="outlined" label="E-mail" value={form.email} onChangeText={(value) => setField('email', value)} keyboardType="email-address" autoCapitalize="none" left={<TextInput.Icon icon="email-outline" />} />
             <TextInput mode="outlined" label="Telefone" placeholder="(00) 0 0000-0000" value={form.telefone} onChangeText={(value) => setField('telefone', formatPhone(value))} keyboardType="phone-pad" left={<TextInput.Icon icon="phone-outline" />} />
-            <TextInput mode="outlined" label="Escola / Instituicao" value={form.escola} onChangeText={(value) => setField('escola', value)} left={<TextInput.Icon icon="domain" />} />
+            <TextInput mode="outlined" label="Escola / Instituição" value={form.escola} onChangeText={(value) => setField('escola', value)} left={<TextInput.Icon icon="domain" />} />
             <SelectField
               label="Tipo de conta"
               value="Administrador"
@@ -103,11 +103,11 @@ export default function RegisterScreen({ navigation }) {
               right={<TextInput.Icon icon={showConfirmarSenha ? 'eye-off-outline' : 'eye-outline'} onPress={() => setShowConfirmarSenha((value) => !value)} />}
             />
 
-            <Checkbox.Item label="Eu aceito os Termos de Uso e a Politica de Privacidade" status={accepted ? 'checked' : 'unchecked'} onPress={() => setAccepted(!accepted)} />
+            <Checkbox.Item label="Eu aceito os Termos de Uso e a Política de Privacidade" status={accepted ? 'checked' : 'unchecked'} onPress={() => setAccepted(!accepted)} />
             {!!error && <HelperText type="error" visible>{error}</HelperText>}
             <Button mode="contained" contentStyle={styles.primaryButtonContent} onPress={handleRegister} loading={loading}>Cadastrar</Button>
             <View style={styles.authFooter}>
-              <Text style={styles.muted}>Ja tem uma conta?</Text>
+              <Text style={styles.muted}>Já tem uma conta?</Text>
               <Button mode="text" onPress={() => navigation.goBack()}>Faça login</Button>
             </View>
           </Card.Content>
