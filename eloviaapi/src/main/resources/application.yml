@@ -52,6 +52,8 @@ management:
   health:
     db:
       enabled: ${DB_HEALTH_ENABLED:false}
+    mail:
+      enabled: ${MAIL_HEALTH_ENABLED:false}
   endpoints:
     web:
       exposure:
