@@ -12,12 +12,17 @@ import { isoToDisplayDate } from '../../utils/date';
 
 export default function DocumentoDetailsScreen({ route, navigation }) {
   const { token } = useAuth();
-  const { documentoId, aluno } = route.params;
+  const { aluno } = route.params;
+  const documentoId = route.params.documentoId || route.params.documento?.id;
   const [documento, setDocumento] = useState(route.params.documento || null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (!documentoId) {
+      setError('Documento não encontrado.');
+      return;
+    }
     buscarDocumento(documentoId, token)
       .then(setDocumento)
       .catch((err) => setError(err.message));
@@ -78,12 +83,12 @@ export default function DocumentoDetailsScreen({ route, navigation }) {
       )}
 
       <Portal>
-        <Dialog visible={confirmDelete} onDismiss={() => setConfirmDelete(false)}>
+        <Dialog visible={confirmDelete} onDismiss={() => setConfirmDelete(false)} style={styles.appDialog}>
           <Dialog.Title>Excluir documento?</Dialog.Title>
           <Dialog.Content>
             <Text>O documento sera desativado e continuara registrado no historico.</Text>
           </Dialog.Content>
-          <Dialog.Actions>
+          <Dialog.Actions style={styles.appDialogActions}>
             <Button onPress={() => setConfirmDelete(false)}>Cancelar</Button>
             <Button onPress={remove}>Confirmar</Button>
           </Dialog.Actions>

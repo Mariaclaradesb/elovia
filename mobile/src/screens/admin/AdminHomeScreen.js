@@ -3,6 +3,7 @@ import { RefreshControl, View } from 'react-native';
 import { Card, HelperText, Text } from 'react-native-paper';
 
 import AppLayout from '../../components/AppLayout';
+import EmptyState from '../../components/EmptyState';
 import { AlunoListItem, MediadorListItem } from '../../components/ListItems';
 import QuickActionTile from '../../components/QuickActionTile';
 import SectionTitle from '../../components/SectionTitle';
@@ -82,6 +83,7 @@ export default function AdminHomeScreen({ navigation }) {
       </View>
 
       <SectionTitle title="Últimos cadastros" />
+      {alunos.length === 0 && mediadores.length === 0 && <EmptyState text="Nenhum cadastro encontrado." />}
       {alunos.slice(0, 3).map((aluno) => (
         <AlunoListItem
           key={aluno.id}

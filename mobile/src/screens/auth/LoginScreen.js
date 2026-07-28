@@ -85,12 +85,12 @@ export default function LoginScreen({ navigation }) {
       </ScrollView>
 
       <Portal>
-        <Dialog visible={forgotOpen} onDismiss={() => setForgotOpen(false)}>
+        <Dialog visible={forgotOpen} onDismiss={() => setForgotOpen(false)} style={styles.appDialog}>
           <Dialog.Title>Recuperacao de senha</Dialog.Title>
           <Dialog.Content>
             <TextInput label="Email" value={forgotEmail} onChangeText={setForgotEmail} keyboardType="email-address" autoCapitalize="none" />
           </Dialog.Content>
-          <Dialog.Actions>
+          <Dialog.Actions style={styles.appDialogActions}>
             <Button onPress={() => setForgotOpen(false)}>Cancelar</Button>
             <Button onPress={handleForgotPassword}>Enviar</Button>
           </Dialog.Actions>

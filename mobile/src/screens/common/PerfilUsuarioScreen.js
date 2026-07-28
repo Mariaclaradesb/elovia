@@ -106,7 +106,7 @@ export default function PerfilUsuarioScreen({ navigation }) {
           <TextInput label="Nome completo" value={form.nome} onChangeText={(value) => setField('nome', value)} />
           <TextInput label="CPF" value={form.cpf} onChangeText={(value) => setField('cpf', formatCpf(value))} keyboardType="number-pad" />
           <TextInput label="E-mail" value={form.email} onChangeText={(value) => setField('email', value)} keyboardType="email-address" autoCapitalize="none" />
-          <TextInput label="Telefone" value={form.telefone} onChangeText={(value) => setField('telefone', formatPhone(value))} keyboardType="phone-pad" />
+          <TextInput label="Telefone" placeholder="(00) 0 0000-0000" value={form.telefone} onChangeText={(value) => setField('telefone', formatPhone(value))} keyboardType="phone-pad" />
           <TextInput label="Escola" value={form.escola} onChangeText={(value) => setField('escola', value)} />
           <TextInput label="Cargo" value={form.cargo} onChangeText={(value) => setField('cargo', value)} />
           <TextInput label="Matricula" value={form.matricula} onChangeText={(value) => setField('matricula', value)} />

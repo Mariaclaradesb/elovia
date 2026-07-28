@@ -4,6 +4,7 @@ import { Avatar, Button, Card, Chip, Dialog, HelperText, Icon, Portal, Text } fr
 import { LinearGradient } from 'expo-linear-gradient';
 
 import TextInput from '../../components/FormTextInput';
+import EmptyState from '../../components/EmptyState';
 import TimelineItem from '../../components/TimelineItem';
 import {
   ATALHOS_OBSERVACAO,
@@ -264,6 +265,7 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
 
         {!!error && <HelperText type="error" visible>{error}</HelperText>}
         <Text variant="titleMedium" style={styles.sectionTitle}>Timeline de observacoes</Text>
+        {timeline.length === 0 && <EmptyState text="Nenhuma observação encontrada." />}
         {timeline.map((item) => <TimelineItem key={item.id} item={item} onPress={() => openEdit(item)} />)}
       </ScrollView>
 
@@ -282,14 +284,14 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
       />
 
       <Portal>
-        <Dialog visible={confirmEnd} onDismiss={() => setConfirmEnd(false)}>
+        <Dialog visible={confirmEnd} onDismiss={() => setConfirmEnd(false)} style={styles.appDialog}>
           <Dialog.Title>Encerrar acompanhamento</Dialog.Title>
           <Dialog.Content>
             {sessao.alunos?.map((aluno) => (
               <Text key={aluno.id}>{aluno.nome}: {counts[aluno.id] || 0} registros</Text>
             ))}
           </Dialog.Content>
-          <Dialog.Actions>
+          <Dialog.Actions style={styles.appDialogActions}>
             <Button onPress={() => setConfirmEnd(false)}>Cancelar</Button>
             <Button mode="contained" buttonColor={colors.tealDark} onPress={finish}>Finalizar sessao</Button>
           </Dialog.Actions>

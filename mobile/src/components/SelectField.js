@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { Pressable, View } from 'react-native';
 import { Menu } from 'react-native-paper';
 
 import TextInput from './FormTextInput';
+import { styles } from '../theme/styles';
 
 export default function SelectField({ label, value, options, onChange }) {
   const [visible, setVisible] = useState(false);
@@ -10,15 +12,24 @@ export default function SelectField({ label, value, options, onChange }) {
     <Menu
       visible={visible}
       onDismiss={() => setVisible(false)}
+      anchorPosition="bottom"
+      contentStyle={styles.selectMenu}
       anchor={(
-        <TextInput
-          label={label}
-          mode="outlined"
-          value={value}
-          editable={false}
-          right={<TextInput.Icon icon="chevron-down" onPress={() => setVisible(true)} />}
-          onPressIn={() => setVisible(true)}
-        />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${label}: ${value || 'selecione uma opção'}`}
+          onPress={() => setVisible(true)}
+          style={styles.selectAnchor}
+        >
+          <View pointerEvents="none">
+            <TextInput
+              label={label}
+              value={value}
+              editable={false}
+              right={<TextInput.Icon icon="chevron-down" />}
+            />
+          </View>
+        </Pressable>
       )}
     >
       {options.map((option) => (

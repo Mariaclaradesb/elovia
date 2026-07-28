@@ -291,7 +291,7 @@ export default function AlunoFormScreen({ route, navigation }) {
                 )}
               </View>
               <TextInput label="Nome" value={responsavel.nome} onChangeText={(value) => setResponsavel(index, 'nome', value)} />
-              <TextInput label="Telefone" value={responsavel.telefone} onChangeText={(value) => setResponsavel(index, 'telefone', formatPhone(value))} keyboardType="phone-pad" />
+              <TextInput label="Telefone" placeholder="(00) 0 0000-0000" value={responsavel.telefone} onChangeText={(value) => setResponsavel(index, 'telefone', formatPhone(value))} keyboardType="phone-pad" />
               <TextInput label="Email" value={responsavel.email} onChangeText={(value) => setResponsavel(index, 'email', value)} keyboardType="email-address" autoCapitalize="none" />
             </View>
           ))}
@@ -355,12 +355,12 @@ export default function AlunoFormScreen({ route, navigation }) {
 
       <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>
       <Portal>
-        <Dialog visible={showAnamneseChoice} onDismiss={() => {}}>
+        <Dialog visible={showAnamneseChoice} onDismiss={() => {}} style={styles.appDialog}>
           <Dialog.Title>Aluno cadastrado</Dialog.Title>
           <Dialog.Content>
             <Text>Deseja iniciar a Anamnese de {savedAluno?.nome} agora? Você também poderá preenchê-la depois pelo perfil do aluno.</Text>
           </Dialog.Content>
-          <Dialog.Actions>
+          <Dialog.Actions style={styles.appDialogActions}>
             <Button onPress={() => {
               setShowAnamneseChoice(false);
               navigation.goBack();

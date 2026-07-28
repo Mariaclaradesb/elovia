@@ -86,6 +86,9 @@ public class MediadorService {
 	@Transactional
 	public MediadorResponse resetPassword(UUID id) {
 		var mediador = findMediador(id);
+		if (!mediador.isPrimeiroAcesso()) {
+			throw new BusinessException("A senha temporaria so pode ser gerada antes do primeiro acesso");
+		}
 		var temporaryPassword = generateTemporaryPassword();
 		mediador.setSenha(passwordEncoder.encode(temporaryPassword));
 		mediador.setPrimeiroAcesso(true);

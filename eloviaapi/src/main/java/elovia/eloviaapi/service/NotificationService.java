@@ -12,7 +12,7 @@ public class NotificationService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
 
 	public void sendTemporaryPassword(Usuario mediador, String senhaTemporaria) {
-		LOGGER.info("Credenciais temporarias para {}: login={}, senhaTemporaria={}",
-				mediador.getNome(), mediador.getEmail(), senhaTemporaria);
+		LOGGER.info("Senha temporaria gerada para o mediador {} ({})",
+				mediador.getNome(), mediador.getEmail());
 	}
 }

@@ -13,6 +13,10 @@ export function cleanCpf(value = '') {
 export function formatPhone(value = '') {
   const digits = value.replace(/\D/g, '').slice(0, 11);
 
+  if (!digits) {
+    return '';
+  }
+
   if (digits.length <= 2) {
     return digits.replace(/(\d{0,2})/, '($1');
   }

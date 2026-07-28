@@ -76,7 +76,7 @@ export default function RegisterScreen({ navigation }) {
             <TextInput mode="outlined" label="Nome completo" value={form.nome} onChangeText={(value) => setField('nome', value)} left={<TextInput.Icon icon="account-outline" />} />
             <TextInput mode="outlined" label="CPF" value={form.cpf} onChangeText={(value) => setField('cpf', formatCpf(value))} keyboardType="number-pad" left={<TextInput.Icon icon="card-account-details-outline" />} />
             <TextInput mode="outlined" label="E-mail" value={form.email} onChangeText={(value) => setField('email', value)} keyboardType="email-address" autoCapitalize="none" left={<TextInput.Icon icon="email-outline" />} />
-            <TextInput mode="outlined" label="Telefone" value={form.telefone} onChangeText={(value) => setField('telefone', formatPhone(value))} keyboardType="phone-pad" left={<TextInput.Icon icon="phone-outline" />} />
+            <TextInput mode="outlined" label="Telefone" placeholder="(00) 0 0000-0000" value={form.telefone} onChangeText={(value) => setField('telefone', formatPhone(value))} keyboardType="phone-pad" left={<TextInput.Icon icon="phone-outline" />} />
             <TextInput mode="outlined" label="Escola / Instituicao" value={form.escola} onChangeText={(value) => setField('escola', value)} left={<TextInput.Icon icon="domain" />} />
             <SelectField
               label="Tipo de conta"

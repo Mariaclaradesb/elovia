@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import * as Clipboard from 'expo-clipboard';
 import { View } from 'react-native';
 import { ActivityIndicator, IconButton, Searchbar, SegmentedButtons, Snackbar } from 'react-native-paper';
 
 import AppLayout from '../../components/AppLayout';
+import EmptyState from '../../components/EmptyState';
 import { MediadorListItem } from '../../components/ListItems';
+import TemporaryPasswordDialog from '../../components/TemporaryPasswordDialog';
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
 import { colors } from '../../theme';
@@ -17,6 +18,7 @@ export default function MediadoresScreen({ navigation }) {
   const [order, setOrder] = useState('cadastro');
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [temporaryPassword, setTemporaryPassword] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -56,8 +58,8 @@ export default function MediadoresScreen({ navigation }) {
   async function resetPassword(id) {
     try {
       const response = await apiRequest(`/api/mediadores/${id}/redefinir-senha`, { method: 'PATCH', token });
-      await Clipboard.setStringAsync(response.senhaTemporaria);
-      setMessage(`Senha temporaria copiada: ${response.senhaTemporaria}`);
+      const mediator = items.find((item) => item.id === id);
+      setTemporaryPassword({ value: response.senhaTemporaria, name: mediator?.nome });
     } catch (err) {
       setMessage(err.message);
     }
@@ -75,7 +77,9 @@ export default function MediadoresScreen({ navigation }) {
             { value: 'az', label: 'A-Z' },
           ]}
         />
-        {loading ? <ActivityIndicator color={colors.tealDark} /> : filtered.map((mediador) => (
+        {loading ? <ActivityIndicator color={colors.tealDark} /> : filtered.length === 0 ? (
+          <EmptyState text="Nenhum mediador encontrado." />
+        ) : filtered.map((mediador) => (
           <MediadorListItem
             key={mediador.id}
             mediador={mediador}
@@ -83,13 +87,19 @@ export default function MediadoresScreen({ navigation }) {
             actions={(
               <View style={styles.rowEnd}>
                 <IconButton icon="pencil-outline" onPress={() => navigation.navigate('MediadorForm', { mediador })} />
-                <IconButton icon="lock-reset" onPress={() => resetPassword(mediador.id)} />
+                {mediador.primeiroAcesso && <IconButton icon="lock-reset" onPress={() => resetPassword(mediador.id)} />}
                 {mediador.ativo && <IconButton icon="account-off-outline" iconColor={colors.danger} onPress={() => deactivate(mediador.id)} />}
               </View>
             )}
           />
         ))}
       </AppLayout>
+      <TemporaryPasswordDialog
+        visible={!!temporaryPassword}
+        password={temporaryPassword?.value || ''}
+        mediatorName={temporaryPassword?.name}
+        onDismiss={() => setTemporaryPassword(null)}
+      />
       <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>
     </View>
   );

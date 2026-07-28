@@ -4,6 +4,7 @@ import { ActivityIndicator, IconButton, Searchbar, SegmentedButtons, Snackbar } 
 
 import AppLayout from '../../components/AppLayout';
 import { AlunoListItem } from '../../components/ListItems';
+import EmptyState from '../../components/EmptyState';
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
 import { colors } from '../../theme';
@@ -80,7 +81,9 @@ export default function AlunosScreen({ navigation }) {
             { value: 'az', label: 'A-Z' },
           ]}
         />
-        {loading ? <ActivityIndicator color={colors.tealDark} /> : filtered.map((aluno) => (
+        {loading ? <ActivityIndicator color={colors.tealDark} /> : filtered.length === 0 ? (
+          <EmptyState text="Nenhum aluno encontrado." />
+        ) : filtered.map((aluno) => (
           <AlunoListItem
             key={aluno.id}
             aluno={aluno}
