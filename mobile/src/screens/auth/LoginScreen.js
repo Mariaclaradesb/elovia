@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { Button, Card, HelperText, Snackbar, Text } from 'react-native-paper';
 
 import TextInput from '../../components/FormTextInput';
+import AuthScreen from '../../components/AuthScreen';
 import { useAuth } from '../../context/AuthContext';
 import { styles } from '../../theme/styles';
 
@@ -39,8 +40,10 @@ export default function LoginScreen({ navigation, route }) {
   }
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.loginWrapper}>
-      <ScrollView contentContainerStyle={styles.loginScroll} keyboardShouldPersistTaps="handled">
+    <AuthScreen
+      contentContainerStyle={styles.loginScroll}
+      footer={<Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>}
+    >
         <View style={styles.authHero}>
           <Image source={require('../../../assets/logo_completa.png')} style={styles.loginLogo} resizeMode="contain" />
           <View style={styles.authCurve} />
@@ -81,8 +84,6 @@ export default function LoginScreen({ navigation, route }) {
             </View>
           </Card.Content>
         </Card>
-      </ScrollView>
-      <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>
-    </KeyboardAvoidingView>
+    </AuthScreen>
   );
 }

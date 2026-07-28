@@ -41,7 +41,7 @@ export default function FirstAccessScreen() {
   }
 
   return (
-    <Screen>
+    <Screen topInset>
       <Image source={require('../../../assets/logo_reduzida.png')} style={styles.firstAccessLogo} resizeMode="contain" />
       <Card style={styles.card}>
         <Card.Content style={styles.formGap}>

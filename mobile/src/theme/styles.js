@@ -43,6 +43,9 @@ export const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 118,
   },
+  screenWithTopInset: {
+    paddingTop: 8,
+  },
   centered: {
     alignItems: 'center',
     backgroundColor: colors.bg,

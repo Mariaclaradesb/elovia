@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { Button, Card, Checkbox, HelperText, IconButton, Snackbar, Text } from 'react-native-paper';
 
 import TextInput from '../../components/FormTextInput';
+import AuthScreen from '../../components/AuthScreen';
 
 import SelectField from '../../components/SelectField';
 import { useAuth } from '../../context/AuthContext';
@@ -59,8 +60,10 @@ export default function RegisterScreen({ navigation }) {
   }
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.loginWrapper}>
-      <ScrollView contentContainerStyle={styles.registerScroll} keyboardShouldPersistTaps="handled">
+    <AuthScreen
+      contentContainerStyle={styles.registerScroll}
+      footer={<Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>}
+    >
         <View style={styles.registerHeader}>
           <IconButton icon="chevron-left" size={32} onPress={() => navigation.goBack()} />
           <View style={styles.flex}>
@@ -112,8 +115,6 @@ export default function RegisterScreen({ navigation }) {
             </View>
           </Card.Content>
         </Card>
-      </ScrollView>
-      <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>
-    </KeyboardAvoidingView>
+    </AuthScreen>
   );
 }

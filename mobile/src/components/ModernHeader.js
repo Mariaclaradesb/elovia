@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { View } from 'react-native';
+import { Platform, StatusBar, View } from 'react-native';
 import { IconButton, Text } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,6 +8,10 @@ import { styles } from '../theme/styles';
 
 export default function ModernHeader({ navigation, route, options, back }) {
   const insets = useSafeAreaInsets();
+  const safeTop = Math.max(
+    insets.top,
+    Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0,
+  );
   const title = options.title || route.name;
 
   return (
@@ -16,7 +20,7 @@ export default function ModernHeader({ navigation, route, options, back }) {
       locations={[0, 0.64, 1]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={[styles.modernHeader, { paddingTop: insets.top }]}
+      style={[styles.modernHeader, { paddingTop: safeTop }]}
     >
       <View style={styles.modernHeaderRow}>
         {back ? (

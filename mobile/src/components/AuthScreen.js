@@ -3,33 +3,32 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { styles } from '../theme/styles';
 
-export default function Screen({ children, refreshControl, topInset = false }) {
+export default function AuthScreen({ children, contentContainerStyle, footer }) {
   const insets = useSafeAreaInsets();
   const safeTop = Math.max(
     insets.top,
     Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0,
   );
-  const keyboardOffset = 56 + insets.top;
 
   return (
     <SafeAreaView
-      style={[styles.safe, topInset && { paddingTop: safeTop }]}
-      edges={['left', 'right']}
+      style={[styles.loginWrapper, { paddingTop: safeTop }]}
+      edges={['left', 'right', 'bottom']}
     >
       <KeyboardAvoidingView
-        behavior="padding"
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.flex}
-        keyboardVerticalOffset={keyboardOffset}
       >
         <ScrollView
-          contentContainerStyle={[styles.screen, topInset && styles.screenWithTopInset]}
+          contentContainerStyle={contentContainerStyle}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
-          refreshControl={refreshControl}
+          showsVerticalScrollIndicator={false}
         >
           {children}
         </ScrollView>
       </KeyboardAvoidingView>
+      {footer}
     </SafeAreaView>
   );
 }

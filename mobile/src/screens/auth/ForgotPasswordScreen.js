@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Image } from 'react-native';
 import { Button, Card, HelperText, Text } from 'react-native-paper';
 
 import TextInput from '../../components/FormTextInput';
+import AuthScreen from '../../components/AuthScreen';
 import { apiRequest } from '../../services/api';
 import { styles } from '../../theme/styles';
 
@@ -78,8 +79,7 @@ export default function ForgotPasswordScreen({ navigation, route }) {
   }
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.loginWrapper}>
-      <ScrollView contentContainerStyle={styles.registerScroll} keyboardShouldPersistTaps="handled">
+    <AuthScreen contentContainerStyle={styles.registerScroll}>
         <Image source={require('../../../assets/logo_completa.png')} style={styles.registerLogo} resizeMode="contain" />
         <Card style={styles.authCard} mode="contained">
           <Card.Content style={styles.formGap}>
@@ -153,7 +153,6 @@ export default function ForgotPasswordScreen({ navigation, route }) {
             </Button>
           </Card.Content>
         </Card>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    </AuthScreen>
   );
 }

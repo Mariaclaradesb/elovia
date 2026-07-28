@@ -24,7 +24,7 @@ export default function AppLayout({
 
   return (
     <View style={styles.flex}>
-      <Screen refreshControl={refreshControl}>
+      <Screen refreshControl={refreshControl} topInset>
         <AppTopBar onMenu={() => setMenuOpen(true)} user={user} navigation={navigation} />
         {showHero && (
           <LinearGradient

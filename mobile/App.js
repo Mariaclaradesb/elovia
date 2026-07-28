@@ -9,6 +9,7 @@ import {
 } from '@expo-google-fonts/nunito';
 import { StatusBar } from 'expo-status-bar';
 import { PaperProvider } from 'react-native-paper';
+import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import ModernHeader from './src/components/ModernHeader';
@@ -132,11 +133,13 @@ export default function App() {
   }
 
   return (
-    <PaperProvider theme={appTheme}>
-      <AuthProvider>
-        <AppNavigator />
-      </AuthProvider>
-      <StatusBar style="dark" />
-    </PaperProvider>
+    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+      <PaperProvider theme={appTheme}>
+        <AuthProvider>
+          <AppNavigator />
+        </AuthProvider>
+        <StatusBar style="dark" />
+      </PaperProvider>
+    </SafeAreaProvider>
   );
 }
