@@ -10,6 +10,34 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
+  modernHeader: {
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
+    elevation: 5,
+    overflow: 'hidden',
+    shadowColor: colors.purple,
+    shadowOffset: { height: 3, width: 0 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+  },
+  modernHeaderRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    minHeight: 64,
+    paddingHorizontal: 8,
+  },
+  modernHeaderAction: {
+    height: 48,
+    margin: 0,
+    width: 48,
+  },
+  modernHeaderTitle: {
+    color: colors.ink,
+    flex: 1,
+    fontFamily: 'Nunito_800ExtraBold',
+    letterSpacing: 0,
+    textAlign: 'center',
+  },
   screen: {
     gap: 14,
     padding: 16,
@@ -57,7 +85,7 @@ export const styles = StyleSheet.create({
   },
   authCard: {
     backgroundColor: colors.white,
-    borderRadius: 8,
+    borderRadius: 24,
     elevation: 0,
   },
   authTitle: {
@@ -76,7 +104,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primaryButtonContent: {
-    minHeight: 56,
+    minHeight: 58,
   },
   alignEnd: {
     alignSelf: 'flex-end',
@@ -104,10 +132,14 @@ export const styles = StyleSheet.create({
     width: 180,
   },
   loginCard: {
-    borderRadius: 8,
+    borderRadius: 22,
   },
   card: {
-    borderRadius: 8,
+    borderRadius: 20,
+    elevation: 1,
+    shadowColor: colors.purple,
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
   },
   inactiveCard: {
     backgroundColor: colors.inactiveBg,
@@ -124,7 +156,7 @@ export const styles = StyleSheet.create({
     color: colors.inactive,
   },
   headerCard: {
-    borderRadius: 8,
+    borderRadius: 20,
     overflow: 'hidden',
   },
   headerContent: {
@@ -151,7 +183,42 @@ export const styles = StyleSheet.create({
     color: colors.muted,
   },
   formGap: {
-    gap: 12,
+    gap: 16,
+  },
+  formField: {
+    gap: 8,
+    width: '100%',
+  },
+  formFieldLabel: {
+    color: colors.tealDark,
+    fontFamily: 'Nunito_800ExtraBold',
+    fontSize: 12,
+    letterSpacing: 0.6,
+    marginLeft: 4,
+    textTransform: 'uppercase',
+  },
+  formInput: {
+    backgroundColor: colors.inputBg,
+    fontFamily: 'Nunito_400Regular',
+    minHeight: 64,
+  },
+  formInputDisabled: {
+    backgroundColor: '#F3F7F6',
+  },
+  formInputContent: {
+    fontFamily: 'Nunito_400Regular',
+    fontSize: 16,
+    minHeight: 64,
+    paddingHorizontal: 18,
+  },
+  formInputMultiline: {
+    minHeight: 110,
+    paddingTop: 16,
+    textAlignVertical: 'top',
+  },
+  formInputOutline: {
+    borderRadius: 22,
+    borderWidth: 1.5,
   },
   listInputGroup: {
     gap: 8,
@@ -159,7 +226,7 @@ export const styles = StyleSheet.create({
   photoPicker: {
     alignItems: 'center',
     borderColor: colors.line,
-    borderRadius: 8,
+    borderRadius: 18,
     borderWidth: 1,
     flexDirection: 'row',
     gap: 14,
@@ -176,7 +243,7 @@ export const styles = StyleSheet.create({
     gap: 10,
   },
   statCard: {
-    borderRadius: 8,
+    borderRadius: 18,
     flexBasis: '31%',
     flexGrow: 1,
     minWidth: 104,
@@ -201,7 +268,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.white,
     borderColor: colors.line,
-    borderRadius: 8,
+    borderRadius: 18,
     borderWidth: 1,
     elevation: 1,
     flexBasis: '30%',
@@ -228,7 +295,11 @@ export const styles = StyleSheet.create({
     fontWeight: '800',
   },
   search: {
-    borderRadius: 8,
+    backgroundColor: colors.white,
+    borderColor: colors.inputBorder,
+    borderRadius: 22,
+    borderWidth: 1,
+    elevation: 0,
   },
   itemRow: {
     alignItems: 'flex-start',
@@ -278,6 +349,34 @@ export const styles = StyleSheet.create({
     height: 76,
     width: 76,
   },
+  profilePhotoPicker: {
+    alignItems: 'center',
+    backgroundColor: colors.tealSoft,
+    borderColor: '#C8EEE5',
+    borderRadius: 20,
+    borderWidth: 1,
+    gap: 14,
+    padding: 16,
+  },
+  profilePhotoLarge: {
+    borderColor: colors.white,
+    borderRadius: 56,
+    borderWidth: 4,
+    height: 112,
+    width: 112,
+  },
+  profilePhotoActions: {
+    alignItems: 'center',
+    gap: 4,
+    width: '100%',
+  },
+  fileActionsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    justifyContent: 'center',
+    marginTop: 8,
+  },
   infoLabel: {
     color: colors.muted,
     fontSize: 12,
@@ -297,7 +396,7 @@ export const styles = StyleSheet.create({
   infoTile: {
     backgroundColor: colors.white,
     borderColor: colors.line,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
     flexBasis: '47%',
     flexGrow: 1,
@@ -312,7 +411,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   tabChip: {
-    borderRadius: 8,
+    borderRadius: 16,
   },
   filterGrid: {
     gap: 10,
@@ -320,7 +419,7 @@ export const styles = StyleSheet.create({
   stepHeader: {
     backgroundColor: '#F0FBF8',
     borderColor: '#DDF8F0',
-    borderRadius: 8,
+    borderRadius: 18,
     borderWidth: 1,
     gap: 8,
     padding: 14,
@@ -332,10 +431,29 @@ export const styles = StyleSheet.create({
   responsavelBox: {
     backgroundColor: '#FBF8FF',
     borderColor: colors.lavender,
-    borderRadius: 8,
+    borderRadius: 18,
     borderWidth: 1,
     gap: 10,
     padding: 10,
+  },
+  clinicalItemBox: {
+    backgroundColor: colors.tealSoft,
+    borderColor: '#C8EEE5',
+    borderRadius: 18,
+    borderWidth: 1,
+    gap: 10,
+    padding: 12,
+  },
+  investigationOption: {
+    alignItems: 'center',
+    backgroundColor: colors.lavenderSoft,
+    borderColor: colors.lavender,
+    borderRadius: 18,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 12,
+    minHeight: 78,
+    padding: 14,
   },
   stepActions: {
     flexDirection: 'row',
@@ -375,6 +493,144 @@ export const styles = StyleSheet.create({
   sessionHeader: {
     borderRadius: 0,
   },
+  sessionPage: {
+    backgroundColor: colors.bg,
+  },
+  sessionPageScroll: {
+    paddingBottom: 42,
+  },
+  sessionHero: {
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    marginBottom: 22,
+    padding: 16,
+    paddingBottom: 24,
+  },
+  sessionSummaryCard: {
+    backgroundColor: colors.white,
+    borderRadius: 20,
+    elevation: 4,
+    shadowColor: colors.purple,
+    shadowOffset: { height: 4, width: 0 },
+    shadowOpacity: 0.14,
+    shadowRadius: 12,
+  },
+  sessionSummaryContent: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'space-between',
+    minHeight: 88,
+  },
+  sessionMeta: {
+    color: colors.muted,
+    fontSize: 14,
+    lineHeight: 24,
+  },
+  sessionMetaStrong: {
+    color: colors.ink,
+    fontFamily: 'Nunito_800ExtraBold',
+  },
+  sessionElapsedBox: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  sessionClockIcon: {
+    backgroundColor: colors.lavenderSoft,
+  },
+  sessionElapsed: {
+    color: colors.purple,
+    fontFamily: 'Nunito_800ExtraBold',
+  },
+  sessionSectionHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+  },
+  sessionStudentsRow: {
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  sessionStudentCard: {
+    backgroundColor: colors.white,
+    borderBottomWidth: 4,
+    borderRadius: 18,
+    elevation: 2,
+    minWidth: 190,
+  },
+  sessionStudentContent: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+    minHeight: 72,
+    paddingHorizontal: 10,
+  },
+  sessionRecordCount: {
+    color: colors.tealDark,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  sessionShortcutGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    padding: 16,
+    paddingTop: 12,
+  },
+  sessionShortcutCard: {
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderColor: colors.line,
+    borderRadius: 18,
+    borderWidth: 1,
+    elevation: 1,
+    flexBasis: '21%',
+    flexGrow: 1,
+    gap: 7,
+    justifyContent: 'center',
+    minHeight: 105,
+    minWidth: 72,
+    padding: 8,
+  },
+  sessionShortcutIcon: {
+    alignItems: 'center',
+    borderRadius: 22,
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
+  },
+  sessionShortcutText: {
+    color: colors.ink,
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 15,
+    textAlign: 'center',
+  },
+  newObservationButton: {
+    alignItems: 'center',
+    borderRadius: 18,
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'center',
+    marginHorizontal: 16,
+    minHeight: 60,
+    paddingHorizontal: 18,
+  },
+  newObservationText: {
+    color: colors.white,
+    fontFamily: 'Nunito_800ExtraBold',
+  },
+  sessionStopButton: {
+    borderRadius: 18,
+    marginHorizontal: 16,
+    marginTop: 12,
+  },
+  sessionStopButtonContent: {
+    minHeight: 64,
+  },
   sessionContent: {
     flex: 1,
     padding: 16,
@@ -400,8 +656,8 @@ export const styles = StyleSheet.create({
   },
   bottomSheet: {
     backgroundColor: colors.white,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     maxHeight: '88%',
   },
   bottomSheetContent: {
@@ -425,7 +681,34 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 2,
+    minHeight: 62,
+    paddingHorizontal: 8,
+  },
+  appTopBarGradient: {
+    borderRadius: 22,
+    elevation: 3,
+    marginBottom: 4,
+    overflow: 'hidden',
+    shadowColor: colors.purple,
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+  },
+  compactPageHeader: {
+    alignItems: 'center',
+    borderRadius: 20,
+    gap: 3,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+  },
+  compactPageTitle: {
+    color: colors.ink,
+    fontFamily: 'Nunito_800ExtraBold',
+    letterSpacing: 0,
+    textAlign: 'center',
+  },
+  compactPageSubtitle: {
+    color: colors.muted,
+    textAlign: 'center',
   },
   logoRow: {
     alignItems: 'center',
@@ -457,20 +740,20 @@ export const styles = StyleSheet.create({
   },
   brandHero: {
     backgroundColor: colors.lavender,
-    borderRadius: 8,
+    borderRadius: 22,
     overflow: 'hidden',
   },
   welcomeCard: {
     backgroundColor: '#F0FBF8',
     borderColor: '#DDF8F0',
-    borderRadius: 8,
+    borderRadius: 20,
     borderWidth: 1,
   },
   gradientCard: {
     backgroundColor: colors.purple,
     borderBottomColor: colors.teal,
     borderBottomWidth: 5,
-    borderRadius: 8,
+    borderRadius: 20,
     borderRightColor: colors.yellow,
     borderRightWidth: 5,
   },
@@ -526,7 +809,7 @@ export const styles = StyleSheet.create({
   },
   bottomIconWrap: {
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: 16,
     height: 40,
     justifyContent: 'center',
     width: 46,
@@ -574,7 +857,6 @@ export const styles = StyleSheet.create({
     width: '82%',
   },
   sideHeader: {
-    backgroundColor: colors.purple,
     minHeight: 190,
     padding: 22,
     paddingTop: 34,
@@ -600,7 +882,7 @@ export const styles = StyleSheet.create({
   },
   sideItem: {
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: 16,
     flexDirection: 'row',
     minHeight: 54,
   },
@@ -612,7 +894,7 @@ export const styles = StyleSheet.create({
   },
   aboutCard: {
     backgroundColor: colors.white,
-    borderRadius: 8,
+    borderRadius: 20,
   },
   aboutLogo: {
     alignSelf: 'center',

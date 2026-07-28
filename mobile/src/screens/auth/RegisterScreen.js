@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
-import { Button, Card, Checkbox, HelperText, IconButton, Snackbar, Text, TextInput } from 'react-native-paper';
+import { Button, Card, Checkbox, HelperText, IconButton, Snackbar, Text } from 'react-native-paper';
+
+import TextInput from '../../components/FormTextInput';
 
 import SelectField from '../../components/SelectField';
 import { useAuth } from '../../context/AuthContext';

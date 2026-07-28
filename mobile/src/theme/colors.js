@@ -3,7 +3,9 @@ export const colors = {
   tealDark: '#1D8B77',
   purple: '#7D70BA',
   lavender: '#DEC1FF',
+  lavenderSoft: '#F0E8FF',
   yellow: '#F6C500',
+  yellowSoft: '#FFF7D1',
   ink: '#263238',
   muted: '#6B7280',
   line: '#E8ECF3',
@@ -13,4 +15,8 @@ export const colors = {
   inactive: '#667085',
   inactiveBg: '#F2F4F7',
   inactiveBorder: '#D0D5DD',
+  tealSoft: '#DDF8F0',
+  inputBorder: '#D8D3E7',
+  inputBg: '#FFFFFF',
+  placeholder: '#8A8895',
 };

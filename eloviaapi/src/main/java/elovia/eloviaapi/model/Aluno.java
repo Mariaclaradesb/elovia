@@ -2,11 +2,14 @@ package elovia.eloviaapi.model;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -14,6 +17,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -56,8 +61,16 @@ public class Aluno {
 	@Column(name = "email_responsavel", length = 180)
 	private String emailResponsavel;
 
-	@Column(columnDefinition = "text")
-	private String responsaveis;
+	@OneToMany(mappedBy = "aluno", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("ordem ASC")
+	private List<ResponsavelAluno> responsaveis = new ArrayList<>();
+
+	@OneToMany(mappedBy = "aluno", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("ordem ASC")
+	private List<ComprometimentoAluno> comprometimentos = new ArrayList<>();
+
+	@Column(name = "em_investigacao", nullable = false)
+	private boolean emInvestigacao;
 
 	@Column(columnDefinition = "text")
 	private String diagnostico;
@@ -203,12 +216,30 @@ public class Aluno {
 		this.emailResponsavel = emailResponsavel;
 	}
 
-	public String getResponsaveis() {
+	public List<ResponsavelAluno> getResponsaveis() {
 		return responsaveis;
 	}
 
-	public void setResponsaveis(String responsaveis) {
-		this.responsaveis = responsaveis;
+	public void addResponsavel(ResponsavelAluno responsavel) {
+		responsavel.setAluno(this);
+		responsaveis.add(responsavel);
+	}
+
+	public List<ComprometimentoAluno> getComprometimentos() {
+		return comprometimentos;
+	}
+
+	public void addComprometimento(ComprometimentoAluno comprometimento) {
+		comprometimento.setAluno(this);
+		comprometimentos.add(comprometimento);
+	}
+
+	public boolean isEmInvestigacao() {
+		return emInvestigacao;
+	}
+
+	public void setEmInvestigacao(boolean emInvestigacao) {
+		this.emInvestigacao = emInvestigacao;
 	}
 
 	public String getDiagnostico() {

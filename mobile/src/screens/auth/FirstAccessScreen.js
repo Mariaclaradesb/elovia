@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Image } from 'react-native';
-import { Button, Card, HelperText, Text, TextInput } from 'react-native-paper';
+import { Button, Card, HelperText, Text } from 'react-native-paper';
+
+import TextInput from '../../components/FormTextInput';
 
 import Screen from '../../components/Screen';
 import { useAuth } from '../../context/AuthContext';

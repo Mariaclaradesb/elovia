@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import * as Clipboard from 'expo-clipboard';
-import { Button, Card, HelperText, Snackbar, TextInput } from 'react-native-paper';
+import { Button, Card, HelperText, Snackbar } from 'react-native-paper';
+
+import TextInput from '../../components/FormTextInput';
 
 import Screen from '../../components/Screen';
 import { useAuth } from '../../context/AuthContext';

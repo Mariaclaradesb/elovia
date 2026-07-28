@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { Button, Checkbox, Chip, HelperText, IconButton, ProgressBar, Snackbar, Text, TextInput } from 'react-native-paper';
+import { Button, Chip, HelperText, IconButton, ProgressBar, Snackbar, Text } from 'react-native-paper';
 
 import DateField from '../../components/DateField';
+import ComprometimentosInput from '../../components/ComprometimentosInput';
+import TextInput from '../../components/FormTextInput';
 import FormSection from '../../components/FormSection';
 import ListInput from '../../components/ListInput';
 import Screen from '../../components/Screen';
@@ -39,6 +41,25 @@ function initialResponsaveis(aluno) {
   }];
 }
 
+function initialComprometimentos(aluno) {
+  if (aluno?.comprometimentos?.length) {
+    return aluno.comprometimentos.map((item) => ({
+      nome: item.nome || '',
+      cid: item.cid || '',
+    }));
+  }
+
+  const legados = textToList(aluno?.diagnostico);
+  if (legados.length) {
+    return legados.map((nome, index) => ({
+      nome,
+      cid: index === 0 ? aluno?.cid || '' : '',
+    }));
+  }
+
+  return [{ nome: '', cid: '' }];
+}
+
 export default function AlunoFormScreen({ route, navigation }) {
   const { token, user } = useAuth();
   const aluno = route.params?.aluno;
@@ -53,9 +74,8 @@ export default function AlunoFormScreen({ route, navigation }) {
     turma: aluno?.turma || '',
     turno: aluno?.turno || '',
     responsaveis: initialResponsaveis(aluno),
-    diagnostico: textToList(aluno?.diagnostico),
-    cid: aluno?.cid || '',
-    necessitaMediador: aluno?.necessitaMediador || false,
+    comprometimentos: initialComprometimentos(aluno),
+    emInvestigacao: aluno?.emInvestigacao || false,
     observacoesIniciais: textToList(aluno?.observacoesIniciais),
     estrategias: textToList(aluno?.estrategias),
     gatilhos: textToList(aluno?.gatilhos),
@@ -125,9 +145,10 @@ export default function AlunoFormScreen({ route, navigation }) {
   }
 
   function validateResponsaveisStep() {
-    const validResponsavel = form.responsaveis.some((item) => item.nome.trim() && cleanPhone(item.telefone));
-    if (!validResponsavel) {
-      return 'Informe pelo menos um responsavel com nome e telefone.';
+    const todosPreenchidos = form.responsaveis.length > 0
+      && form.responsaveis.every((item) => item.nome.trim() && cleanPhone(item.telefone).length >= 10);
+    if (!todosPreenchidos) {
+      return 'Preencha nome e telefone de todos os responsaveis adicionados.';
     }
     return '';
   }
@@ -164,6 +185,13 @@ export default function AlunoFormScreen({ route, navigation }) {
       return;
     }
 
+    const cidSemComprometimento = form.comprometimentos.some((item) => item.cid.trim() && !item.nome.trim());
+    if (cidSemComprometimento) {
+      setError('Informe o comprometimento associado ao CID preenchido.');
+      setStep(2);
+      return;
+    }
+
     setLoading(true);
     try {
       const responsaveis = form.responsaveis
@@ -174,13 +202,16 @@ export default function AlunoFormScreen({ route, navigation }) {
           email: item.email.trim(),
         }));
       const principal = responsaveis[0];
+      const comprometimentos = form.comprometimentos
+        .filter((item) => item.nome.trim())
+        .map((item) => ({ nome: item.nome.trim(), cid: item.cid.trim() }));
       const payload = {
         ...form,
         responsaveis,
         responsavel: principal.nome,
         telefoneResponsavel: principal.telefone,
         emailResponsavel: principal.email,
-        diagnostico: listToText(form.diagnostico),
+        comprometimentos,
         observacoesIniciais: listToText(form.observacoesIniciais),
         estrategias: listToText(form.estrategias),
         gatilhos: listToText(form.gatilhos),
@@ -266,9 +297,12 @@ export default function AlunoFormScreen({ route, navigation }) {
       {step === 2 && (
         <FormSection title="Informacoes clinicas">
           <Text style={styles.muted}>Esta etapa pode ser preenchida depois.</Text>
-          <ListInput label="Diagnostico" items={form.diagnostico} onChange={(items) => setField('diagnostico', items)} />
-          <TextInput label="CID" value={form.cid} onChangeText={(value) => setField('cid', value)} />
-          <Checkbox.Item label="Necessita mediador" status={form.necessitaMediador ? 'checked' : 'unchecked'} onPress={() => setField('necessitaMediador', !form.necessitaMediador)} />
+          <ComprometimentosInput
+            items={form.comprometimentos}
+            onChange={(items) => setField('comprometimentos', items)}
+            emInvestigacao={form.emInvestigacao}
+            onInvestigacaoChange={(value) => setField('emInvestigacao', value)}
+          />
           <ListInput label="Observacoes iniciais" items={form.observacoesIniciais} onChange={(items) => setField('observacoesIniciais', items)} />
         </FormSection>
       )}

@@ -1,7 +1,7 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import TextInput from './FormTextInput';
 
 import { dateToIso, displayToIsoDate, formatDisplayDate, isoToDate, isoToDisplayDate } from '../utils/date';
 

@@ -40,6 +40,9 @@ public class Usuario {
 	@Column(length = 30)
 	private String telefone;
 
+	@Column(length = 700)
+	private String foto;
+
 	@Column(nullable = false)
 	private String senha;
 
@@ -116,6 +119,14 @@ public class Usuario {
 
 	public void setTelefone(String telefone) {
 		this.telefone = telefone;
+	}
+
+	public String getFoto() {
+		return foto;
+	}
+
+	public void setFoto(String foto) {
+		this.foto = foto;
 	}
 
 	public String getSenha() {

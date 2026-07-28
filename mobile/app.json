@@ -28,7 +28,8 @@
         {
           "photosPermission": "Permita que o Elovia acesse suas fotos para cadastrar a imagem do aluno."
         }
-      ]
+      ],
+      "expo-font"
     ]
   }
 }

@@ -16,7 +16,11 @@ export default function TimelineItem({ item, onPress }) {
     <Card style={styles.card} onPress={onPress}>
       <Card.Content>
         <View style={styles.itemRow}>
-          <Avatar.Icon size={42} icon={categoriaObservacaoIcon(item.categoria)} style={{ backgroundColor: color }} />
+          {item.alunoFoto ? (
+            <Avatar.Image size={46} source={{ uri: item.alunoFoto }} />
+          ) : (
+            <Avatar.Icon size={46} icon={categoriaObservacaoIcon(item.categoria)} style={{ backgroundColor: color }} />
+          )}
           <View style={styles.flex}>
             <View style={styles.timelineHeader}>
               <Text style={styles.timelineTime}>{hora(item.createdAt)}</Text>

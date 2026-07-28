@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
-import { Button, Card, Dialog, HelperText, Portal, Snackbar, Text, TextInput } from 'react-native-paper';
+import { Button, Card, Dialog, HelperText, Portal, Snackbar, Text } from 'react-native-paper';
+
+import TextInput from '../../components/FormTextInput';
 
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';

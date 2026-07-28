@@ -7,6 +7,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import elovia.eloviaapi.dto.AlterarSenhaRequest;
 import elovia.eloviaapi.dto.AtualizarPerfilRequest;
@@ -29,16 +30,19 @@ public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
 	private final CurrentUserService currentUserService;
+	private final SupabaseStorageService storageService;
 
 	public AuthService(
 			UsuarioRepository usuarioRepository,
 			PasswordEncoder passwordEncoder,
 			JwtService jwtService,
-			CurrentUserService currentUserService) {
+			CurrentUserService currentUserService,
+			SupabaseStorageService storageService) {
 		this.usuarioRepository = usuarioRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtService = jwtService;
 		this.currentUserService = currentUserService;
+		this.storageService = storageService;
 	}
 
 	@Transactional
@@ -113,6 +117,23 @@ public class AuthService {
 		usuario.setEscola(request.escola());
 		usuario.setCargo(request.cargo());
 		usuario.setMatricula(request.matricula());
+		return UsuarioResponse.from(usuario);
+	}
+
+	@Transactional
+	public UsuarioResponse atualizarFoto(MultipartFile arquivo) {
+		if (arquivo == null || arquivo.isEmpty()) {
+			throw new BusinessException("Selecione uma foto");
+		}
+		if (arquivo.getContentType() == null || !arquivo.getContentType().startsWith("image/")) {
+			throw new BusinessException("Envie uma imagem PNG ou JPG");
+		}
+
+		var usuario = currentUserService.getCurrentUser();
+		var nomeOriginal = arquivo.getOriginalFilename() != null ? arquivo.getOriginalFilename() : "perfil.jpg";
+		var nomeLimpo = nomeOriginal.replaceAll("[^a-zA-Z0-9._-]", "_");
+		var caminho = "perfis/" + usuario.getId() + "/" + UUID.randomUUID() + "-" + nomeLimpo;
+		usuario.setFoto(storageService.upload(caminho, arquivo));
 		return UsuarioResponse.from(usuario);
 	}
 

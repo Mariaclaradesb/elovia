@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Menu, TextInput } from 'react-native-paper';
+import { Menu } from 'react-native-paper';
+
+import TextInput from './FormTextInput';
 
 export default function SelectField({ label, value, options, onChange }) {
   const [visible, setVisible] = useState(false);

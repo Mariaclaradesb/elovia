@@ -1,12 +1,15 @@
 package elovia.eloviaapi.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import elovia.eloviaapi.dto.AlterarSenhaRequest;
 import elovia.eloviaapi.dto.AtualizarPerfilRequest;
@@ -47,6 +50,11 @@ public class AuthController {
 	@PatchMapping("/me")
 	public UsuarioResponse atualizarPerfil(@Valid @RequestBody AtualizarPerfilRequest request) {
 		return authService.atualizarPerfil(request);
+	}
+
+	@PatchMapping(value = "/me/foto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public UsuarioResponse atualizarFoto(@RequestPart("arquivo") MultipartFile arquivo) {
+		return authService.atualizarFoto(arquivo);
 	}
 
 	@PatchMapping("/alterar-senha")

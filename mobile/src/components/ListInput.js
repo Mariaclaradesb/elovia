@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Chip, TextInput } from 'react-native-paper';
+import { Chip } from 'react-native-paper';
 
 import { styles } from '../theme/styles';
+import TextInput from './FormTextInput';
 
 export default function ListInput({ label, items, onChange }) {
   const [text, setText] = useState('');

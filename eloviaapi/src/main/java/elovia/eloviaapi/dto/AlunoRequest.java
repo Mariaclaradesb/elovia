@@ -4,7 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public record AlunoRequest(
@@ -15,12 +17,14 @@ public record AlunoRequest(
 		@NotBlank String escola,
 		String turma,
 		@NotBlank String turno,
-		@NotBlank String responsavel,
-		@NotBlank String telefoneResponsavel,
+		String responsavel,
+		String telefoneResponsavel,
 		String emailResponsavel,
-		List<ResponsavelAlunoRequest> responsaveis,
+		@Valid @NotEmpty List<ResponsavelAlunoRequest> responsaveis,
 		String diagnostico,
 		String cid,
+		@Valid List<ComprometimentoAlunoRequest> comprometimentos,
+		Boolean emInvestigacao,
 		boolean necessitaMediador,
 		String observacoesIniciais,
 		String estrategias,

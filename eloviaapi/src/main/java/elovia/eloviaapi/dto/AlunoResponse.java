@@ -23,6 +23,8 @@ public record AlunoResponse(
 		List<ResponsavelAlunoResponse> responsaveis,
 		String diagnostico,
 		String cid,
+		List<ComprometimentoAlunoResponse> comprometimentos,
+		boolean emInvestigacao,
 		boolean necessitaMediador,
 		String observacoesIniciais,
 		String estrategias,
@@ -54,7 +56,9 @@ public record AlunoResponse(
 				responsaveisFrom(aluno),
 				aluno.getDiagnostico(),
 				aluno.getCid(),
-				aluno.isNecessitaMediador(),
+				comprometimentosFrom(aluno),
+				aluno.isEmInvestigacao(),
+				aluno.getMediadores().isEmpty(),
 				aluno.getObservacoesIniciais(),
 				aluno.getEstrategias(),
 				aluno.getGatilhos(),
@@ -70,22 +74,14 @@ public record AlunoResponse(
 	}
 
 	private static List<ResponsavelAlunoResponse> responsaveisFrom(Aluno aluno) {
-		if (aluno.getResponsaveis() == null || aluno.getResponsaveis().isBlank()) {
-			if (aluno.getResponsavel() == null || aluno.getResponsavel().isBlank()) {
-				return List.of();
-			}
-			return List.of(new ResponsavelAlunoResponse(
-					aluno.getResponsavel(),
-					aluno.getTelefoneResponsavel(),
-					aluno.getEmailResponsavel()));
-		}
+		return aluno.getResponsaveis().stream()
+				.map(ResponsavelAlunoResponse::from)
+				.toList();
+	}
 
-		return aluno.getResponsaveis().lines()
-				.map(line -> line.split("\t", -1))
-				.map(parts -> new ResponsavelAlunoResponse(
-						parts.length > 0 ? parts[0] : "",
-						parts.length > 1 ? parts[1] : "",
-						parts.length > 2 ? parts[2] : ""))
+	private static List<ComprometimentoAlunoResponse> comprometimentosFrom(Aluno aluno) {
+		return aluno.getComprometimentos().stream()
+				.map(ComprometimentoAlunoResponse::from)
 				.toList();
 	}
 }

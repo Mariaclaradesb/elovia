@@ -43,6 +43,11 @@ export default function AlunoProfileScreen({ route, navigation }) {
     const responsaveis = aluno.responsaveis?.length
       ? aluno.responsaveis.map((item, index) => `${index + 1}. ${item.nome} - ${item.telefone || 'sem telefone'}${item.email ? ` - ${item.email}` : ''}`).join('\n')
       : `${aluno.responsavel || 'Nao informado'}${aluno.telefoneResponsavel ? ` - ${aluno.telefoneResponsavel}` : ''}`;
+    const comprometimentos = aluno.comprometimentos?.length
+      ? aluno.comprometimentos
+        .map((item) => `${item.nome}${item.cid ? ` - CID ${item.cid}` : ' - CID não informado'}`)
+        .join('\n')
+      : 'Nenhum comprometimento informado';
 
     return (
       <InfoGrid
@@ -53,7 +58,8 @@ export default function AlunoProfileScreen({ route, navigation }) {
           { label: 'Genero', value: aluno.sexo },
           { label: 'Nascimento', value: isoToDisplayDate(aluno.dataNascimento) },
           { label: 'Responsaveis', value: responsaveis, full: true },
-          { label: 'Diagnostico', value: aluno.diagnostico, full: true },
+          { label: 'Comprometimentos', value: comprometimentos, full: true },
+          ...(aluno.emInvestigacao ? [{ label: 'Situação', value: 'Em investigação', full: true }] : []),
         ]}
       />
     );

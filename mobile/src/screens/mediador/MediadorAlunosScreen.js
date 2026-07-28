@@ -62,8 +62,8 @@ export default function MediadorAlunosScreen({ navigation }) {
       showHero={false}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.tealDark} />}
     >
-      <Text variant="headlineSmall" style={styles.title}>Meus alunos</Text>
-      <Text style={styles.muted}>Visualize apenas os alunos vinculados a voce.</Text>
+      {/* <Text variant="headlineSmall" style={styles.title}>Meus alunos</Text>
+      <Text style={styles.muted}>Visualize apenas os alunos vinculados a voce.</Text> */}
       <Searchbar placeholder="Pesquisar aluno" value={search} onChangeText={setSearch} style={styles.search} />
       <SegmentedButtons
         value={order}

@@ -1,9 +1,17 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {
+  Nunito_400Regular,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+  useFonts,
+} from '@expo-google-fonts/nunito';
 import { StatusBar } from 'expo-status-bar';
 import { PaperProvider } from 'react-native-paper';
 
 import { AuthProvider, useAuth } from './src/context/AuthContext';
+import ModernHeader from './src/components/ModernHeader';
 import AdminHomeScreen from './src/screens/admin/AdminHomeScreen';
 import AlunoFormScreen from './src/screens/admin/AlunoFormScreen';
 import AlunoProfileScreen from './src/screens/admin/AlunoProfileScreen';
@@ -40,10 +48,9 @@ function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
-          headerStyle: { backgroundColor: colors.white },
-          headerTintColor: colors.ink,
-          headerTitleStyle: { fontWeight: '800' },
+          header: (props) => <ModernHeader {...props} />,
           contentStyle: { backgroundColor: colors.bg },
+          animation: 'slide_from_right',
         }}
       >
         {!token ? (
@@ -86,7 +93,7 @@ function AppNavigator() {
             <Stack.Screen name="MediadorAlunos" component={MediadorAlunosScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Sessoes" component={SessoesScreen} options={{ headerShown: false }} />
             <Stack.Screen name="IniciarSessao" component={IniciarSessaoScreen} options={{ title: 'Iniciar acompanhamento' }} />
-            <Stack.Screen name="SessaoAcompanhamento" component={SessaoAcompanhamentoScreen} options={{ title: 'Acompanhamento diário' }} />
+            <Stack.Screen name="SessaoAcompanhamento" component={SessaoAcompanhamentoScreen} options={{ title: 'Sessão em andamento' }} />
             <Stack.Screen name="AlunoProfile" component={AlunoProfileScreen} options={{ title: 'Perfil do aluno' }} />
             <Stack.Screen name="BibliotecaAluno" component={BibliotecaAlunoScreen} options={{ title: 'Biblioteca' }} />
             <Stack.Screen
@@ -106,6 +113,17 @@ function AppNavigator() {
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Nunito_400Regular,
+    Nunito_600SemiBold,
+    Nunito_700Bold,
+    Nunito_800ExtraBold,
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <PaperProvider theme={appTheme}>
       <AuthProvider>

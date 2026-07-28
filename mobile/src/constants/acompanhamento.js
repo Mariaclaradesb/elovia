@@ -30,6 +30,25 @@ export const ATALHOS_OBSERVACAO = [
   { label: 'Alimentacao', categoria: 'ALIMENTACAO', descricao: 'Registro relacionado a alimentacao.' },
 ];
 
+const DESCRICOES_CATEGORIAS = {
+  PARTICIPACAO: 'Participou da atividade proposta.',
+  COMPORTAMENTO: 'Apresentou comportamento observado durante o acompanhamento.',
+  INTERACAO: 'Interagiu com colegas ou com a equipe escolar.',
+  COMUNICACAO: 'Realizou uma iniciativa ou resposta de comunicacao.',
+  ATIVIDADE: 'Realizou a atividade proposta durante o acompanhamento.',
+  ALIMENTACAO: 'Registro relacionado ao momento de alimentacao.',
+  HIGIENE: 'Registro relacionado aos cuidados de higiene.',
+  RECREIO: 'Participou do momento de recreio.',
+  CRISE: 'Apresentou um momento de crise ou desregulacao.',
+  AUTORREGULACAO: 'Realizou autorregulacao com apoio ou estrategia.',
+  TRANSICAO: 'Realizou uma transicao entre ambientes ou atividades.',
+  OUTRO: 'Registro adicional do acompanhamento.',
+};
+
+export function categoriaObservacaoDescricao(value) {
+  return DESCRICOES_CATEGORIAS[value] || '';
+}
+
 export function categoriaObservacaoLabel(value) {
   return OBSERVACAO_CATEGORIAS.find((item) => item.value === value)?.label || value || 'Observacao';
 }

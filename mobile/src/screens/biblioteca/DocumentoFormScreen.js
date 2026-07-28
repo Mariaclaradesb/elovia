@@ -2,7 +2,9 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Button, HelperText, Snackbar, Text, TextInput } from 'react-native-paper';
+import { Button, HelperText, Snackbar, Text } from 'react-native-paper';
+
+import TextInput from '../../components/FormTextInput';
 
 import DateField from '../../components/DateField';
 import FormSection from '../../components/FormSection';

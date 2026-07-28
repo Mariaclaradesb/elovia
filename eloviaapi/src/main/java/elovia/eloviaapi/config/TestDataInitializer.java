@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import elovia.eloviaapi.model.Aluno;
+import elovia.eloviaapi.model.ComprometimentoAluno;
 import elovia.eloviaapi.model.Role;
 import elovia.eloviaapi.model.Usuario;
 import elovia.eloviaapi.repository.AlunoRepository;
@@ -106,6 +107,11 @@ public class TestDataInitializer implements ApplicationRunner {
 		aluno.setEmailResponsavel("responsavel@elovia.test");
 		aluno.setDiagnostico("TEA");
 		aluno.setCid("F84.0");
+		var comprometimento = new ComprometimentoAluno();
+		comprometimento.setNome("Transtorno do espectro autista");
+		comprometimento.setCid("F84.0");
+		comprometimento.setOrdem(0);
+		aluno.addComprometimento(comprometimento);
 		aluno.setNecessitaMediador(true);
 		aluno.setObservacoesIniciais("Cadastro de teste criado automaticamente.");
 		usuarioRepository.findByEmailIgnoreCase(adminEmail).ifPresent(aluno::setAdministrador);

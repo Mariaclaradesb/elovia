@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Image, Modal, Pressable, View } from 'react-native';
-import { Avatar, Button, Card, IconButton, Text } from 'react-native-paper';
+import { Avatar, Button, IconButton, Text } from 'react-native-paper';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { useAuth } from '../context/AuthContext';
 import { colors } from '../theme';
@@ -26,15 +27,32 @@ export default function AppLayout({
       <Screen refreshControl={refreshControl}>
         <AppTopBar onMenu={() => setMenuOpen(true)} user={user} navigation={navigation} />
         {showHero && (
-          <Card style={styles.brandHero} mode="contained">
-            <Card.Content style={styles.brandHeroContent}>
+          <LinearGradient
+            colors={[colors.lavenderSoft, colors.tealSoft, colors.yellowSoft]}
+            locations={[0, 0.72, 1]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.brandHero}
+          >
+            <View style={[styles.brandHeroContent, { padding: 16 }]}>
               <View style={styles.flex}>
                 <Text variant="headlineSmall" style={styles.brandHeroTitle}>{title || `Ola, ${firstName(user?.nome)}`}</Text>
                 <Text style={styles.brandHeroSubtitle}>{subtitle || 'Que bom te ver por aqui novamente.'}</Text>
               </View>
               <Image source={require('../../assets/logo_reduzida.png')} style={styles.heroLogoMark} resizeMode="contain" />
-            </Card.Content>
-          </Card>
+            </View>
+          </LinearGradient>
+        )}
+        {!showHero && !!title && (
+          <LinearGradient
+            colors={[colors.lavenderSoft, colors.tealSoft]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.compactPageHeader}
+          >
+            <Text variant="titleLarge" style={styles.compactPageTitle}>{title}</Text>
+            {!!subtitle && <Text style={styles.compactPageSubtitle}>{subtitle}</Text>}
+          </LinearGradient>
         )}
         {children}
       </Screen>
@@ -53,18 +71,24 @@ export default function AppLayout({
 
 function AppTopBar({ onMenu, user, navigation }) {
   return (
-    <View style={styles.appTopBar}>
-      <View style={styles.logoRow}>
-        <IconButton icon="menu" onPress={onMenu} iconColor={colors.ink} />
-        <Image source={require('../../assets/logo_reduzida.png')} style={styles.topLogoIcon} resizeMode="contain" />
-        <Text variant="headlineSmall" style={styles.topBrandName}>Elovia</Text>
+    <LinearGradient colors={[colors.lavenderSoft, colors.tealSoft]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.appTopBarGradient}>
+      <View style={styles.appTopBar}>
+        <View style={styles.logoRow}>
+          <IconButton icon="menu" onPress={onMenu} iconColor={colors.ink} />
+          <Image source={require('../../assets/logo_reduzida.png')} style={styles.topLogoIcon} resizeMode="contain" />
+          <Text variant="headlineSmall" style={styles.topBrandName}>Elovia</Text>
+        </View>
+        <View style={styles.topActions}>
+          <Pressable onPress={() => navigation.navigate('PerfilUsuario')}>
+            {user?.foto ? (
+              <Avatar.Image size={42} source={{ uri: user.foto }} style={styles.topAvatar} />
+            ) : (
+              <Avatar.Text size={42} label={initials(user?.nome)} style={styles.topAvatar} />
+            )}
+          </Pressable>
+        </View>
       </View>
-      <View style={styles.topActions}>
-        <Pressable onPress={() => navigation.navigate('PerfilUsuario')}>
-          <Avatar.Text size={42} label={initials(user?.nome)} style={styles.topAvatar} />
-        </Pressable>
-      </View>
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -137,14 +161,18 @@ function SideMenu({ visible, onClose, role, user, navigation, signOut }) {
       <View style={styles.sideOverlay}>
         <Pressable style={styles.sideDim} onPress={onClose} />
         <View style={styles.sidePanel}>
-          <View style={styles.sideHeader}>
+          <LinearGradient colors={[colors.purple, colors.teal]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.sideHeader}>
             <IconButton icon="close" iconColor={colors.white} onPress={onClose} style={styles.sideClose} />
-            <Avatar.Text size={78} label={initials(user?.nome)} style={styles.sideAvatar} />
+            {user?.foto ? (
+              <Avatar.Image size={78} source={{ uri: user.foto }} style={styles.sideAvatar} />
+            ) : (
+              <Avatar.Text size={78} label={initials(user?.nome)} style={styles.sideAvatar} />
+            )}
             <View>
               <Text variant="titleLarge" style={styles.sideName}>{user?.nome}</Text>
               <Text style={styles.sideRole}>{roleLabel}</Text>
             </View>
-          </View>
+          </LinearGradient>
           <View style={styles.sideItems}>
             {items.map((item) => (
               <Pressable key={item.label} style={styles.sideItem} onPress={() => go(item.route)}>

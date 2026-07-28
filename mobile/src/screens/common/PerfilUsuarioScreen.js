@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, HelperText, Snackbar, Text, TextInput } from 'react-native-paper';
+import { Button, Card, HelperText, Snackbar, Text } from 'react-native-paper';
 
+import TextInput from '../../components/FormTextInput';
 import AppLayout from '../../components/AppLayout';
+import ProfilePhotoPicker from '../../components/ProfilePhotoPicker';
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
+import { atualizarFotoPerfil } from '../../services/perfilApi';
 import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
 import { cleanCpf, cleanPhone, formatCpf, formatPhone } from '../../utils/masks';
@@ -21,6 +24,8 @@ export default function PerfilUsuarioScreen({ navigation }) {
     matricula: user?.matricula || '',
   });
   const [loading, setLoading] = useState(false);
+  const [foto, setFoto] = useState(user?.foto || '');
+  const [fotoArquivo, setFotoArquivo] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -28,6 +33,7 @@ export default function PerfilUsuarioScreen({ navigation }) {
     apiRequest('/api/auth/me', { token })
       .then((freshUser) => {
         updateUser(freshUser);
+        setFoto(freshUser?.foto || '');
         setForm({
           nome: freshUser?.nome || '',
           cpf: formatCpf(freshUser?.cpf || ''),
@@ -49,7 +55,7 @@ export default function PerfilUsuarioScreen({ navigation }) {
     setError('');
     setLoading(true);
     try {
-      const updated = await apiRequest('/api/auth/me', {
+      let updated = await apiRequest('/api/auth/me', {
         method: 'PATCH',
         token,
         body: {
@@ -58,6 +64,11 @@ export default function PerfilUsuarioScreen({ navigation }) {
           telefone: cleanPhone(form.telefone),
         },
       });
+      if (fotoArquivo) {
+        updated = await atualizarFotoPerfil(token, fotoArquivo);
+        setFoto(updated.foto || fotoArquivo.uri);
+        setFotoArquivo(null);
+      }
       await updateUser(updated);
       setMessage('Perfil atualizado.');
     } catch (err) {
@@ -84,6 +95,14 @@ export default function PerfilUsuarioScreen({ navigation }) {
 
       <Card style={styles.card}>
         <Card.Content style={styles.formGap}>
+          <ProfilePhotoPicker
+            value={fotoArquivo?.uri || foto}
+            onChange={(asset) => {
+              setFotoArquivo(asset);
+              setFoto(asset.uri);
+            }}
+            onError={setMessage}
+          />
           <TextInput label="Nome completo" value={form.nome} onChangeText={(value) => setField('nome', value)} />
           <TextInput label="CPF" value={form.cpf} onChangeText={(value) => setField('cpf', formatCpf(value))} keyboardType="number-pad" />
           <TextInput label="E-mail" value={form.email} onChangeText={(value) => setField('email', value)} keyboardType="email-address" autoCapitalize="none" />
