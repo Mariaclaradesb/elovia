@@ -1,19 +1,22 @@
 import { useCallback, useEffect, useState } from 'react';
-import { RefreshControl } from 'react-native';
-import { HelperText } from 'react-native-paper';
+import { RefreshControl, View } from 'react-native';
+import { Button, Card, HelperText, Text } from 'react-native-paper';
 
+import AppLayout from '../../components/AppLayout';
 import EmptyState from '../../components/EmptyState';
-import HeaderBlock from '../../components/HeaderBlock';
 import { AlunoListItem } from '../../components/ListItems';
-import Screen from '../../components/Screen';
+import QuickActionTile from '../../components/QuickActionTile';
+import SectionTitle from '../../components/SectionTitle';
 import { useAuth } from '../../context/AuthContext';
+import { buscarSessaoAtiva } from '../../services/acompanhamentoApi';
 import { apiRequest } from '../../services/api';
 import { colors } from '../../theme';
-import { firstName } from '../../utils/text';
+import { styles } from '../../theme/styles';
 
-export default function MediadorHomeScreen() {
-  const { token, user, signOut } = useAuth();
+export default function MediadorHomeScreen({ navigation }) {
+  const { token } = useAuth();
   const [alunos, setAlunos] = useState([]);
+  const [sessaoAtiva, setSessaoAtiva] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
 
@@ -21,6 +24,11 @@ export default function MediadorHomeScreen() {
     setError('');
     try {
       setAlunos(await apiRequest('/api/alunos', { token }));
+      try {
+        setSessaoAtiva(await buscarSessaoAtiva(token));
+      } catch {
+        setSessaoAtiva(null);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -37,10 +45,44 @@ export default function MediadorHomeScreen() {
   }
 
   return (
-    <Screen refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.tealDark} />}>
-      <HeaderBlock title={`Ola, ${firstName(user?.nome)}`} subtitle="Alunos vinculados" onLogout={signOut} />
+    <AppLayout
+      navigation={navigation}
+      role="MEDIADOR"
+      active="home"
+      title="Acompanhe, registre e transforme vidas"
+      subtitle="O Elovia esta aqui para apoiar voce no dia a dia."
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.tealDark} />}
+    >
       {!!error && <HelperText type="error" visible>{error}</HelperText>}
-      {alunos.length === 0 ? <EmptyState text="Nenhum aluno vinculado." /> : alunos.map((aluno) => <AlunoListItem key={aluno.id} aluno={aluno} />)}
-    </Screen>
+
+      <SectionTitle title="Acesso rapido" />
+      <View style={styles.actionGrid}>
+        <QuickActionTile label="Meus alunos" icon="account-school-outline" color={colors.tealDark} onPress={() => navigation.navigate('MediadorAlunos')} />
+        <QuickActionTile label="Sessoes" icon="calendar-clock" onPress={() => navigation.navigate('Sessoes')} />
+        <QuickActionTile label="Iniciar" icon="play-circle-outline" color={colors.yellow} onPress={() => navigation.navigate('IniciarSessao')} />
+      </View>
+
+      {sessaoAtiva ? (
+        <Card style={styles.card}>
+          <Card.Content style={styles.formGap}>
+            <Text variant="titleLarge" style={styles.title}>Sessao em andamento</Text>
+            <Text style={styles.muted}>{sessaoAtiva.periodo} - {sessaoAtiva.alunos?.length || 0} aluno(s)</Text>
+            <Button mode="contained" icon="play-circle-outline" onPress={() => navigation.navigate('SessaoAcompanhamento', { sessao: sessaoAtiva })}>
+              Continuar acompanhamento
+            </Button>
+          </Card.Content>
+        </Card>
+      ) : (
+        <Button mode="contained" icon="plus-circle-outline" contentStyle={styles.primaryButtonContent} onPress={() => navigation.navigate('IniciarSessao')}>
+          Iniciar Acompanhamento
+        </Button>
+      )}
+      <Button mode="outlined" icon="calendar-clock" onPress={() => navigation.navigate('Sessoes')}>
+        Ver sessoes
+      </Button>
+      {alunos.length === 0 ? <EmptyState text="Nenhum aluno vinculado." /> : alunos.map((aluno) => (
+        <AlunoListItem key={aluno.id} aluno={aluno} onPress={() => navigation.navigate('AlunoProfile', { aluno })} />
+      ))}
+    </AppLayout>
   );
 }

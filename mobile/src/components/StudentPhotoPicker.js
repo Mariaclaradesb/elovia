@@ -25,6 +25,25 @@ export default function StudentPhotoPicker({ value, onChange, onError }) {
     }
   }
 
+  async function takePhoto() {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (!permission.granted) {
+      onError?.('Permita acesso a camera para tirar a foto do aluno.');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.7,
+    });
+
+    if (!result.canceled && result.assets?.[0]?.uri) {
+      onChange(result.assets[0].uri);
+    }
+  }
+
   return (
     <View style={styles.photoPicker}>
       {value ? (
@@ -34,10 +53,11 @@ export default function StudentPhotoPicker({ value, onChange, onError }) {
       )}
       <View style={styles.flex}>
         <Text style={styles.itemTitle}>Foto do aluno</Text>
-        <Text style={styles.muted}>Selecione uma imagem da galeria do celular.</Text>
-        <Button mode="outlined" icon="image-plus" onPress={pickImage}>
-          Selecionar foto
-        </Button>
+        <Text style={styles.muted}>Selecione da galeria ou tire uma foto agora.</Text>
+        <View style={styles.fileActions}>
+          <Button mode="outlined" icon="camera-outline" onPress={takePhoto}>Tirar foto</Button>
+          <Button mode="outlined" icon="image-plus" onPress={pickImage}>Galeria</Button>
+        </View>
       </View>
     </View>
   );

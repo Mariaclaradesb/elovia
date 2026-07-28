@@ -98,7 +98,7 @@ public class MediadorService {
 		return usuarioRepository.findById(id)
 				.filter(usuario -> usuario.getRole() == Role.MEDIADOR)
 				.filter(usuario -> usuario.getAdministrador() != null && usuario.getAdministrador().getId().equals(admin.getId()))
-				.orElseThrow(() -> new NotFoundException("Mediador nao encontrado"));
+				.orElseThrow(() -> new NotFoundException("Mediador não encontrado"));
 	}
 
 	private void validateUnique(String email, String cpf, UUID currentId) {

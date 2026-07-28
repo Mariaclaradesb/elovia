@@ -20,6 +20,7 @@ public record AlunoResponse(
 		String responsavel,
 		String telefoneResponsavel,
 		String emailResponsavel,
+		List<ResponsavelAlunoResponse> responsaveis,
 		String diagnostico,
 		String cid,
 		boolean necessitaMediador,
@@ -50,6 +51,7 @@ public record AlunoResponse(
 				aluno.getResponsavel(),
 				aluno.getTelefoneResponsavel(),
 				aluno.getEmailResponsavel(),
+				responsaveisFrom(aluno),
 				aluno.getDiagnostico(),
 				aluno.getCid(),
 				aluno.isNecessitaMediador(),
@@ -65,5 +67,25 @@ public record AlunoResponse(
 				aluno.isAtivo(),
 				aluno.getCriadoEm(),
 				aluno.getAtualizadoEm());
+	}
+
+	private static List<ResponsavelAlunoResponse> responsaveisFrom(Aluno aluno) {
+		if (aluno.getResponsaveis() == null || aluno.getResponsaveis().isBlank()) {
+			if (aluno.getResponsavel() == null || aluno.getResponsavel().isBlank()) {
+				return List.of();
+			}
+			return List.of(new ResponsavelAlunoResponse(
+					aluno.getResponsavel(),
+					aluno.getTelefoneResponsavel(),
+					aluno.getEmailResponsavel()));
+		}
+
+		return aluno.getResponsaveis().lines()
+				.map(line -> line.split("\t", -1))
+				.map(parts -> new ResponsavelAlunoResponse(
+						parts.length > 0 ? parts[0] : "",
+						parts.length > 1 ? parts[1] : "",
+						parts.length > 2 ? parts[2] : ""))
+				.toList();
 	}
 }

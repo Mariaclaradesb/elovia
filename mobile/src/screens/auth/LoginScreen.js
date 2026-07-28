@@ -15,6 +15,7 @@ export default function LoginScreen({ navigation }) {
   const [forgotOpen, setForgotOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [showSenha, setShowSenha] = useState(false);
 
   async function handleLogin() {
     setError('');
@@ -59,14 +60,22 @@ export default function LoginScreen({ navigation }) {
         <Card style={styles.authCard} mode="contained">
           <Card.Content style={styles.formGap}>
             <Text variant="headlineSmall" style={styles.authTitle}>Bem-vindo(a)!</Text>
-            <Text style={styles.authSubtitle}>Faca login para acessar sua conta</Text>
+            <Text style={styles.authSubtitle}>Faça login para acessar sua conta</Text>
             <TextInput mode="outlined" label="E-mail" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" left={<TextInput.Icon icon="email-outline" />} />
-            <TextInput mode="outlined" label="Senha" value={senha} onChangeText={setSenha} secureTextEntry left={<TextInput.Icon icon="lock-outline" />} right={<TextInput.Icon icon="eye-outline" />} />
+            <TextInput
+              mode="outlined"
+              label="Senha"
+              value={senha}
+              onChangeText={setSenha}
+              secureTextEntry={!showSenha}
+              left={<TextInput.Icon icon="lock-outline" />}
+              right={<TextInput.Icon icon={showSenha ? 'eye-off-outline' : 'eye-outline'} onPress={() => setShowSenha((value) => !value)} />}
+            />
             {!!error && <HelperText type="error" visible>{error}</HelperText>}
             <Button mode="text" style={styles.alignEnd} onPress={() => { setForgotEmail(email); setForgotOpen(true); }}>Esqueci minha senha</Button>
             <Button mode="contained" contentStyle={styles.primaryButtonContent} onPress={handleLogin} loading={loading} disabled={loading}>Entrar</Button>
             <View style={styles.authFooter}>
-              <Text style={styles.muted}>Nao tem uma conta?</Text>
+              <Text style={styles.muted}>Não tem uma conta?</Text>
               <Button mode="text" onPress={() => navigation.navigate('Register')}>Cadastre-se</Button>
             </View>
           </Card.Content>

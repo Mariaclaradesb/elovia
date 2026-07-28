@@ -23,6 +23,8 @@ export default function RegisterScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [showSenha, setShowSenha] = useState(false);
+  const [showConfirmarSenha, setShowConfirmarSenha] = useState(false);
 
   function setField(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -80,15 +82,31 @@ export default function RegisterScreen({ navigation }) {
               options={[{ label: 'Administrador', value: 'ADMIN' }]}
               onChange={(value) => setField('tipoConta', value)}
             />
-            <TextInput mode="outlined" label="Senha" value={form.senha} onChangeText={(value) => setField('senha', value)} secureTextEntry left={<TextInput.Icon icon="lock-outline" />} right={<TextInput.Icon icon="eye-outline" />} />
-            <TextInput mode="outlined" label="Confirmar senha" value={form.confirmarSenha} onChangeText={(value) => setField('confirmarSenha', value)} secureTextEntry left={<TextInput.Icon icon="lock-check-outline" />} right={<TextInput.Icon icon="eye-outline" />} />
+            <TextInput
+              mode="outlined"
+              label="Senha"
+              value={form.senha}
+              onChangeText={(value) => setField('senha', value)}
+              secureTextEntry={!showSenha}
+              left={<TextInput.Icon icon="lock-outline" />}
+              right={<TextInput.Icon icon={showSenha ? 'eye-off-outline' : 'eye-outline'} onPress={() => setShowSenha((value) => !value)} />}
+            />
+            <TextInput
+              mode="outlined"
+              label="Confirmar senha"
+              value={form.confirmarSenha}
+              onChangeText={(value) => setField('confirmarSenha', value)}
+              secureTextEntry={!showConfirmarSenha}
+              left={<TextInput.Icon icon="lock-check-outline" />}
+              right={<TextInput.Icon icon={showConfirmarSenha ? 'eye-off-outline' : 'eye-outline'} onPress={() => setShowConfirmarSenha((value) => !value)} />}
+            />
 
             <Checkbox.Item label="Eu aceito os Termos de Uso e a Politica de Privacidade" status={accepted ? 'checked' : 'unchecked'} onPress={() => setAccepted(!accepted)} />
             {!!error && <HelperText type="error" visible>{error}</HelperText>}
             <Button mode="contained" contentStyle={styles.primaryButtonContent} onPress={handleRegister} loading={loading}>Cadastrar</Button>
             <View style={styles.authFooter}>
               <Text style={styles.muted}>Ja tem uma conta?</Text>
-              <Button mode="text" onPress={() => navigation.goBack()}>Faca login</Button>
+              <Button mode="text" onPress={() => navigation.goBack()}>Faça login</Button>
             </View>
           </Card.Content>
         </Card>

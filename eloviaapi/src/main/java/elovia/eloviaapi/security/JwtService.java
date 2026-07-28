@@ -73,7 +73,7 @@ public class JwtService {
 			mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
 			return base64Url(mac.doFinal(value.getBytes(StandardCharsets.UTF_8)));
 		} catch (Exception exception) {
-			throw new IllegalStateException("Nao foi possivel assinar o token", exception);
+			throw new IllegalStateException("Não foi possivel assinar o token", exception);
 		}
 	}
 

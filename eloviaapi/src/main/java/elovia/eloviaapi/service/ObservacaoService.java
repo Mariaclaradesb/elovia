@@ -43,10 +43,10 @@ public class ObservacaoService {
 	public ObservacaoResponse create(ObservacaoRequest request) {
 		var sessao = sessaoService.findEntityById(request.sessaoId());
 		if (sessao.getStatus() != StatusSessao.ABERTA) {
-			throw new BusinessException("Sessao encerrada nao permite novas observacoes");
+			throw new BusinessException("Sessao encerrada não permite novas observacoes");
 		}
 		if (!sessaoService.alunoPertenceASessao(sessao, request.alunoId())) {
-			throw new BusinessException("Aluno nao pertence a sessao");
+			throw new BusinessException("Aluno não pertence a sessao");
 		}
 
 		var observacao = new Observacao();
@@ -60,11 +60,11 @@ public class ObservacaoService {
 	public ObservacaoResponse update(UUID id, ObservacaoRequest request) {
 		var observacao = findEntityById(id);
 		if (observacao.getSessao().getStatus() != StatusSessao.ABERTA) {
-			throw new BusinessException("Sessao encerrada nao permite alteracoes");
+			throw new BusinessException("Sessao encerrada não permite alteracoes");
 		}
 		if (!observacao.getAluno().getId().equals(request.alunoId())
 				&& !sessaoService.alunoPertenceASessao(observacao.getSessao(), request.alunoId())) {
-			throw new BusinessException("Aluno nao pertence a sessao");
+			throw new BusinessException("Aluno não pertence a sessao");
 		}
 		observacao.setAluno(alunoService.findEntityById(request.alunoId()));
 		fill(observacao, request);
@@ -75,7 +75,7 @@ public class ObservacaoService {
 	public void delete(UUID id) {
 		var observacao = findEntityById(id);
 		if (observacao.getSessao().getStatus() != StatusSessao.ABERTA) {
-			throw new BusinessException("Sessao encerrada nao permite exclusao");
+			throw new BusinessException("Sessao encerrada não permite exclusao");
 		}
 		observacaoRepository.delete(observacao);
 	}
@@ -83,7 +83,7 @@ public class ObservacaoService {
 	@Transactional(readOnly = true)
 	public Observacao findEntityById(UUID id) {
 		var observacao = observacaoRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("Observacao nao encontrada"));
+				.orElseThrow(() -> new NotFoundException("Observacao não encontrada"));
 		sessaoService.findEntityById(observacao.getSessao().getId());
 		return observacao;
 	}

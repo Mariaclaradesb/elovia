@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import elovia.eloviaapi.dto.AlterarSenhaRequest;
+import elovia.eloviaapi.dto.AtualizarPerfilRequest;
 import elovia.eloviaapi.dto.CadastrarAdminRequest;
 import elovia.eloviaapi.dto.EsqueciSenhaRequest;
 import elovia.eloviaapi.dto.LoginRequest;
@@ -41,6 +42,11 @@ public class AuthController {
 	@GetMapping("/me")
 	public UsuarioResponse me() {
 		return authService.me();
+	}
+
+	@PatchMapping("/me")
+	public UsuarioResponse atualizarPerfil(@Valid @RequestBody AtualizarPerfilRequest request) {
+		return authService.atualizarPerfil(request);
 	}
 
 	@PatchMapping("/alterar-senha")

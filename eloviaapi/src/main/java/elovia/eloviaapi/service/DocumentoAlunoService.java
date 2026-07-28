@@ -112,14 +112,14 @@ public class DocumentoAlunoService {
 
 	private DocumentoAluno findDocumentoAutorizado(UUID id) {
 		var documento = documentoRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("Documento nao encontrado"));
+				.orElseThrow(() -> new NotFoundException("Documento não encontrado"));
 		validarAcesso(documento.getAluno());
 		return documento;
 	}
 
 	private Aluno findAlunoAutorizado(UUID alunoId) {
 		var aluno = alunoRepository.findById(alunoId)
-				.orElseThrow(() -> new NotFoundException("Aluno nao encontrado"));
+				.orElseThrow(() -> new NotFoundException("Aluno não encontrado"));
 		validarAcesso(aluno);
 		return aluno;
 	}
@@ -130,13 +130,13 @@ public class DocumentoAlunoService {
 			if (aluno.getAdministrador() != null && aluno.getAdministrador().getId().equals(usuario.getId())) {
 				return;
 			}
-			throw new NotFoundException("Aluno nao encontrado");
+			throw new NotFoundException("Aluno não encontrado");
 		}
 
 		var vinculado = aluno.isAtivo() && aluno.getMediadores().stream()
 				.anyMatch(mediador -> mediador.getId().equals(usuario.getId()));
 		if (!vinculado) {
-			throw new NotFoundException("Aluno nao encontrado");
+			throw new NotFoundException("Aluno não encontrado");
 		}
 	}
 
@@ -162,7 +162,7 @@ public class DocumentoAlunoService {
 		var nomeOriginal = arquivo.getOriginalFilename() != null ? arquivo.getOriginalFilename() : "arquivo";
 		var extensao = obterExtensao(nomeOriginal);
 		if (!EXTENSOES_ACEITAS.contains(extensao)) {
-			throw new BusinessException("Tipo de arquivo nao permitido");
+			throw new BusinessException("Tipo de arquivo não permitido");
 		}
 
 		var nomeLimpo = nomeOriginal.replaceAll("[^a-zA-Z0-9._-]", "_");

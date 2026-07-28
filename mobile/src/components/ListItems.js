@@ -36,7 +36,7 @@ export function AlunoListItem({ aluno, actions, onPress }) {
           <Avatar.Icon size={42} icon="school" style={{ backgroundColor: disabled ? colors.inactive : colors.teal }} />
           <View style={styles.flex}>
             <Text variant="titleMedium" style={[styles.itemTitle, disabled && styles.inactiveText]}>{aluno.nome}</Text>
-            <Text style={styles.muted}>{aluno.escola} - {aluno.turma || 'Turma nao informada'} - {aluno.turno}</Text>
+            <Text style={styles.muted}>{aluno.escola} - {aluno.turma || 'Turma não informada'} - {aluno.turno}</Text>
             <View style={styles.chipWrap}>
               {disabled && <Chip compact style={styles.inactiveChip} textStyle={styles.inactiveChipText}>Desativado</Chip>}
               {aluno.necessitaMediador && <Chip compact>Necessita mediador</Chip>}

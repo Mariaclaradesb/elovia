@@ -57,6 +57,9 @@ public class Aluno {
 	private String emailResponsavel;
 
 	@Column(columnDefinition = "text")
+	private String responsaveis;
+
+	@Column(columnDefinition = "text")
 	private String diagnostico;
 
 	@Column(length = 40)
@@ -198,6 +201,14 @@ public class Aluno {
 
 	public void setEmailResponsavel(String emailResponsavel) {
 		this.emailResponsavel = emailResponsavel;
+	}
+
+	public String getResponsaveis() {
+		return responsaveis;
+	}
+
+	public void setResponsaveis(String responsaveis) {
+		this.responsaveis = responsaveis;
 	}
 
 	public String getDiagnostico() {

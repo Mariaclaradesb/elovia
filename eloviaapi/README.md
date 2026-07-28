@@ -67,13 +67,13 @@ A migration inicial fica em:
 src/main/resources/db/migration/V1__criar_tabelas_iniciais.sql
 ```
 
-O Hibernate nao cria tabelas automaticamente porque:
+O Hibernate não cria tabelas automaticamente porque:
 
 ```text
 JPA_DDL_AUTO=none
 ```
 
-Essa combinacao e mais segura: o banco muda por migrations versionadas, nao por geracao automatica do JPA.
+Essa combinacao e mais segura: o banco muda por migrations versionadas, não por geracao automatica do JPA.
 
 ## Endpoints iniciais
 
@@ -125,7 +125,7 @@ Senha: Mediador12345
 Primeiro acesso: true
 ```
 
-Tambem cria um `Aluno Demo` associado ao `Mediador Demo` se ainda nao houver alunos no banco.
+Tambem cria um `Aluno Demo` associado ao `Mediador Demo` se ainda não houver alunos no banco.
 
 Para testar login:
 

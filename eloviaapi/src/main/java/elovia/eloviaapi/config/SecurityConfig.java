@@ -49,7 +49,7 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.exceptionHandling(exception -> exception
 						.authenticationEntryPoint((request, response, authException) ->
-								response.sendError(HttpStatus.UNAUTHORIZED.value(), "Nao autenticado"))
+								response.sendError(HttpStatus.UNAUTHORIZED.value(), "Não autenticado"))
 						.accessDeniedHandler((request, response, accessDeniedException) ->
 								response.sendError(HttpStatus.FORBIDDEN.value(), "Acesso negado")))
 				.authorizeHttpRequests(auth -> auth

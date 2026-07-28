@@ -107,11 +107,11 @@ public class SessaoService {
 	public SessaoResponse findAtiva() {
 		var usuario = currentUserService.getCurrentUser();
 		if (usuario.getRole() != Role.MEDIADOR) {
-			throw new NotFoundException("Sessao ativa nao encontrada");
+			throw new NotFoundException("Sessao ativa não encontrada");
 		}
 		return sessaoRepository.findFirstByMediadorIdAndStatusOrderByInicioDesc(usuario.getId(), StatusSessao.ABERTA)
 				.map(this::toResponse)
-				.orElseThrow(() -> new NotFoundException("Sessao ativa nao encontrada"));
+				.orElseThrow(() -> new NotFoundException("Sessao ativa não encontrada"));
 	}
 
 	@Transactional(readOnly = true)
@@ -122,7 +122,7 @@ public class SessaoService {
 	SessaoAcompanhamento findEntityById(UUID id) {
 		return sessaoRepository.findById(id)
 				.filter(this::canAccess)
-				.orElseThrow(() -> new NotFoundException("Sessao nao encontrada"));
+				.orElseThrow(() -> new NotFoundException("Sessao não encontrada"));
 	}
 
 	boolean alunoPertenceASessao(SessaoAcompanhamento sessao, UUID alunoId) {

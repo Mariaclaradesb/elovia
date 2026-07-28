@@ -18,7 +18,13 @@ import BibliotecaAlunoScreen from './src/screens/biblioteca/BibliotecaAlunoScree
 import DocumentoDetailsScreen from './src/screens/biblioteca/DocumentoDetailsScreen';
 import DocumentoFormScreen from './src/screens/biblioteca/DocumentoFormScreen';
 import DocumentoViewerScreen from './src/screens/biblioteca/DocumentoViewerScreen';
+import AboutScreen from './src/screens/common/AboutScreen';
+import PerfilUsuarioScreen from './src/screens/common/PerfilUsuarioScreen';
+import IniciarSessaoScreen from './src/screens/mediador/IniciarSessaoScreen';
+import MediadorAlunosScreen from './src/screens/mediador/MediadorAlunosScreen';
 import MediadorHomeScreen from './src/screens/mediador/MediadorHomeScreen';
+import SessaoAcompanhamentoScreen from './src/screens/mediador/SessaoAcompanhamentoScreen';
+import SessoesScreen from './src/screens/mediador/SessoesScreen';
 import { appTheme, colors } from './src/theme';
 
 const Stack = createNativeStackNavigator();
@@ -49,14 +55,14 @@ function AppNavigator() {
           <Stack.Screen name="PrimeiroAcesso" component={FirstAccessScreen} options={{ headerShown: false }} />
         ) : user?.role === 'ADMIN' ? (
           <>
-            <Stack.Screen name="AdminHome" component={AdminHomeScreen} options={{ title: 'Elovia' }} />
-            <Stack.Screen name="Mediadores" component={MediadoresScreen} options={{ title: 'Mediadores' }} />
+            <Stack.Screen name="AdminHome" component={AdminHomeScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Mediadores" component={MediadoresScreen} options={{ headerShown: false }} />
             <Stack.Screen
               name="MediadorForm"
               component={MediadorFormScreen}
               options={({ route }) => ({ title: route.params?.mediador ? 'Editar mediador' : 'Novo mediador' })}
             />
-            <Stack.Screen name="Alunos" component={AlunosScreen} options={{ title: 'Alunos' }} />
+            <Stack.Screen name="Alunos" component={AlunosScreen} options={{ headerShown: false }} />
             <Stack.Screen name="AlunoProfile" component={AlunoProfileScreen} options={{ title: 'Perfil do aluno' }} />
             <Stack.Screen
               name="AlunoForm"
@@ -71,10 +77,16 @@ function AppNavigator() {
             />
             <Stack.Screen name="DocumentoDetails" component={DocumentoDetailsScreen} options={{ title: 'Documento' }} />
             <Stack.Screen name="DocumentoViewer" component={DocumentoViewerScreen} options={{ title: 'Visualizador' }} />
+            <Stack.Screen name="About" component={AboutScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="PerfilUsuario" component={PerfilUsuarioScreen} options={{ headerShown: false }} />
           </>
         ) : (
           <>
-            <Stack.Screen name="MediadorHome" component={MediadorHomeScreen} options={{ title: 'Meus alunos' }} />
+            <Stack.Screen name="MediadorHome" component={MediadorHomeScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="MediadorAlunos" component={MediadorAlunosScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Sessoes" component={SessoesScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="IniciarSessao" component={IniciarSessaoScreen} options={{ title: 'Iniciar acompanhamento' }} />
+            <Stack.Screen name="SessaoAcompanhamento" component={SessaoAcompanhamentoScreen} options={{ title: 'Acompanhamento diário' }} />
             <Stack.Screen name="AlunoProfile" component={AlunoProfileScreen} options={{ title: 'Perfil do aluno' }} />
             <Stack.Screen name="BibliotecaAluno" component={BibliotecaAlunoScreen} options={{ title: 'Biblioteca' }} />
             <Stack.Screen
@@ -84,6 +96,8 @@ function AppNavigator() {
             />
             <Stack.Screen name="DocumentoDetails" component={DocumentoDetailsScreen} options={{ title: 'Documento' }} />
             <Stack.Screen name="DocumentoViewer" component={DocumentoViewerScreen} options={{ title: 'Visualizador' }} />
+            <Stack.Screen name="About" component={AboutScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="PerfilUsuario" component={PerfilUsuarioScreen} options={{ headerShown: false }} />
           </>
         )}
       </Stack.Navigator>

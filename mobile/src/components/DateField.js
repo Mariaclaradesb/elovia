@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { TextInput } from 'react-native-paper';
 
-import { dateToIso, displayToIsoDate, isoToDate, isoToDisplayDate } from '../utils/date';
+import { dateToIso, displayToIsoDate, formatDisplayDate, isoToDate, isoToDisplayDate } from '../utils/date';
 
 export default function DateField({ label, value, onChange }) {
   const [showPicker, setShowPicker] = useState(false);
@@ -14,10 +14,11 @@ export default function DateField({ label, value, onChange }) {
   }, [value]);
 
   function handleManualChange(text) {
-    setDisplayValue(text);
+    const formatted = formatDisplayDate(text);
+    setDisplayValue(formatted);
 
-    if (/^\d{2}-\d{2}-\d{4}$/.test(text)) {
-      onChange(displayToIsoDate(text));
+    if (/^\d{2}-\d{2}-\d{4}$/.test(formatted)) {
+      onChange(displayToIsoDate(formatted));
     }
   }
 

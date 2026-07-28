@@ -1,0 +1,94 @@
+import { Linking } from 'react-native';
+import { Button, Card, Dialog, Portal, Text } from 'react-native-paper';
+import { useEffect, useState } from 'react';
+
+import InfoGrid from '../../components/InfoGrid';
+import Screen from '../../components/Screen';
+import { categoryLabel } from '../../constants/documentCategories';
+import { useAuth } from '../../context/AuthContext';
+import { buscarDocumento, excluirDocumento } from '../../services/documentosApi';
+import { styles } from '../../theme/styles';
+import { isoToDisplayDate } from '../../utils/date';
+
+export default function DocumentoDetailsScreen({ route, navigation }) {
+  const { token } = useAuth();
+  const { documentoId, aluno } = route.params;
+  const [documento, setDocumento] = useState(route.params.documento || null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    buscarDocumento(documentoId, token)
+      .then(setDocumento)
+      .catch((err) => setError(err.message));
+  }, [documentoId, token]);
+
+  async function remove() {
+    try {
+      await excluirDocumento(documento.id, token);
+      setConfirmDelete(false);
+      navigation.goBack();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  if (!documento) {
+    return (
+      <Screen>
+        <Text>Carregando documento...</Text>
+      </Screen>
+    );
+  }
+
+  return (
+    <Screen>
+      <Card style={styles.card}>
+        <Card.Content style={styles.formGap}>
+          <Text variant="headlineSmall" style={styles.title}>{documento.titulo}</Text>
+          <InfoGrid
+            items={[
+              { label: 'Categoria', value: categoryLabel(documento.categoria) },
+              { label: 'Aluno', value: documento.alunoNome },
+              { label: 'Enviado por', value: documento.usuarioUploadNome },
+              { label: 'Data do documento', value: isoToDisplayDate(documento.dataDocumento) },
+              { label: 'Data do upload', value: isoToDisplayDate(documento.dataUpload) },
+              { label: 'Descricao', value: documento.descricao, full: true },
+              { label: 'Arquivo', value: documento.nomeArquivo, full: true },
+              { label: 'Ultima edicao', value: documento.usuarioUltimaEdicaoNome ? `${documento.usuarioUltimaEdicaoNome} em ${isoToDisplayDate(documento.dataUltimaEdicao)}` : 'Não editado', full: true },
+            ]}
+          />
+          {!!error && <Text style={styles.errorText}>{error}</Text>}
+        </Card.Content>
+      </Card>
+
+      <Button mode="contained" icon="eye-outline" onPress={() => navigation.navigate('DocumentoViewer', { documento })}>
+        Visualizar
+      </Button>
+      <Button mode="outlined" icon="download-outline" onPress={() => Linking.openURL(documento.urlArquivo)}>
+        Baixar
+      </Button>
+      <Button mode="outlined" icon="pencil-outline" onPress={() => navigation.navigate('DocumentoForm', { aluno, documento })}>
+        Editar
+      </Button>
+      {documento.ativo && (
+        <Button mode="outlined" icon="delete-outline" onPress={() => setConfirmDelete(true)}>
+          Excluir
+        </Button>
+      )}
+
+      <Portal>
+        <Dialog visible={confirmDelete} onDismiss={() => setConfirmDelete(false)}>
+          <Dialog.Title>Excluir documento?</Dialog.Title>
+          <Dialog.Content>
+            <Text>O documento sera desativado e continuara registrado no historico.</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setConfirmDelete(false)}>Cancelar</Button>
+            <Button onPress={remove}>Confirmar</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    </Screen>
+  );
+}

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { ActivityIndicator, FAB, IconButton, Searchbar, SegmentedButtons, Snackbar } from 'react-native-paper';
+import { ActivityIndicator, IconButton, Searchbar, SegmentedButtons, Snackbar } from 'react-native-paper';
 
+import AppLayout from '../../components/AppLayout';
 import { AlunoListItem } from '../../components/ListItems';
-import Screen from '../../components/Screen';
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
 import { colors } from '../../theme';
@@ -14,6 +14,7 @@ export default function AlunosScreen({ navigation }) {
   const [items, setItems] = useState([]);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('todos');
+  const [order, setOrder] = useState('cadastro');
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
 
@@ -34,13 +35,19 @@ export default function AlunosScreen({ navigation }) {
     return unsubscribe;
   }, [navigation, load]);
 
-  const filtered = items.filter((item) => {
-    const matchesSearch = `${item.nome} ${item.turma} ${item.escola}`.toLowerCase().includes(search.toLowerCase());
-    const matchesFilter = filter === 'todos'
-      || (filter === 'precisa' && item.necessitaMediador)
-      || (filter === 'sem' && item.mediadorIds?.length === 0);
-    return matchesSearch && matchesFilter;
-  });
+  const filtered = items
+    .filter((item) => {
+      const matchesSearch = `${item.nome} ${item.turma} ${item.escola}`.toLowerCase().includes(search.toLowerCase());
+      const matchesFilter = filter === 'todos'
+        || (filter === 'precisa' && item.necessitaMediador)
+        || (filter === 'sem' && item.mediadorIds?.length === 0);
+      return matchesSearch && matchesFilter;
+    })
+    .sort((a, b) => (
+      order === 'az'
+        ? a.nome.localeCompare(b.nome)
+        : new Date(b.criadoEm || 0).getTime() - new Date(a.criadoEm || 0).getTime()
+    ));
 
   async function archive(id) {
     try {
@@ -54,7 +61,7 @@ export default function AlunosScreen({ navigation }) {
 
   return (
     <View style={styles.flex}>
-      <Screen>
+      <AppLayout navigation={navigation} role="ADMIN" active="alunos" title="Alunos" subtitle="Consulte e organize os cadastros da escola." showHero={false}>
         <Searchbar placeholder="Pesquisar aluno" value={search} onChangeText={setSearch} style={styles.search} />
         <SegmentedButtons
           value={filter}
@@ -65,11 +72,19 @@ export default function AlunosScreen({ navigation }) {
             { value: 'sem', label: 'Sem mediador' },
           ]}
         />
+        <SegmentedButtons
+          value={order}
+          onValueChange={setOrder}
+          buttons={[
+            { value: 'cadastro', label: 'Cadastro' },
+            { value: 'az', label: 'A-Z' },
+          ]}
+        />
         {loading ? <ActivityIndicator color={colors.tealDark} /> : filtered.map((aluno) => (
           <AlunoListItem
             key={aluno.id}
             aluno={aluno}
-            onPress={() => navigation.navigate('AlunoForm', { aluno })}
+            onPress={() => navigation.navigate('AlunoProfile', { aluno })}
             actions={(
               <View style={styles.rowEnd}>
                 <IconButton icon="pencil-outline" onPress={() => navigation.navigate('AlunoForm', { aluno })} />
@@ -78,8 +93,7 @@ export default function AlunosScreen({ navigation }) {
             )}
           />
         ))}
-      </Screen>
-      <FAB icon="plus" style={styles.fab} onPress={() => navigation.navigate('AlunoForm')} />
+      </AppLayout>
       <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>
     </View>
   );

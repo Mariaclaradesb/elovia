@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import * as Clipboard from 'expo-clipboard';
 import { View } from 'react-native';
-import { ActivityIndicator, FAB, IconButton, Searchbar, Snackbar } from 'react-native-paper';
+import { ActivityIndicator, IconButton, Searchbar, SegmentedButtons, Snackbar } from 'react-native-paper';
 
+import AppLayout from '../../components/AppLayout';
 import { MediadorListItem } from '../../components/ListItems';
-import Screen from '../../components/Screen';
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
 import { colors } from '../../theme';
@@ -14,6 +14,7 @@ export default function MediadoresScreen({ navigation }) {
   const { token, user } = useAuth();
   const [items, setItems] = useState([]);
   const [search, setSearch] = useState('');
+  const [order, setOrder] = useState('cadastro');
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
 
@@ -36,7 +37,11 @@ export default function MediadoresScreen({ navigation }) {
 
   const filtered = items
     .filter((item) => `${item.nome} ${item.email} ${item.escola}`.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => a.nome.localeCompare(b.nome));
+    .sort((a, b) => (
+      order === 'az'
+        ? a.nome.localeCompare(b.nome)
+        : new Date(b.dataCriacao || 0).getTime() - new Date(a.dataCriacao || 0).getTime()
+    ));
 
   async function deactivate(id) {
     try {
@@ -60,8 +65,16 @@ export default function MediadoresScreen({ navigation }) {
 
   return (
     <View style={styles.flex}>
-      <Screen>
+      <AppLayout navigation={navigation} role="ADMIN" active="mediadores" title="Mediadores" subtitle="Equipe vinculada a sua escola." showHero={false}>
         <Searchbar placeholder="Pesquisar" value={search} onChangeText={setSearch} style={styles.search} />
+        <SegmentedButtons
+          value={order}
+          onValueChange={setOrder}
+          buttons={[
+            { value: 'cadastro', label: 'Cadastro' },
+            { value: 'az', label: 'A-Z' },
+          ]}
+        />
         {loading ? <ActivityIndicator color={colors.tealDark} /> : filtered.map((mediador) => (
           <MediadorListItem
             key={mediador.id}
@@ -76,8 +89,7 @@ export default function MediadoresScreen({ navigation }) {
             )}
           />
         ))}
-      </Screen>
-      <FAB icon="plus" style={styles.fab} onPress={() => navigation.navigate('MediadorForm')} />
+      </AppLayout>
       <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>
     </View>
   );

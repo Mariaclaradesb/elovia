@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import elovia.eloviaapi.dto.AlterarSenhaRequest;
+import elovia.eloviaapi.dto.AtualizarPerfilRequest;
 import elovia.eloviaapi.dto.CadastrarAdminRequest;
 import elovia.eloviaapi.dto.EsqueciSenhaRequest;
 import elovia.eloviaapi.dto.LoginRequest;
@@ -57,7 +58,7 @@ public class AuthService {
 	@Transactional
 	public LoginResponse cadastrarAdmin(CadastrarAdminRequest request) {
 		if (!request.senha().equals(request.confirmarSenha())) {
-			throw new BusinessException("A confirmacao da senha nao confere");
+			throw new BusinessException("A confirmacao da senha não confere");
 		}
 
 		if (usuarioRepository.existsByEmailIgnoreCase(request.email())) {
@@ -90,9 +91,35 @@ public class AuthService {
 	}
 
 	@Transactional
+	public UsuarioResponse atualizarPerfil(AtualizarPerfilRequest request) {
+		var usuario = currentUserService.getCurrentUser();
+
+		usuarioRepository.findByEmailIgnoreCase(request.email())
+				.filter(outro -> !outro.getId().equals(usuario.getId()))
+				.ifPresent(outro -> {
+					throw new BusinessException("Email ja cadastrado");
+				});
+
+		usuarioRepository.findByCpf(request.cpf())
+				.filter(outro -> !outro.getId().equals(usuario.getId()))
+				.ifPresent(outro -> {
+					throw new BusinessException("CPF ja cadastrado");
+				});
+
+		usuario.setNome(request.nome());
+		usuario.setCpf(request.cpf());
+		usuario.setEmail(request.email());
+		usuario.setTelefone(request.telefone());
+		usuario.setEscola(request.escola());
+		usuario.setCargo(request.cargo());
+		usuario.setMatricula(request.matricula());
+		return UsuarioResponse.from(usuario);
+	}
+
+	@Transactional
 	public UsuarioResponse alterarSenha(AlterarSenhaRequest request) {
 		if (!request.novaSenha().equals(request.confirmarSenha())) {
-			throw new BusinessException("A confirmacao da senha nao confere");
+			throw new BusinessException("A confirmacao da senha não confere");
 		}
 
 		var usuario = currentUserService.getCurrentUser();
@@ -116,7 +143,7 @@ public class AuthService {
 
 	public void redefinirSenha(RedefinirSenhaRequest request) {
 		if (!request.novaSenha().equals(request.confirmarSenha())) {
-			throw new BusinessException("A confirmacao da senha nao confere");
+			throw new BusinessException("A confirmacao da senha não confere");
 		}
 		throw new BusinessException("Recuperacao de senha ainda depende da configuracao de envio de e-mail");
 	}

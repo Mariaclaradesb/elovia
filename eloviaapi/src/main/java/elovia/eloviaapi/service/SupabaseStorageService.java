@@ -53,7 +53,7 @@ public class SupabaseStorageService {
 
 			return publicUrl(caminho);
 		} catch (IOException exception) {
-			throw new BusinessException("Nao foi possivel ler o arquivo enviado");
+			throw new BusinessException("Não foi possivel ler o arquivo enviado");
 		} catch (InterruptedException exception) {
 			Thread.currentThread().interrupt();
 			throw new BusinessException("Envio de arquivo interrompido");

@@ -13,6 +13,8 @@ export default function FirstAccessScreen() {
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showNovaSenha, setShowNovaSenha] = useState(false);
+  const [showConfirmarSenha, setShowConfirmarSenha] = useState(false);
 
   async function handleSave() {
     setError('');
@@ -43,8 +45,20 @@ export default function FirstAccessScreen() {
         <Card.Content style={styles.formGap}>
           <Text variant="titleLarge" style={styles.title}>Primeiro acesso</Text>
           <Text style={styles.muted}>Para sua seguranca, altere sua senha.</Text>
-          <TextInput label="Nova senha" value={novaSenha} onChangeText={setNovaSenha} secureTextEntry />
-          <TextInput label="Confirmar senha" value={confirmarSenha} onChangeText={setConfirmarSenha} secureTextEntry />
+          <TextInput
+            label="Nova senha"
+            value={novaSenha}
+            onChangeText={setNovaSenha}
+            secureTextEntry={!showNovaSenha}
+            right={<TextInput.Icon icon={showNovaSenha ? 'eye-off-outline' : 'eye-outline'} onPress={() => setShowNovaSenha((value) => !value)} />}
+          />
+          <TextInput
+            label="Confirmar senha"
+            value={confirmarSenha}
+            onChangeText={setConfirmarSenha}
+            secureTextEntry={!showConfirmarSenha}
+            right={<TextInput.Icon icon={showConfirmarSenha ? 'eye-off-outline' : 'eye-outline'} onPress={() => setShowConfirmarSenha((value) => !value)} />}
+          />
           {!!error && <HelperText type="error" visible>{error}</HelperText>}
           <Button mode="contained" icon="content-save" onPress={handleSave} loading={loading}>Salvar</Button>
           <Button mode="text" icon="logout" onPress={signOut}>Sair</Button>

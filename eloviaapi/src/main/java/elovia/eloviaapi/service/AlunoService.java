@@ -1,16 +1,17 @@
 package elovia.eloviaapi.service;
 
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import elovia.eloviaapi.dto.AssociarMediadoresRequest;
 import elovia.eloviaapi.dto.AlunoObservacoesRequest;
 import elovia.eloviaapi.dto.AlunoRequest;
 import elovia.eloviaapi.dto.AlunoResponse;
+import elovia.eloviaapi.dto.AssociarMediadoresRequest;
+import elovia.eloviaapi.dto.ResponsavelAlunoRequest;
 import elovia.eloviaapi.exception.BusinessException;
 import elovia.eloviaapi.exception.NotFoundException;
 import elovia.eloviaapi.model.Aluno;
@@ -26,7 +27,10 @@ public class AlunoService {
 	private final UsuarioRepository usuarioRepository;
 	private final CurrentUserService currentUserService;
 
-	public AlunoService(AlunoRepository alunoRepository, UsuarioRepository usuarioRepository, CurrentUserService currentUserService) {
+	public AlunoService(
+			AlunoRepository alunoRepository,
+			UsuarioRepository usuarioRepository,
+			CurrentUserService currentUserService) {
 		this.alunoRepository = alunoRepository;
 		this.usuarioRepository = usuarioRepository;
 		this.currentUserService = currentUserService;
@@ -122,9 +126,7 @@ public class AlunoService {
 		aluno.setEscola(request.escola());
 		aluno.setTurma(request.turma());
 		aluno.setTurno(request.turno());
-		aluno.setResponsavel(request.responsavel());
-		aluno.setTelefoneResponsavel(request.telefoneResponsavel());
-		aluno.setEmailResponsavel(request.emailResponsavel());
+		fillResponsaveis(aluno, request);
 		aluno.setDiagnostico(request.diagnostico());
 		aluno.setCid(request.cid());
 		aluno.setNecessitaMediador(request.necessitaMediador());
@@ -136,6 +138,36 @@ public class AlunoService {
 		aluno.setObjetivosPdi(request.objetivosPdi());
 		aluno.setFormaComunicacao(request.formaComunicacao());
 		aluno.setObservacoes(request.observacoes());
+	}
+
+	private void fillResponsaveis(Aluno aluno, AlunoRequest request) {
+		var responsaveis = request.responsaveis();
+		if (responsaveis != null && !responsaveis.isEmpty()) {
+			var principal = responsaveis.get(0);
+			aluno.setResponsavel(principal.nome());
+			aluno.setTelefoneResponsavel(principal.telefone());
+			aluno.setEmailResponsavel(principal.email());
+			aluno.setResponsaveis(encodeResponsaveis(responsaveis));
+			return;
+		}
+
+		aluno.setResponsavel(request.responsavel());
+		aluno.setTelefoneResponsavel(request.telefoneResponsavel());
+		aluno.setEmailResponsavel(request.emailResponsavel());
+		aluno.setResponsaveis(null);
+	}
+
+	private String encodeResponsaveis(List<ResponsavelAlunoRequest> responsaveis) {
+		return responsaveis.stream()
+				.map(item -> sanitizeResponsavelValue(item.nome())
+						+ "\t" + sanitizeResponsavelValue(item.telefone())
+						+ "\t" + sanitizeResponsavelValue(item.email()))
+				.reduce((left, right) -> left + "\n" + right)
+				.orElse("");
+	}
+
+	private String sanitizeResponsavelValue(String value) {
+		return value == null ? "" : value.replace("\t", " ").replace("\n", " ").trim();
 	}
 
 	private void syncMediadores(Aluno aluno, List<UUID> mediadorIds) {

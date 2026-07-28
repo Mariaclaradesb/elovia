@@ -20,9 +20,9 @@ public class CurrentUserService {
 	public Usuario getCurrentUser() {
 		var auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth == null || !(auth.getPrincipal() instanceof AuthenticatedUser user)) {
-			throw new NotFoundException("Usuario autenticado nao encontrado");
+			throw new NotFoundException("Usuario autenticado não encontrado");
 		}
 		return usuarioRepository.findById(user.id())
-				.orElseThrow(() -> new NotFoundException("Usuario autenticado nao encontrado"));
+				.orElseThrow(() -> new NotFoundException("Usuario autenticado não encontrado"));
 	}
 }

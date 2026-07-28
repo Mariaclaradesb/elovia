@@ -1,20 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, View } from 'react-native';
-import { Button, HelperText } from 'react-native-paper';
+import { Card, HelperText, Text } from 'react-native-paper';
 
-import HeaderBlock from '../../components/HeaderBlock';
+import AppLayout from '../../components/AppLayout';
 import { AlunoListItem, MediadorListItem } from '../../components/ListItems';
-import Screen from '../../components/Screen';
+import QuickActionTile from '../../components/QuickActionTile';
 import SectionTitle from '../../components/SectionTitle';
 import StatCard from '../../components/StatCard';
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
 import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
-import { firstName } from '../../utils/text';
 
 export default function AdminHomeScreen({ navigation }) {
-  const { token, user, signOut } = useAuth();
+  const { token, user } = useAuth();
   const [dashboard, setDashboard] = useState(null);
   const [alunos, setAlunos] = useState([]);
   const [mediadores, setMediadores] = useState([]);
@@ -49,9 +48,24 @@ export default function AdminHomeScreen({ navigation }) {
   }
 
   return (
-    <Screen refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.tealDark} />}>
-      <HeaderBlock title={`Ola, ${firstName(user?.nome)}`} subtitle="Painel administrativo" onLogout={signOut} />
+    <AppLayout
+      navigation={navigation}
+      role="ADMIN"
+      active="home"
+      title="Painel Administrativo"
+      subtitle="Gerencie alunos, mediadores e dados da escola."
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.tealDark} />}
+    >
       {!!error && <HelperText type="error" visible>{error}</HelperText>}
+
+      <Card style={styles.welcomeCard} mode="contained">
+        <Card.Content style={styles.brandHeroContent}>
+          <View style={styles.flex}>
+            <Text variant="titleLarge" style={styles.title}>Organize, acompanhe e cuide</Text>
+            <Text style={styles.muted}>Acesse rapidamente os cadastros e indicadores da sua escola.</Text>
+          </View>
+        </Card.Content>
+      </Card>
 
       <View style={styles.statsGrid}>
         <StatCard label="Alunos" value={dashboard?.quantidadeAlunos ?? '-'} color={colors.teal} icon="school" />
@@ -59,19 +73,20 @@ export default function AdminHomeScreen({ navigation }) {
         <StatCard label="Sem mediador" value={dashboard?.quantidadeAlunosSemMediador ?? '-'} color={colors.yellow} icon="account-alert" />
       </View>
 
-      <View style={styles.quickGrid}>
-        <Button mode="contained" icon="account-plus" onPress={() => navigation.navigate('MediadorForm')}>Cadastrar mediador</Button>
-        <Button mode="contained-tonal" icon="school" onPress={() => navigation.navigate('AlunoForm')}>Cadastrar aluno</Button>
-        <Button mode="outlined" icon="format-list-bulleted" onPress={() => navigation.navigate('Mediadores')}>Lista de mediadores</Button>
-        <Button mode="outlined" icon="clipboard-list-outline" onPress={() => navigation.navigate('Alunos')}>Lista de alunos</Button>
+      <SectionTitle title="Acesso rapido" />
+      <View style={styles.actionGrid}>
+        <QuickActionTile label="Alunos" icon="account-school-outline" color={colors.tealDark} onPress={() => navigation.navigate('Alunos')} />
+        <QuickActionTile label="Mediadores" icon="account-heart-outline" onPress={() => navigation.navigate('Mediadores')} />
+        <QuickActionTile label="Novo aluno" icon="school-outline" color={colors.yellow} onPress={() => navigation.navigate('AlunoForm')} />
+        <QuickActionTile label="Novo mediador" icon="account-plus-outline" onPress={() => navigation.navigate('MediadorForm')} />
       </View>
 
-      <SectionTitle title="Ultimos cadastros" />
+      <SectionTitle title="Últimos cadastros" />
       {alunos.slice(0, 3).map((aluno) => (
         <AlunoListItem
           key={aluno.id}
           aluno={aluno}
-          onPress={() => navigation.navigate('AlunoForm', { aluno })}
+          onPress={() => navigation.navigate('AlunoProfile', { aluno })}
         />
       ))}
       {mediadores.slice(0, 3).map((mediador) => (
@@ -81,6 +96,6 @@ export default function AdminHomeScreen({ navigation }) {
           onPress={() => navigation.navigate('MediadorForm', { mediador })}
         />
       ))}
-    </Screen>
+    </AppLayout>
   );
 }
