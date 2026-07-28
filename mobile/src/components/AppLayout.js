@@ -136,7 +136,6 @@ function SideMenu({ visible, onClose, role, user, navigation, signOut }) {
       { label: 'Meu perfil', icon: 'account-edit-outline', route: 'PerfilUsuario' },
       { label: 'Alunos', icon: 'account-school-outline', route: 'Alunos' },
       { label: 'Mediadores', icon: 'account-heart-outline', route: 'Mediadores' },
-      { label: 'Biblioteca', icon: 'book-open-page-variant-outline', route: 'Alunos' },
       { label: 'Cadastrar aluno', icon: 'school-outline', route: 'AlunoForm' },
       { label: 'Cadastrar mediador', icon: 'account-plus-outline', route: 'MediadorForm' },
       { label: 'Sobre o app', icon: 'information-outline', route: 'About' },
@@ -147,7 +146,6 @@ function SideMenu({ visible, onClose, role, user, navigation, signOut }) {
       { label: 'Meus alunos', icon: 'account-school-outline', route: 'MediadorAlunos' },
       { label: 'Acompanhamento', icon: 'clipboard-text-clock-outline', route: 'Sessoes' },
       { label: 'Iniciar sessao', icon: 'play-circle-outline', route: 'IniciarSessao' },
-      { label: 'Biblioteca', icon: 'book-open-page-variant-outline', route: 'MediadorAlunos' },
       { label: 'Sobre o app', icon: 'information-outline', route: 'About' },
     ];
 

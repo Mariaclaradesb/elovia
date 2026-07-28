@@ -1,7 +1,7 @@
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import { Button, Card, HelperText, IconButton, Snackbar, Text } from 'react-native-paper';
 
 import TextInput from '../../components/FormTextInput';
@@ -10,7 +10,7 @@ import DateField from '../../components/DateField';
 import FormSection from '../../components/FormSection';
 import Screen from '../../components/Screen';
 import SelectField from '../../components/SelectField';
-import { DOCUMENT_CATEGORIES, categoryLabel, isImageDocument } from '../../constants/documentCategories';
+import { DOCUMENT_CATEGORIES, categoryLabel } from '../../constants/documentCategories';
 import { ANAMNESE_ATTACHMENT_CATEGORIES } from '../../constants/anamnese';
 import { useAuth } from '../../context/AuthContext';
 import { salvarDocumentoAluno } from '../../services/documentosApi';
@@ -78,28 +78,6 @@ export default function DocumentoFormScreen({ route, navigation }) {
     }
   }
 
-  async function previewFile() {
-    const uri = file?.uri || documento?.urlArquivo;
-    if (!uri) {
-      setMessage('Selecione um arquivo para visualizar.');
-      return;
-    }
-    const previewDocument = file ? {
-      urlArquivo: file.uri,
-      nomeArquivo: file.name,
-      tipoArquivo: file.mimeType,
-    } : documento;
-    if (isImageDocument(previewDocument)) {
-      navigation.navigate('DocumentoViewer', { documento: previewDocument });
-      return;
-    }
-    try {
-      await Linking.openURL(uri);
-    } catch {
-      setMessage('Não foi possível abrir este arquivo no dispositivo.');
-    }
-  }
-
   async function save() {
     setError('');
     setLoading(true);
@@ -159,7 +137,6 @@ export default function DocumentoFormScreen({ route, navigation }) {
                   {file?.size ? `${Math.round(file.size / 1024)} KB` : 'Arquivo já salvo'}
                 </Text>
               </View>
-              <IconButton icon="eye-outline" accessibilityLabel="Visualizar arquivo" onPress={previewFile} />
               {!!file && <IconButton icon="delete-outline" iconColor="#B42318" accessibilityLabel="Remover arquivo selecionado" onPress={() => setFile(null)} />}
             </Card.Content>
           </Card>

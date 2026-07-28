@@ -36,6 +36,18 @@ spring:
       max-file-size: ${MAX_UPLOAD_FILE_SIZE:25MB}
       max-request-size: ${MAX_UPLOAD_REQUEST_SIZE:30MB}
 
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      "mail.smtp.auth": ${MAIL_SMTP_AUTH:true}
+      "mail.smtp.starttls.enable": ${MAIL_STARTTLS_ENABLE:true}
+      "mail.smtp.connectiontimeout": ${MAIL_CONNECTION_TIMEOUT:5000}
+      "mail.smtp.timeout": ${MAIL_TIMEOUT:5000}
+      "mail.smtp.writetimeout": ${MAIL_WRITE_TIMEOUT:5000}
+
 management:
   health:
     db:
@@ -51,6 +63,11 @@ app:
   jwt:
     secret: ${JWT_SECRET:troque-este-segredo-em-producao-com-pelo-menos-32-caracteres}
     expiration-minutes: ${JWT_EXPIRATION_MINUTES:480}
+  email:
+    enabled: ${EMAIL_ENABLED:false}
+    from: ${MAIL_FROM:no-reply@elovia.com.br}
+  password-reset:
+    expiration-minutes: ${PASSWORD_RESET_EXPIRATION_MINUTES:15}
   admin:
     email: ${ADMIN_EMAIL:admin@elovia.test}
     password: ${ADMIN_PASSWORD:Admin12345}

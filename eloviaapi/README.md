@@ -169,6 +169,27 @@ JPA_DDL_AUTO=none
 DB_HEALTH_ENABLED=false
 ```
 
+### Envio de e-mails
+
+Para enviar o login inicial do mediador e os codigos de recuperacao de senha,
+configure um servidor SMTP no Northflank:
+
+```text
+EMAIL_ENABLED=true
+MAIL_HOST=smtp.seu-provedor.com
+MAIL_PORT=587
+MAIL_USERNAME=seu-usuario-smtp
+MAIL_PASSWORD=sua-senha-smtp
+MAIL_FROM=no-reply@seu-dominio.com.br
+MAIL_SMTP_AUTH=true
+MAIL_STARTTLS_ENABLE=true
+PASSWORD_RESET_EXPIRATION_MINUTES=15
+```
+
+Use como `MAIL_FROM` um remetente validado no provedor de e-mail. Quando
+`EMAIL_ENABLED=false`, o cadastro continua funcionando e a senha temporaria
+ainda aparece para o administrador, mas nenhum e-mail e enviado.
+
 No Expo/mobile, use somente a URL publica do Northflank, por exemplo:
 
 ```javascript

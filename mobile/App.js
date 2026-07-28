@@ -21,6 +21,7 @@ import AnamneseWizardScreen from './src/screens/anamnese/AnamneseWizardScreen';
 import MediadorFormScreen from './src/screens/admin/MediadorFormScreen';
 import MediadoresScreen from './src/screens/admin/MediadoresScreen';
 import FirstAccessScreen from './src/screens/auth/FirstAccessScreen';
+import ForgotPasswordScreen from './src/screens/auth/ForgotPasswordScreen';
 import LoadingScreen from './src/screens/auth/LoadingScreen';
 import LoginScreen from './src/screens/auth/LoginScreen';
 import RegisterScreen from './src/screens/auth/RegisterScreen';
@@ -58,6 +59,7 @@ function AppNavigator() {
         {!token ? (
           <>
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
           </>
         ) : user?.primeiroAcesso ? (
