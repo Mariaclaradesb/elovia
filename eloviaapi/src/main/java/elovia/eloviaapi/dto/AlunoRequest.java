@@ -25,7 +25,6 @@ public record AlunoRequest(
 		String cid,
 		@Valid List<ComprometimentoAlunoRequest> comprometimentos,
 		Boolean emInvestigacao,
-		boolean necessitaMediador,
 		String observacoesIniciais,
 		String estrategias,
 		String gatilhos,
