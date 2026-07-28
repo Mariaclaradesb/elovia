@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, Pressable, ScrollView, View } from 'react-native';
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, View } from 'react-native';
 import { Avatar, Button, Card, Chip, Dialog, HelperText, Icon, Portal, Text } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -309,7 +309,10 @@ function ObservationSheet({ visible, onDismiss, sessao, multiAluno, form, setFie
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onDismiss}>
-      <View style={styles.sheetBackdrop}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.sheetBackdrop}
+      >
         <ScrollView style={styles.bottomSheet} contentContainerStyle={styles.bottomSheetContent} keyboardShouldPersistTaps="handled">
           <Text variant="titleLarge" style={styles.title}>{editing ? 'Editar observacao' : 'Nova observacao'}</Text>
           {multiAluno && (
@@ -352,7 +355,7 @@ function ObservationSheet({ visible, onDismiss, sessao, multiAluno, form, setFie
           {editing && <Button mode="outlined" icon="delete-outline" onPress={onDelete}>Excluir</Button>}
           <Button mode="text" onPress={onDismiss}>Cancelar</Button>
         </ScrollView>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
