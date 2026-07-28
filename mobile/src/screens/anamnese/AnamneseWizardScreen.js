@@ -1,15 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
-import {
-  ActivityIndicator,
-  Button,
-  Card,
-  Chip,
-  HelperText,
-  ProgressBar,
-  Snackbar,
-  Text,
-} from 'react-native-paper';
+import { ActivityIndicator, Button, Card, HelperText, ProgressBar, Snackbar, Text } from 'react-native-paper';
 
 import ChoiceChips from '../../components/ChoiceChips';
 import TextInput from '../../components/FormTextInput';
@@ -19,10 +10,10 @@ import RepeatableAnamneseList from '../../components/RepeatableAnamneseList';
 import Screen from '../../components/Screen';
 import {
   ANAMNESE_STEPS,
-  APRENDIZAGEM_OPTIONS,
   COMUNICACAO_OPTIONS,
   EMPTY_ANAMNESE,
   MORADIA_OPTIONS,
+  TERAPIA_OPTIONS,
   anamnesePayload,
   normalizeAnamnese,
 } from '../../constants/anamnese';
@@ -31,31 +22,21 @@ import { buscarAnamnese, salvarEtapaAnamnese } from '../../services/anamneseApi'
 import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
 import { isoToDisplayDate } from '../../utils/date';
+import { formatPhone } from '../../utils/masks';
 
-const MEDICAMENTO_FIELDS = [
-  { key: 'nome', label: 'Nome do medicamento' },
-  { key: 'dosagem', label: 'Dosagem' },
-  { key: 'horario', label: 'Horário' },
-  { key: 'observacoes', label: 'Observações', multiline: true },
+const DIAGNOSTICO_FIELDS = [
+  { key: 'nome', label: 'Diagnóstico' },
+  { key: 'cid', label: 'CID' },
 ];
 
-const TERAPIA_FIELDS = [
-  { key: 'tipo', label: 'Terapia' },
-  { key: 'frequencia', label: 'Frequência' },
-  { key: 'profissional', label: 'Profissional' },
-  { key: 'observacoes', label: 'Observações', multiline: true },
+const MEDICAMENTO_FIELDS = [
+  { key: 'nome', label: 'Medicamento' },
+  { key: 'dosagem', label: 'Dosagem' },
+  { key: 'observacao', label: 'Observação', multiline: true },
 ];
 
 function LongField({ label, value, onChange }) {
-  return (
-    <TextInput
-      label={label}
-      value={value || ''}
-      onChangeText={onChange}
-      multiline
-      numberOfLines={4}
-    />
-  );
+  return <TextInput label={label} value={value || ''} onChangeText={onChange} multiline numberOfLines={4} />;
 }
 
 export default function AnamneseWizardScreen({ route, navigation }) {
@@ -67,6 +48,9 @@ export default function AnamneseWizardScreen({ route, navigation }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const formRef = useRef(EMPTY_ANAMNESE);
+  const stepRef = useRef(1);
+  const lastSavedRef = useRef('');
   const currentStep = ANAMNESE_STEPS[step - 1];
   const progress = useMemo(() => step / ANAMNESE_STEPS.length, [step]);
 
@@ -78,12 +62,32 @@ export default function AnamneseWizardScreen({ route, navigation }) {
     }
     buscarAnamnese(aluno.id, token)
       .then((data) => {
-        setForm(normalizeAnamnese(data));
-        setStep(Math.min(7, Math.max(1, route.params?.startAt || data?.etapaAtual || 1)));
+        const normalized = normalizeAnamnese(data);
+        normalized.responsavelTelefone = formatPhone(normalized.responsavelTelefone);
+        setForm(normalized);
+        formRef.current = normalized;
+        lastSavedRef.current = JSON.stringify(anamnesePayload(normalized));
+        setStep(Math.min(ANAMNESE_STEPS.length, Math.max(1, route.params?.startAt || data?.etapaAtual || 1)));
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [aluno?.id, route.params?.startAt, token]);
+
+  useEffect(() => {
+    formRef.current = form;
+    stepRef.current = step;
+  }, [form, step]);
+
+  useEffect(() => navigation.addListener('blur', () => {
+    if (!aluno?.id || loading) return;
+    const payload = anamnesePayload(formRef.current);
+    const serialized = JSON.stringify(payload);
+    if (serialized === lastSavedRef.current) return;
+    lastSavedRef.current = serialized;
+    salvarEtapaAnamnese(aluno.id, stepRef.current, payload, token).catch(() => {
+      lastSavedRef.current = '';
+    });
+  }), [aluno?.id, loading, navigation, token]);
 
   function setField(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -94,8 +98,12 @@ export default function AnamneseWizardScreen({ route, navigation }) {
     setError('');
     try {
       const saved = await salvarEtapaAnamnese(aluno.id, targetStep, anamnesePayload(form), token);
-      setForm(normalizeAnamnese(saved));
-      setMessage(`Etapa ${targetStep} salva automaticamente.`);
+      const normalized = normalizeAnamnese(saved);
+      normalized.responsavelTelefone = formatPhone(normalized.responsavelTelefone);
+      setForm(normalized);
+      formRef.current = normalized;
+      lastSavedRef.current = JSON.stringify(anamnesePayload(normalized));
+      setMessage(`Seção ${targetStep} salva automaticamente.`);
       return true;
     } catch (err) {
       setError(err.message);
@@ -108,7 +116,7 @@ export default function AnamneseWizardScreen({ route, navigation }) {
   async function next() {
     const saved = await persist();
     if (!saved) return;
-    if (step === 7) {
+    if (step === ANAMNESE_STEPS.length) {
       navigation.replace('AnamneseView', { aluno });
       return;
     }
@@ -120,195 +128,126 @@ export default function AnamneseWizardScreen({ route, navigation }) {
     if (saved) setStep((current) => Math.max(1, current - 1));
   }
 
-  if (loading) {
-    return (
-      <Screen>
-        <ActivityIndicator size="large" color={colors.tealDark} />
-      </Screen>
-    );
-  }
+  if (loading) return <Screen><ActivityIndicator size="large" color={colors.tealDark} /></Screen>;
 
-  function renderStepOne() {
-    const responsaveis = aluno.responsaveis?.map((item) => item.nome).join(', ') || aluno.responsavel;
+  function renderIdentification() {
     return (
       <>
         <FormSection title="Dados do aluno">
           <InfoGrid items={[
-            { label: 'Aluno', value: aluno.nome, full: true },
-            { label: 'Nascimento', value: isoToDisplayDate(aluno.dataNascimento) },
+            { label: 'Nome', value: aluno.nome, full: true },
+            { label: 'Data de nascimento', value: isoToDisplayDate(aluno.dataNascimento) },
             { label: 'Turma', value: aluno.turma },
             { label: 'Turno', value: aluno.turno },
-            { label: 'Escola', value: aluno.escola, full: true },
-            { label: 'Responsáveis', value: responsaveis, full: true },
           ]} />
+          <TextInput label="Série" value={form.serie} onChangeText={(value) => setField('serie', value)} />
         </FormSection>
-        <FormSection title="Equipe de acompanhamento">
-          <TextInput label="Professor(a) da sala de recursos" value={form.professorSalaRecursos} onChangeText={(value) => setField('professorSalaRecursos', value)} />
-          <TextInput label="Profissional de apoio" value={form.profissionalApoio} onChangeText={(value) => setField('profissionalApoio', value)} />
-          <TextInput label="Função do profissional de apoio" value={form.funcaoProfissionalApoio} onChangeText={(value) => setField('funcaoProfissionalApoio', value)} />
-        </FormSection>
-      </>
-    );
-  }
-
-  function renderStepTwo() {
-    return (
-      <>
-        <FormSection title="Comprometimentos cadastrados">
-          <Text style={styles.muted}>Estes dados vêm do cadastro do aluno e permanecem associados aos respectivos CIDs.</Text>
-          <View style={styles.formGap}>
-            {aluno.comprometimentos?.map((item) => (
-              <Card key={item.id || item.nome} style={styles.card}>
-                <Card.Content>
-                  <Text style={styles.sectionTitle}>{item.nome}</Text>
-                  <Text style={styles.muted}>{item.cid ? `CID ${item.cid}` : 'CID não informado'}</Text>
-                </Card.Content>
-              </Card>
-            ))}
-            {!aluno.comprometimentos?.length && !aluno.emInvestigacao && (
-              <Text style={styles.muted}>Nenhum comprometimento informado.</Text>
-            )}
-            {aluno.emInvestigacao && <Chip icon="magnify" selected>Em investigação</Chip>}
-          </View>
-        </FormSection>
-        <FormSection title="Sala de recursos">
-          <LongField label="Motivo da matrícula na sala de recursos" value={form.motivoMatriculaSrm} onChange={(value) => setField('motivoMatriculaSrm', value)} />
+        <FormSection title="Responsável">
+          <TextInput label="Nome" value={form.responsavelNome} onChangeText={(value) => setField('responsavelNome', value)} />
+          <TextInput label="Parentesco" value={form.responsavelParentesco} onChangeText={(value) => setField('responsavelParentesco', value)} />
+          <TextInput label="Telefone" placeholder="(00) 0 0000-0000" value={form.responsavelTelefone} keyboardType="phone-pad" onChangeText={(value) => setField('responsavelTelefone', formatPhone(value))} />
         </FormSection>
       </>
     );
   }
 
-  function renderStepThree() {
+  function renderFamily() {
     return (
-      <FormSection title="Histórico do aluno">
-        <LongField label="Quem é o aluno?" value={form.quemEAluno} onChange={(value) => setField('quemEAluno', value)} />
-        <TextInput label="Onde mora?" value={form.ondeMora} onChangeText={(value) => setField('ondeMora', value)} />
+      <FormSection title="Informações familiares">
         <Text style={styles.formFieldLabel}>Com quem mora?</Text>
         <ChoiceChips options={MORADIA_OPTIONS} value={form.comQuemMora} onChange={(value) => setField('comQuemMora', value)} />
-        <LongField label="Como foi o desenvolvimento?" value={form.desenvolvimento} onChange={(value) => setField('desenvolvimento', value)} />
-        <LongField label="Como ocorreu a gestação?" value={form.gestacao} onChange={(value) => setField('gestacao', value)} />
-        <LongField label="Houve complicações no parto?" value={form.complicacoesParto} onChange={(value) => setField('complicacoesParto', value)} />
-        <Text style={styles.formFieldLabel}>Possui irmãos?</Text>
-        <ChoiceChips options={['Sim', 'Não']} value={form.possuiIrmaos == null ? null : form.possuiIrmaos ? 'Sim' : 'Não'} multiple={false} onChange={(value) => setField('possuiIrmaos', value === 'Sim')} />
-        {form.possuiIrmaos && (
-          <TextInput label="Quantidade de irmãos" value={form.quantidadeIrmaos} keyboardType="number-pad" onChangeText={(value) => setField('quantidadeIrmaos', value.replace(/\D/g, ''))} />
-        )}
-        <Text style={styles.formFieldLabel}>Comunicação</Text>
-        <ChoiceChips options={COMUNICACAO_OPTIONS} value={form.comunicacao} onChange={(value) => setField('comunicacao', value)} />
+        {form.comQuemMora.includes('Outros') && <TextInput label="Outros" value={form.comQuemMoraOutro} onChangeText={(value) => setField('comQuemMoraOutro', value)} />}
+        <TextInput label="Onde mora?" value={form.ondeMora} onChangeText={(value) => setField('ondeMora', value)} />
+        <LongField label="Quem acompanha a rotina escolar?" value={form.acompanhaRotinaEscolar} onChange={(value) => setField('acompanhaRotinaEscolar', value)} />
       </FormSection>
     );
   }
 
-  function renderStepFour() {
+  function renderGeneral() {
+    return (
+      <FormSection title="Informações gerais">
+        <LongField label="Como a família descreve o aluno?" value={form.descricaoFamilia} onChange={(value) => setField('descricaoFamilia', value)} />
+        <LongField label="Quais são seus principais interesses e/ou potencialidades?" value={form.interessesPotencialidades} onChange={(value) => setField('interessesPotencialidades', value)} />
+        <LongField label="Quais atividades ele mais gosta?" value={form.atividadesPreferidas} onChange={(value) => setField('atividadesPreferidas', value)} />
+        <LongField label="Existe alguma dificuldade importante?" value={form.dificuldadeImportante} onChange={(value) => setField('dificuldadeImportante', value)} />
+        <LongField label="Existe alguma orientação importante para a escola?" value={form.orientacaoEscola} onChange={(value) => setField('orientacaoEscola', value)} />
+      </FormSection>
+    );
+  }
+
+  function renderHealth() {
     return (
       <>
+        <FormSection title="Diagnósticos">
+          <Text style={styles.muted}>Os diagnósticos do cadastro inicial já aparecem abaixo e podem ser complementados.</Text>
+          <RepeatableAnamneseList title="Diagnósticos" addLabel="Adicionar diagnóstico" items={form.diagnosticos} emptyItem={{ nome: '', cid: '' }} fields={DIAGNOSTICO_FIELDS} onChange={(value) => setField('diagnosticos', value)} />
+        </FormSection>
         <FormSection title="Medicação">
           <Text style={styles.formFieldLabel}>Faz uso de medicação?</Text>
           <ChoiceChips options={['Sim', 'Não']} value={form.usaMedicacao == null ? null : form.usaMedicacao ? 'Sim' : 'Não'} multiple={false} onChange={(value) => setField('usaMedicacao', value === 'Sim')} />
-          {form.usaMedicacao && (
-            <RepeatableAnamneseList
-              title="Medicamentos"
-              addLabel="Adicionar medicamento"
-              items={form.medicamentos}
-              emptyItem={{ nome: '', dosagem: '', horario: '', observacoes: '' }}
-              fields={MEDICAMENTO_FIELDS}
-              onChange={(value) => setField('medicamentos', value)}
-            />
-          )}
+          {form.usaMedicacao && <RepeatableAnamneseList title="Medicamentos" addLabel="Adicionar medicamento" items={form.medicamentos} emptyItem={{ nome: '', dosagem: '', observacao: '' }} fields={MEDICAMENTO_FIELDS} onChange={(value) => setField('medicamentos', value)} />}
         </FormSection>
         <FormSection title="Terapias">
-          <RepeatableAnamneseList
-            title="Terapias"
-            addLabel="Adicionar terapia"
-            items={form.terapias}
-            emptyItem={{ tipo: '', frequencia: '', profissional: '', observacoes: '' }}
-            fields={TERAPIA_FIELDS}
-            onChange={(value) => setField('terapias', value)}
-          />
+          <ChoiceChips options={TERAPIA_OPTIONS} value={form.terapias} onChange={(value) => setField('terapias', value)} />
+          {form.terapias.includes('Outros') && <TextInput label="Outra terapia" value={form.terapiaOutra} onChangeText={(value) => setField('terapiaOutra', value)} />}
         </FormSection>
         <FormSection title="Outras informações de saúde">
-          <LongField label="Alergias" value={form.alergias} onChange={(value) => setField('alergias', value)} />
-          <LongField label="Restrições alimentares" value={form.restricoesAlimentares} onChange={(value) => setField('restricoesAlimentares', value)} />
-          <LongField label="Crises recorrentes" value={form.crisesRecorrentes} onChange={(value) => setField('crisesRecorrentes', value)} />
-          <LongField label="Informações médicas importantes" value={form.informacoesMedicas} onChange={(value) => setField('informacoesMedicas', value)} />
+          <LongField label="Possui alergias?" value={form.alergias} onChange={(value) => setField('alergias', value)} />
+          <LongField label="Possui restrições alimentares?" value={form.restricoesAlimentares} onChange={(value) => setField('restricoesAlimentares', value)} />
         </FormSection>
       </>
     );
   }
 
-  function renderStepFive() {
+  function renderCommunication() {
     return (
-      <FormSection title="Perfil pedagógico">
-        <LongField label="Quais são suas potencialidades?" value={form.potencialidades} onChange={(value) => setField('potencialidades', value)} />
-        <LongField label="Quais são seus interesses?" value={form.interesses} onChange={(value) => setField('interesses', value)} />
-        <LongField label="Maior facilidade" value={form.maiorFacilidade} onChange={(value) => setField('maiorFacilidade', value)} />
-        <LongField label="Maior dificuldade" value={form.maiorDificuldade} onChange={(value) => setField('maiorDificuldade', value)} />
-        <LongField label="Necessita de adaptações?" value={form.necessitaAdaptacoes} onChange={(value) => setField('necessitaAdaptacoes', value)} />
-        <LongField label="Como reage a mudanças?" value={form.reacaoMudancas} onChange={(value) => setField('reacaoMudancas', value)} />
-        <LongField label="Possui hiperfoco?" value={form.hiperfoco} onChange={(value) => setField('hiperfoco', value)} />
-        <Text style={styles.formFieldLabel}>Como aprende melhor?</Text>
-        <ChoiceChips options={APRENDIZAGEM_OPTIONS} value={form.formasAprendizagem} onChange={(value) => setField('formasAprendizagem', value)} />
+      <FormSection title="Comunicação">
+        <Text style={styles.formFieldLabel}>Como o aluno se comunica?</Text>
+        <ChoiceChips options={COMUNICACAO_OPTIONS} value={form.comunicacaoTipo} multiple={false} onChange={(value) => setField('comunicacaoTipo', value)} />
+        {form.comunicacaoTipo === 'Outra' && <TextInput label="Outra forma de comunicação" value={form.comunicacaoOutra} onChangeText={(value) => setField('comunicacaoOutra', value)} />}
+        <LongField label="Como demonstra que precisa de ajuda?" value={form.comoPedeAjuda} onChange={(value) => setField('comoPedeAjuda', value)} />
       </FormSection>
     );
   }
 
-  function renderStepSix() {
-    return (
-      <FormSection title="Informações da família">
-        <TextInput label="Responsável que respondeu" value={form.responsavelRespondente} onChangeText={(value) => setField('responsavelRespondente', value)} />
-        <LongField label="Como é a rotina em casa?" value={form.rotinaCasa} onChange={(value) => setField('rotinaCasa', value)} />
-        <LongField label="Quais são as expectativas da família?" value={form.expectativasFamilia} onChange={(value) => setField('expectativasFamilia', value)} />
-        <LongField label="Existe alguma orientação importante?" value={form.orientacaoImportante} onChange={(value) => setField('orientacaoImportante', value)} />
-        <LongField label="Comportamentos observados fora da escola" value={form.comportamentosForaEscola} onChange={(value) => setField('comportamentosForaEscola', value)} />
-      </FormSection>
-    );
-  }
-
-  function renderStepSeven() {
+  function renderSchool() {
     return (
       <>
-        <FormSection title="Observações da escola">
-          <LongField label="Observação em sala e outros espaços" value={form.observacaoSalaOutrosEspacos} onChange={(value) => setField('observacaoSalaOutrosEspacos', value)} />
-          <LongField label="Professor regente" value={form.professorRegente} onChange={(value) => setField('professorRegente', value)} />
-          <LongField label="Sala de recursos" value={form.salaRecursos} onChange={(value) => setField('salaRecursos', value)} />
-          <LongField label="Equipe pedagógica" value={form.equipePedagogica} onChange={(value) => setField('equipePedagogica', value)} />
+        <FormSection title="Escola">
+          <LongField label="Como foi a adaptação escolar?" value={form.adaptacaoEscolar} onChange={(value) => setField('adaptacaoEscolar', value)} />
+          <LongField label="Quais estratégias costumam funcionar?" value={form.estrategiasFuncionam} onChange={(value) => setField('estrategiasFuncionam', value)} />
+          <LongField label="Existe alguma recomendação do professor anterior?" value={form.recomendacaoProfessorAnterior} onChange={(value) => setField('recomendacaoProfessorAnterior', value)} />
           <LongField label="Observações gerais" value={form.observacoesGerais} onChange={(value) => setField('observacoesGerais', value)} />
         </FormSection>
         <FormSection title="Documentos complementares">
-          <Text style={styles.muted}>Laudos, receitas, relatórios, avaliações, PDI e outros documentos serão vinculados à Anamnese e à Biblioteca.</Text>
-          <Button mode="outlined" icon="paperclip" onPress={() => navigation.navigate('DocumentoForm', { aluno, anamnese: true })}>
-            Adicionar anexo
-          </Button>
-          {!!form.anexos?.length && <Text style={styles.muted}>{form.anexos.length} documento(s) anexado(s).</Text>}
+          <Text style={styles.muted}>Os documentos serão vinculados à Anamnese e à Biblioteca do aluno.</Text>
+          <Button mode="outlined" icon="paperclip" onPress={() => navigation.navigate('DocumentoForm', { aluno, anamnese: true })}>Adicionar anexo</Button>
+          {!!form.anexos.length && <Text style={styles.muted}>{form.anexos.length} documento(s) vinculado(s).</Text>}
         </FormSection>
       </>
     );
   }
 
-  const renders = [renderStepOne, renderStepTwo, renderStepThree, renderStepFour, renderStepFive, renderStepSix, renderStepSeven];
+  const renders = [renderIdentification, renderFamily, renderGeneral, renderHealth, renderCommunication, renderSchool];
 
   return (
     <Screen>
       <View style={styles.stepHeader}>
         <View style={styles.documentHeader}>
-          <Text style={styles.infoLabel}>Etapa {step} de 7</Text>
+          <Text style={styles.infoLabel}>Etapa {step} de {ANAMNESE_STEPS.length}</Text>
           <Text style={styles.infoLabel}>{Math.round(progress * 100)}%</Text>
         </View>
         <Text variant="headlineSmall" style={styles.title}>{currentStep.title}</Text>
         <Text style={styles.muted}>{currentStep.subtitle}</Text>
         <ProgressBar progress={progress} color={colors.tealDark} style={styles.stepProgress} />
       </View>
-
       {renders[step - 1]()}
       {!!error && <HelperText type="error" visible>{error}</HelperText>}
-
       <View style={styles.stepActions}>
         {step > 1 && <Button mode="outlined" disabled={saving} onPress={back}>Voltar</Button>}
-        <Button mode="text" icon="content-save-outline" loading={saving} onPress={() => persist()}>
-          Salvar rascunho
-        </Button>
-        <Button mode="contained" icon={step === 7 ? 'check' : 'arrow-right'} loading={saving} onPress={next}>
-          {step === 7 ? 'Concluir anamnese' : 'Salvar e continuar'}
+        <Button mode="text" icon="content-save-outline" loading={saving} onPress={() => persist()}>Salvar rascunho</Button>
+        <Button mode="contained" icon={step === ANAMNESE_STEPS.length ? 'check' : 'arrow-right'} loading={saving} onPress={next}>
+          {step === ANAMNESE_STEPS.length ? 'Concluir anamnese' : 'Salvar e continuar'}
         </Button>
       </View>
       <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>

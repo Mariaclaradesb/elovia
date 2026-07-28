@@ -39,6 +39,43 @@ public class Anamnese {
 	@Column(name = "percentual_preenchimento", nullable = false)
 	private int percentualPreenchimento;
 
+	@Column(length = 80)
+	private String serie;
+	@Column(name = "responsavel_nome", length = 180)
+	private String responsavelNome;
+	@Column(name = "responsavel_parentesco", length = 100)
+	private String responsavelParentesco;
+	@Column(name = "responsavel_telefone", length = 30)
+	private String responsavelTelefone;
+	@Column(name = "com_quem_mora_outro", columnDefinition = "text")
+	private String comQuemMoraOutro;
+	@Column(name = "acompanha_rotina_escolar", columnDefinition = "text")
+	private String acompanhaRotinaEscolar;
+	@Column(name = "descricao_familia", columnDefinition = "text")
+	private String descricaoFamilia;
+	@Column(name = "interesses_potencialidades", columnDefinition = "text")
+	private String interessesPotencialidades;
+	@Column(name = "atividades_preferidas", columnDefinition = "text")
+	private String atividadesPreferidas;
+	@Column(name = "dificuldade_importante", columnDefinition = "text")
+	private String dificuldadeImportante;
+	@Column(name = "orientacao_escola", columnDefinition = "text")
+	private String orientacaoEscola;
+	@Column(name = "terapia_outra", columnDefinition = "text")
+	private String terapiaOutra;
+	@Column(name = "comunicacao_tipo", length = 80)
+	private String comunicacaoTipo;
+	@Column(name = "comunicacao_outra", columnDefinition = "text")
+	private String comunicacaoOutra;
+	@Column(name = "como_pede_ajuda", columnDefinition = "text")
+	private String comoPedeAjuda;
+	@Column(name = "adaptacao_escolar", columnDefinition = "text")
+	private String adaptacaoEscolar;
+	@Column(name = "estrategias_funcionam", columnDefinition = "text")
+	private String estrategiasFuncionam;
+	@Column(name = "recomendacao_professor_anterior", columnDefinition = "text")
+	private String recomendacaoProfessorAnterior;
+
 	@Column(name = "professor_sala_recursos", length = 180)
 	private String professorSalaRecursos;
 	@Column(name = "profissional_apoio", length = 180)
@@ -156,6 +193,42 @@ public class Anamnese {
 	public void setEtapaAtual(int etapaAtual) { this.etapaAtual = etapaAtual; }
 	public int getPercentualPreenchimento() { return percentualPreenchimento; }
 	public void setPercentualPreenchimento(int percentualPreenchimento) { this.percentualPreenchimento = percentualPreenchimento; }
+	public String getSerie() { return serie; }
+	public void setSerie(String v) { serie = v; }
+	public String getResponsavelNome() { return responsavelNome; }
+	public void setResponsavelNome(String v) { responsavelNome = v; }
+	public String getResponsavelParentesco() { return responsavelParentesco; }
+	public void setResponsavelParentesco(String v) { responsavelParentesco = v; }
+	public String getResponsavelTelefone() { return responsavelTelefone; }
+	public void setResponsavelTelefone(String v) { responsavelTelefone = v; }
+	public String getComQuemMoraOutro() { return comQuemMoraOutro; }
+	public void setComQuemMoraOutro(String v) { comQuemMoraOutro = v; }
+	public String getAcompanhaRotinaEscolar() { return acompanhaRotinaEscolar; }
+	public void setAcompanhaRotinaEscolar(String v) { acompanhaRotinaEscolar = v; }
+	public String getDescricaoFamilia() { return descricaoFamilia; }
+	public void setDescricaoFamilia(String v) { descricaoFamilia = v; }
+	public String getInteressesPotencialidades() { return interessesPotencialidades; }
+	public void setInteressesPotencialidades(String v) { interessesPotencialidades = v; }
+	public String getAtividadesPreferidas() { return atividadesPreferidas; }
+	public void setAtividadesPreferidas(String v) { atividadesPreferidas = v; }
+	public String getDificuldadeImportante() { return dificuldadeImportante; }
+	public void setDificuldadeImportante(String v) { dificuldadeImportante = v; }
+	public String getOrientacaoEscola() { return orientacaoEscola; }
+	public void setOrientacaoEscola(String v) { orientacaoEscola = v; }
+	public String getTerapiaOutra() { return terapiaOutra; }
+	public void setTerapiaOutra(String v) { terapiaOutra = v; }
+	public String getComunicacaoTipo() { return comunicacaoTipo; }
+	public void setComunicacaoTipo(String v) { comunicacaoTipo = v; }
+	public String getComunicacaoOutra() { return comunicacaoOutra; }
+	public void setComunicacaoOutra(String v) { comunicacaoOutra = v; }
+	public String getComoPedeAjuda() { return comoPedeAjuda; }
+	public void setComoPedeAjuda(String v) { comoPedeAjuda = v; }
+	public String getAdaptacaoEscolar() { return adaptacaoEscolar; }
+	public void setAdaptacaoEscolar(String v) { adaptacaoEscolar = v; }
+	public String getEstrategiasFuncionam() { return estrategiasFuncionam; }
+	public void setEstrategiasFuncionam(String v) { estrategiasFuncionam = v; }
+	public String getRecomendacaoProfessorAnterior() { return recomendacaoProfessorAnterior; }
+	public void setRecomendacaoProfessorAnterior(String v) { recomendacaoProfessorAnterior = v; }
 	public String getProfessorSalaRecursos() { return professorSalaRecursos; }
 	public void setProfessorSalaRecursos(String v) { professorSalaRecursos = v; }
 	public String getProfissionalApoio() { return profissionalApoio; }

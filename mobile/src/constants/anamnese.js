@@ -1,17 +1,24 @@
 export const ANAMNESE_STEPS = [
-  { id: 1, title: 'Identificação', subtitle: 'Equipe que acompanha o aluno' },
-  { id: 2, title: 'Comprometimentos', subtitle: 'Informações clínicas já cadastradas' },
-  { id: 3, title: 'Histórico', subtitle: 'Trajetória e desenvolvimento do aluno' },
-  { id: 4, title: 'Saúde', subtitle: 'Medicações, terapias e cuidados' },
-  { id: 5, title: 'Perfil pedagógico', subtitle: 'Potencialidades e formas de aprendizagem' },
-  { id: 6, title: 'Família', subtitle: 'Rotina e informações familiares' },
-  { id: 7, title: 'Escola', subtitle: 'Registros da equipe escolar e anexos' },
+  { id: 1, title: 'Identificação', subtitle: 'Dados do aluno e do responsável' },
+  { id: 2, title: 'Informações familiares', subtitle: 'Moradia e acompanhamento escolar' },
+  { id: 3, title: 'Informações gerais', subtitle: 'Perfil, interesses e orientações' },
+  { id: 4, title: 'Saúde', subtitle: 'Diagnósticos, medicamentos e terapias' },
+  { id: 5, title: 'Comunicação', subtitle: 'Forma de comunicação e pedido de ajuda' },
+  { id: 6, title: 'Escola', subtitle: 'Adaptação, estratégias e observações' },
 ];
 
-export const MORADIA_OPTIONS = ['Pai', 'Mãe', 'Avós', 'Tios', 'Responsável', 'Outros'];
-export const COMUNICACAO_OPTIONS = ['Verbal', 'Não verbal', 'Comunicação alternativa', 'Libras'];
-export const APRENDIZAGEM_OPTIONS = ['Visual', 'Auditivo', 'Leitura', 'Prática'];
-export const TERAPIA_OPTIONS = ['Psicologia', 'TO', 'Fonoaudiologia', 'Fisioterapia', 'Psicopedagogia', 'Equoterapia'];
+export const MORADIA_OPTIONS = [
+  'Pai', 'Mãe', 'Avós', 'Tios', 'Irmãos', 'Responsável Legal', 'Família Acolhedora', 'Outros',
+];
+
+export const COMUNICACAO_OPTIONS = [
+  'Verbal', 'Não verbal', 'Comunicação alternativa', 'Libras', 'Outra',
+];
+
+export const TERAPIA_OPTIONS = [
+  'Psicologia', 'Terapia Ocupacional', 'Fonoaudiologia', 'Psicopedagogia',
+  'Fisioterapia', 'Equoterapia', 'Outros',
+];
 
 export const ANAMNESE_ATTACHMENT_CATEGORIES = [
   { value: 'LAUDO', label: 'Laudo' },
@@ -23,62 +30,50 @@ export const ANAMNESE_ATTACHMENT_CATEGORIES = [
 ];
 
 export const EMPTY_ANAMNESE = {
-  professorSalaRecursos: '',
-  profissionalApoio: '',
-  funcaoProfissionalApoio: '',
-  motivoMatriculaSrm: '',
-  quemEAluno: '',
-  ondeMora: '',
+  serie: '',
+  responsavelNome: '',
+  responsavelParentesco: '',
+  responsavelTelefone: '',
   comQuemMora: [],
-  desenvolvimento: '',
-  gestacao: '',
-  complicacoesParto: '',
-  possuiIrmaos: null,
-  quantidadeIrmaos: '',
-  comunicacao: [],
+  comQuemMoraOutro: '',
+  ondeMora: '',
+  acompanhaRotinaEscolar: '',
+  descricaoFamilia: '',
+  interessesPotencialidades: '',
+  atividadesPreferidas: '',
+  dificuldadeImportante: '',
+  orientacaoEscola: '',
+  diagnosticos: [],
   usaMedicacao: null,
   medicamentos: [],
   terapias: [],
+  terapiaOutra: '',
   alergias: '',
   restricoesAlimentares: '',
-  crisesRecorrentes: '',
-  informacoesMedicas: '',
-  potencialidades: '',
-  interesses: '',
-  maiorFacilidade: '',
-  maiorDificuldade: '',
-  necessitaAdaptacoes: '',
-  reacaoMudancas: '',
-  hiperfoco: '',
-  formasAprendizagem: [],
-  responsavelRespondente: '',
-  rotinaCasa: '',
-  expectativasFamilia: '',
-  orientacaoImportante: '',
-  comportamentosForaEscola: '',
-  observacaoSalaOutrosEspacos: '',
-  professorRegente: '',
-  salaRecursos: '',
-  equipePedagogica: '',
+  comunicacaoTipo: '',
+  comunicacaoOutra: '',
+  comoPedeAjuda: '',
+  adaptacaoEscolar: '',
+  estrategiasFuncionam: '',
+  recomendacaoProfessorAnterior: '',
   observacoesGerais: '',
+  anexos: [],
 };
 
 export function normalizeAnamnese(data) {
+  const comQuemMora = data?.comQuemMora || [];
+  const terapias = data?.terapias || [];
   return {
     ...EMPTY_ANAMNESE,
     ...(data || {}),
-    quantidadeIrmaos: data?.quantidadeIrmaos == null ? '' : String(data.quantidadeIrmaos),
-    comQuemMora: data?.comQuemMora || [],
-    comunicacao: data?.comunicacao || [],
-    formasAprendizagem: data?.formasAprendizagem || [],
+    comQuemMora: data?.comQuemMoraOutro && !comQuemMora.includes('Outros') ? [...comQuemMora, 'Outros'] : comQuemMora,
+    diagnosticos: data?.diagnosticos || [],
     medicamentos: data?.medicamentos || [],
-    terapias: data?.terapias || [],
+    terapias: data?.terapiaOutra && !terapias.includes('Outros') ? [...terapias, 'Outros'] : terapias,
+    anexos: data?.anexos || [],
   };
 }
 
 export function anamnesePayload(values) {
-  return {
-    ...values,
-    quantidadeIrmaos: values.quantidadeIrmaos === '' ? null : Number(values.quantidadeIrmaos),
-  };
+  return values;
 }

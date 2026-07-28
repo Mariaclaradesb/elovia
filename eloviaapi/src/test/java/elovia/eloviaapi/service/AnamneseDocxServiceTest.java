@@ -22,10 +22,10 @@ class AnamneseDocxServiceTest {
 
 		var anamnese = new Anamnese();
 		anamnese.setAluno(aluno);
-		anamnese.setQuemEAluno("Aluno comunicativo e participativo.");
-		anamnese.setPotencialidades("Boa memoria visual.");
-		anamnese.setRotinaCasa("Rotina organizada com a familia.");
-		anamnese.setProfessorRegente("Observacao da professora regente.");
+		anamnese.setDescricaoFamilia("Aluno comunicativo e participativo.");
+		anamnese.setInteressesPotencialidades("Boa memoria visual.");
+		anamnese.setAcompanhaRotinaEscolar("A familia acompanha a rotina.");
+		anamnese.setRecomendacaoProfessorAnterior("Observacao da professora anterior.");
 
 		var service = new AnamneseDocxService(null, null, null);
 		var bytes = service.criarDocumento(anamnese);
@@ -37,8 +37,8 @@ class AnamneseDocxServiceTest {
 			document.getTables().forEach(table -> text.append(table.getText()).append('\n'));
 			assertTrue(text.toString().contains("RELATORIO DE ANAMNESE DO ALUNO"));
 			assertTrue(text.toString().contains("Aluno de Teste"));
-			assertTrue(text.toString().contains("5. Perfil pedagogico"));
-			assertTrue(text.toString().contains("7. Observacoes da escola"));
+			assertTrue(text.toString().contains("3. Informacoes gerais"));
+			assertTrue(text.toString().contains("6. Escola"));
 		}
 	}
 }

@@ -2,15 +2,22 @@ package elovia.eloviaapi.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.text.Normalizer;
 import java.util.UUID;
 
+import javax.imageio.ImageIO;
+
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.apache.poi.util.Units;
 import org.springframework.stereotype.Service;
 
 import elovia.eloviaapi.dto.DocumentoAlunoResponse;
@@ -75,79 +82,54 @@ public class AnamneseDocxService {
 			var aluno = a.getAluno();
 			var identificacao = document.createTable();
 			identificacao.setWidth("100%");
-			linha(identificacao, "Aluno", aluno.getNome());
-			linha(identificacao, "Escola", aluno.getEscola());
-			linha(identificacao, "Turma / turno", combinar(aluno.getTurma(), aluno.getTurno()));
+			linha(identificacao, "Nome", aluno.getNome());
 			linha(identificacao, "Data de nascimento", aluno.getDataNascimento() != null ? aluno.getDataNascimento().format(DATA_BR) : null);
-			linha(identificacao, "Professor(a) da sala de recursos", a.getProfessorSalaRecursos());
-			linha(identificacao, "Profissional de apoio", combinar(a.getProfissionalApoio(), a.getFuncaoProfissionalApoio()));
-			if (!aluno.getResponsaveis().isEmpty()) {
-				var responsaveis = document.createTable();
-				cabecalho(responsaveis, "Responsavel", "Telefone", "E-mail");
-				aluno.getResponsaveis().forEach(item -> linha(
-						responsaveis, item.getNome(), item.getTelefone(), item.getEmail()));
-			}
+			linha(identificacao, "Serie", a.getSerie());
+			linha(identificacao, "Turma", aluno.getTurma());
+			linha(identificacao, "Turno", aluno.getTurno());
+			var responsavel = document.createTable();
+			cabecalho(responsavel, "Responsavel", "Parentesco", "Telefone");
+			linha(responsavel, a.getResponsavelNome(), a.getResponsavelParentesco(), a.getResponsavelTelefone());
 
-			adicionarSecao(document, "2. Comprometimentos e CIDs");
-			if (a.getDiagnosticos().isEmpty()) {
-				adicionarResposta(document, "Comprometimentos", aluno.isEmInvestigacao() ? "Em investigacao" : null);
-			} else {
-				var tabela = document.createTable();
-				cabecalho(tabela, "Comprometimento", "CID");
-				a.getDiagnosticos().forEach(item -> linha(tabela, item.getComprometimento(), item.getCid()));
-			}
-			adicionarResposta(document, "Motivo da matricula na sala de recursos", a.getMotivoMatriculaSrm());
-
-			adicionarSecao(document, "3. Historico do aluno");
-			adicionarResposta(document, "Quem e o aluno?", a.getQuemEAluno());
+			adicionarSecao(document, "2. Informacoes familiares");
+			adicionarResposta(document, "Com quem mora?", combinarLista(a.getComQuemMora(), a.getComQuemMoraOutro()));
 			adicionarResposta(document, "Onde mora?", a.getOndeMora());
-			adicionarResposta(document, "Com quem mora?", a.getComQuemMora());
-			adicionarResposta(document, "Como foi o desenvolvimento?", a.getDesenvolvimento());
-			adicionarResposta(document, "Como ocorreu a gestacao?", a.getGestacao());
-			adicionarResposta(document, "Houve complicacoes no parto?", a.getComplicacoesParto());
-			adicionarResposta(document, "Possui irmaos?", Boolean.TRUE.equals(a.getPossuiIrmaos())
-					? "Sim. Quantidade: " + valor(a.getQuantidadeIrmaos()) : "Nao");
-			adicionarResposta(document, "Comunicacao", a.getComunicacao());
+			adicionarResposta(document, "Quem acompanha a rotina escolar?", a.getAcompanhaRotinaEscolar());
+
+			adicionarSecao(document, "3. Informacoes gerais");
+			adicionarResposta(document, "Como a familia descreve o aluno?", a.getDescricaoFamilia());
+			adicionarResposta(document, "Principais interesses e potencialidades", a.getInteressesPotencialidades());
+			adicionarResposta(document, "Atividades de que mais gosta", a.getAtividadesPreferidas());
+			adicionarResposta(document, "Dificuldade importante", a.getDificuldadeImportante());
+			adicionarResposta(document, "Orientacao importante para a escola", a.getOrientacaoEscola());
 
 			adicionarSecao(document, "4. Saude");
+			if (a.getDiagnosticos().isEmpty()) {
+				adicionarResposta(document, "Diagnosticos", null);
+			} else {
+				var tabela = document.createTable();
+				cabecalho(tabela, "Diagnostico", "CID");
+				a.getDiagnosticos().forEach(item -> linha(tabela, item.getComprometimento(), item.getCid()));
+			}
 			adicionarResposta(document, "Faz uso de medicacao?", simNao(a.getUsaMedicacao()));
 			if (!a.getMedicamentos().isEmpty()) {
 				var tabela = document.createTable();
-				cabecalho(tabela, "Medicamento", "Dosagem", "Horario", "Observacoes");
-				a.getMedicamentos().forEach(item -> linha(tabela, item.getNome(), item.getDosagem(), item.getHorario(), item.getObservacoes()));
+				cabecalho(tabela, "Medicamento", "Dosagem", "Observacao");
+				a.getMedicamentos().forEach(item -> linha(tabela, item.getNome(), item.getDosagem(), item.getObservacoes()));
 			}
-			if (!a.getTerapias().isEmpty()) {
-				var tabela = document.createTable();
-				cabecalho(tabela, "Terapia", "Frequencia", "Profissional", "Observacoes");
-				a.getTerapias().forEach(item -> linha(tabela, item.getTipo(), item.getFrequencia(), item.getProfissional(), item.getObservacoes()));
-			}
+			adicionarResposta(document, "Terapias", a.getTerapias().stream().map(item -> item.getTipo()).reduce((x, y) -> x + ", " + y).orElse(null));
+			adicionarResposta(document, "Outra terapia", a.getTerapiaOutra());
 			adicionarResposta(document, "Alergias", a.getAlergias());
 			adicionarResposta(document, "Restricoes alimentares", a.getRestricoesAlimentares());
-			adicionarResposta(document, "Crises recorrentes", a.getCrisesRecorrentes());
-			adicionarResposta(document, "Informacoes medicas importantes", a.getInformacoesMedicas());
 
-			adicionarSecao(document, "5. Perfil pedagogico");
-			adicionarResposta(document, "Potencialidades", a.getPotencialidades());
-			adicionarResposta(document, "Interesses", a.getInteresses());
-			adicionarResposta(document, "Maior facilidade", a.getMaiorFacilidade());
-			adicionarResposta(document, "Maior dificuldade", a.getMaiorDificuldade());
-			adicionarResposta(document, "Necessita de adaptacoes?", a.getNecessitaAdaptacoes());
-			adicionarResposta(document, "Como reage a mudancas?", a.getReacaoMudancas());
-			adicionarResposta(document, "Possui hiperfoco?", a.getHiperfoco());
-			adicionarResposta(document, "Como aprende melhor?", a.getFormasAprendizagem());
+			adicionarSecao(document, "5. Comunicacao");
+			adicionarResposta(document, "Como o aluno se comunica?", combinar(a.getComunicacaoTipo(), a.getComunicacaoOutra()));
+			adicionarResposta(document, "Como demonstra que precisa de ajuda?", a.getComoPedeAjuda());
 
-			adicionarSecao(document, "6. Informacoes da familia");
-			adicionarResposta(document, "Responsavel respondente", a.getResponsavelRespondente());
-			adicionarResposta(document, "Rotina em casa", a.getRotinaCasa());
-			adicionarResposta(document, "Expectativas da familia", a.getExpectativasFamilia());
-			adicionarResposta(document, "Orientacao importante", a.getOrientacaoImportante());
-			adicionarResposta(document, "Comportamentos observados fora da escola", a.getComportamentosForaEscola());
-
-			adicionarSecao(document, "7. Observacoes da escola");
-			adicionarResposta(document, "Observacao em sala e outros espacos", a.getObservacaoSalaOutrosEspacos());
-			adicionarResposta(document, "Professor regente", a.getProfessorRegente());
-			adicionarResposta(document, "Sala de recursos", a.getSalaRecursos());
-			adicionarResposta(document, "Equipe pedagogica", a.getEquipePedagogica());
+			adicionarSecao(document, "6. Escola");
+			adicionarResposta(document, "Como foi a adaptacao escolar?", a.getAdaptacaoEscolar());
+			adicionarResposta(document, "Estrategias que costumam funcionar", a.getEstrategiasFuncionam());
+			adicionarResposta(document, "Recomendacao do professor anterior", a.getRecomendacaoProfessorAnterior());
 			adicionarResposta(document, "Observacoes gerais", a.getObservacoesGerais());
 
 			var rodape = document.createParagraph();
@@ -167,8 +149,15 @@ public class AnamneseDocxService {
 	private void adicionarCabecalho(XWPFDocument document) {
 		var titulo = document.createParagraph();
 		titulo.setAlignment(ParagraphAlignment.CENTER);
+		try {
+			var logo = criarLogo();
+			titulo.createRun().addPicture(new java.io.ByteArrayInputStream(logo),
+					XWPFDocument.PICTURE_TYPE_PNG, "logo-elovia.png", Units.toEMU(150), Units.toEMU(42));
+		} catch (Exception ignored) {
+			// O titulo textual abaixo mantém a identidade mesmo se a imagem não puder ser renderizada.
+		}
 		var tituloRun = titulo.createRun();
-		tituloRun.setText("ELOVIA");
+		tituloRun.setText("\nELOVIA");
 		tituloRun.setBold(true);
 		tituloRun.setFontSize(22);
 		tituloRun.setColor(VERDE);
@@ -182,6 +171,25 @@ public class AnamneseDocxService {
 		var data = document.createParagraph();
 		data.setAlignment(ParagraphAlignment.CENTER);
 		data.createRun().setText("Data de emissao: " + LocalDate.now().format(DATA_BR));
+	}
+
+	private byte[] criarLogo() throws IOException {
+		var image = new BufferedImage(600, 168, BufferedImage.TYPE_INT_ARGB);
+		var graphics = image.createGraphics();
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		graphics.setColor(new Color(0x1D8B77));
+		graphics.fillRoundRect(8, 8, 152, 152, 52, 52);
+		graphics.setColor(Color.WHITE);
+		graphics.setFont(new Font("SansSerif", Font.BOLD, 96));
+		graphics.drawString("E", 50, 118);
+		graphics.setColor(new Color(0x1D8B77));
+		graphics.setFont(new Font("SansSerif", Font.BOLD, 88));
+		graphics.drawString("ELOVIA", 180, 116);
+		graphics.dispose();
+		try (var output = new ByteArrayOutputStream()) {
+			ImageIO.write(image, "png", output);
+			return output.toByteArray();
+		}
 	}
 
 	private void adicionarSecao(XWPFDocument document, String texto) {
@@ -231,6 +239,11 @@ public class AnamneseDocxService {
 		if (primeiro == null || primeiro.isBlank()) return valor(segundo);
 		if (segundo == null || segundo.isBlank()) return primeiro;
 		return primeiro + " - " + segundo;
+	}
+
+	private String combinarLista(String lista, String outro) {
+		var valores = lista == null ? null : lista.replace("\n", ", ");
+		return combinar(valores, outro);
 	}
 
 	private String simNao(Boolean value) {

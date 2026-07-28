@@ -77,14 +77,13 @@ public class AnamneseService {
 
 	@Transactional
 	public AnamneseResponse salvarEtapa(UUID alunoId, int etapa, AnamneseRequest request) {
-		if (etapa < 1 || etapa > 7) throw new BusinessException("Etapa da anamnese invalida");
+		if (etapa < 1 || etapa > 6) throw new BusinessException("Etapa da anamnese invalida");
 		var usuario = exigirAdministrador();
 		var aluno = alunoService.findEntityById(alunoId);
 		var anamnese = anamneseRepository.findByAlunoId(alunoId).orElseGet(() -> criar(aluno));
 
 		aplicarEtapa(anamnese, etapa, request);
-		sincronizarDiagnosticos(anamnese, aluno);
-		anamnese.setEtapaAtual(Math.max(anamnese.getEtapaAtual(), Math.min(7, etapa + 1)));
+		anamnese.setEtapaAtual(Math.max(anamnese.getEtapaAtual(), Math.min(6, etapa + 1)));
 		anamnese.setPercentualPreenchimento(calcularPercentual(anamnese));
 		anamnese.setAtualizadoPor(usuario);
 		registrarHistorico(anamnese, etapa, usuario.getNome());
@@ -155,6 +154,11 @@ public class AnamneseService {
 		anamnese.setAluno(aluno);
 		anamnese.setCriadoPor(usuario);
 		anamnese.setAtualizadoPor(usuario);
+		var responsavel = aluno.getResponsaveis().stream().findFirst().orElse(null);
+		anamnese.setResponsavelNome(responsavel != null ? responsavel.getNome() : aluno.getResponsavel());
+		anamnese.setResponsavelTelefone(responsavel != null ? responsavel.getTelefone() : aluno.getTelefoneResponsavel());
+		anamnese.setInteressesPotencialidades(aluno.getInteresses());
+		anamnese.setEstrategiasFuncionam(aluno.getEstrategias());
 		sincronizarDiagnosticos(anamnese, aluno);
 		return anamneseRepository.save(anamnese);
 	}
@@ -175,53 +179,42 @@ public class AnamneseService {
 	private void aplicarEtapa(Anamnese a, int etapa, AnamneseRequest r) {
 		switch (etapa) {
 			case 1 -> {
-				a.setProfessorSalaRecursos(r.professorSalaRecursos());
-				a.setProfissionalApoio(r.profissionalApoio());
-				a.setFuncaoProfissionalApoio(r.funcaoProfissionalApoio());
+				a.setSerie(r.serie());
+				a.setResponsavelNome(r.responsavelNome());
+				a.setResponsavelParentesco(r.responsavelParentesco());
+				a.setResponsavelTelefone(r.responsavelTelefone());
 			}
-			case 2 -> a.setMotivoMatriculaSrm(r.motivoMatriculaSrm());
-			case 3 -> {
-				a.setQuemEAluno(r.quemEAluno());
-				a.setOndeMora(r.ondeMora());
+			case 2 -> {
 				a.setComQuemMora(juntar(r.comQuemMora()));
-				a.setDesenvolvimento(r.desenvolvimento());
-				a.setGestacao(r.gestacao());
-				a.setComplicacoesParto(r.complicacoesParto());
-				a.setPossuiIrmaos(r.possuiIrmaos());
-				a.setQuantidadeIrmaos(Boolean.TRUE.equals(r.possuiIrmaos()) ? r.quantidadeIrmaos() : null);
-				a.setComunicacao(juntar(r.comunicacao()));
+				a.setComQuemMoraOutro(r.comQuemMoraOutro());
+				a.setOndeMora(r.ondeMora());
+				a.setAcompanhaRotinaEscolar(r.acompanhaRotinaEscolar());
+			}
+			case 3 -> {
+				a.setDescricaoFamilia(r.descricaoFamilia());
+				a.setInteressesPotencialidades(r.interessesPotencialidades());
+				a.setAtividadesPreferidas(r.atividadesPreferidas());
+				a.setDificuldadeImportante(r.dificuldadeImportante());
+				a.setOrientacaoEscola(r.orientacaoEscola());
 			}
 			case 4 -> {
+				sincronizarDiagnosticos(a, r);
 				a.setUsaMedicacao(r.usaMedicacao());
 				sincronizarMedicamentos(a, r);
 				sincronizarTerapias(a, r);
+				a.setTerapiaOutra(r.terapiaOutra());
 				a.setAlergias(r.alergias());
 				a.setRestricoesAlimentares(r.restricoesAlimentares());
-				a.setCrisesRecorrentes(r.crisesRecorrentes());
-				a.setInformacoesMedicas(r.informacoesMedicas());
 			}
 			case 5 -> {
-				a.setPotencialidades(r.potencialidades());
-				a.setInteresses(r.interesses());
-				a.setMaiorFacilidade(r.maiorFacilidade());
-				a.setMaiorDificuldade(r.maiorDificuldade());
-				a.setNecessitaAdaptacoes(r.necessitaAdaptacoes());
-				a.setReacaoMudancas(r.reacaoMudancas());
-				a.setHiperfoco(r.hiperfoco());
-				a.setFormasAprendizagem(juntar(r.formasAprendizagem()));
+				a.setComunicacaoTipo(r.comunicacaoTipo());
+				a.setComunicacaoOutra(r.comunicacaoOutra());
+				a.setComoPedeAjuda(r.comoPedeAjuda());
 			}
 			case 6 -> {
-				a.setResponsavelRespondente(r.responsavelRespondente());
-				a.setRotinaCasa(r.rotinaCasa());
-				a.setExpectativasFamilia(r.expectativasFamilia());
-				a.setOrientacaoImportante(r.orientacaoImportante());
-				a.setComportamentosForaEscola(r.comportamentosForaEscola());
-			}
-			case 7 -> {
-				a.setObservacaoSalaOutrosEspacos(r.observacaoSalaOutrosEspacos());
-				a.setProfessorRegente(r.professorRegente());
-				a.setSalaRecursos(r.salaRecursos());
-				a.setEquipePedagogica(r.equipePedagogica());
+				a.setAdaptacaoEscolar(r.adaptacaoEscolar());
+				a.setEstrategiasFuncionam(r.estrategiasFuncionam());
+				a.setRecomendacaoProfessorAnterior(r.recomendacaoProfessorAnterior());
 				a.setObservacoesGerais(r.observacoesGerais());
 			}
 			default -> throw new BusinessException("Etapa da anamnese invalida");
@@ -237,8 +230,8 @@ public class AnamneseService {
 			var medicamento = new AnamneseMedicamento();
 			medicamento.setNome(item.nome().trim());
 			medicamento.setDosagem(item.dosagem());
-			medicamento.setHorario(item.horario());
-			medicamento.setObservacoes(item.observacoes());
+			medicamento.setHorario(null);
+			medicamento.setObservacoes(item.observacao());
 			medicamento.setOrdem(ordem);
 			a.addMedicamento(medicamento);
 		}
@@ -249,14 +242,26 @@ public class AnamneseService {
 		if (r.terapias() == null) return;
 		for (int ordem = 0; ordem < r.terapias().size(); ordem++) {
 			var item = r.terapias().get(ordem);
-			if (item.tipo() == null || item.tipo().isBlank()) continue;
+			if (item == null || item.isBlank() || item.equals("Outros")) continue;
 			var terapia = new AnamneseTerapia();
-			terapia.setTipo(item.tipo().trim());
-			terapia.setFrequencia(item.frequencia());
-			terapia.setProfissional(item.profissional());
-			terapia.setObservacoes(item.observacoes());
+			terapia.setTipo(item.trim());
 			terapia.setOrdem(ordem);
 			a.addTerapia(terapia);
+		}
+	}
+
+	private void sincronizarDiagnosticos(Anamnese a, AnamneseRequest r) {
+		if (r.diagnosticos() == null) return;
+		a.getDiagnosticos().clear();
+		for (int ordem = 0; ordem < r.diagnosticos().size(); ordem++) {
+			var item = r.diagnosticos().get(ordem);
+			if (item.nome() == null || item.nome().isBlank()) continue;
+			var diagnostico = new AnamneseDiagnostico();
+			diagnostico.setComprometimento(item.nome().trim());
+			diagnostico.setCid(item.cid() == null ? null : item.cid().trim());
+			diagnostico.setEmInvestigacao(false);
+			diagnostico.setOrdem(ordem);
+			a.addDiagnostico(diagnostico);
 		}
 	}
 
@@ -290,18 +295,15 @@ public class AnamneseService {
 
 	private int calcularPercentual(Anamnese a) {
 		int preenchidos = 0;
-		int total = 37;
+		int total = 23;
 		Object[] campos = {
-			a.getProfessorSalaRecursos(), a.getProfissionalApoio(), a.getFuncaoProfissionalApoio(),
-			a.getMotivoMatriculaSrm(), a.getQuemEAluno(), a.getOndeMora(), a.getComQuemMora(),
-			a.getDesenvolvimento(), a.getGestacao(), a.getComplicacoesParto(), a.getPossuiIrmaos(),
-			a.getComunicacao(), a.getUsaMedicacao(), a.getAlergias(), a.getRestricoesAlimentares(),
-			a.getCrisesRecorrentes(), a.getInformacoesMedicas(), a.getPotencialidades(), a.getInteresses(),
-			a.getMaiorFacilidade(), a.getMaiorDificuldade(), a.getNecessitaAdaptacoes(), a.getReacaoMudancas(),
-			a.getHiperfoco(), a.getFormasAprendizagem(), a.getResponsavelRespondente(), a.getRotinaCasa(),
-			a.getExpectativasFamilia(), a.getOrientacaoImportante(), a.getComportamentosForaEscola(),
-			a.getObservacaoSalaOutrosEspacos(), a.getProfessorRegente(), a.getSalaRecursos(),
-			a.getEquipePedagogica(), a.getObservacoesGerais()
+			a.getSerie(), a.getResponsavelNome(), a.getResponsavelParentesco(), a.getResponsavelTelefone(),
+			a.getComQuemMora(), a.getOndeMora(), a.getAcompanhaRotinaEscolar(),
+			a.getDescricaoFamilia(), a.getInteressesPotencialidades(), a.getAtividadesPreferidas(),
+			a.getDificuldadeImportante(), a.getOrientacaoEscola(), a.getUsaMedicacao(),
+			a.getAlergias(), a.getRestricoesAlimentares(), a.getComunicacaoTipo(), a.getComoPedeAjuda(),
+			a.getAdaptacaoEscolar(), a.getEstrategiasFuncionam(), a.getRecomendacaoProfessorAnterior(),
+			a.getObservacoesGerais()
 		};
 		for (Object campo : campos) if (preenchido(campo)) preenchidos++;
 		if (!a.getDiagnosticos().isEmpty()) preenchidos++;
@@ -321,30 +323,26 @@ public class AnamneseService {
 
 	private List<AnamnesePesquisaResponse> camposPesquisaveis(Anamnese a) {
 		var itens = new ArrayList<AnamnesePesquisaResponse>();
-		adicionarCampo(itens, "Identificacao", "Professor da sala de recursos", a.getProfessorSalaRecursos());
-		adicionarCampo(itens, "Identificacao", "Profissional de apoio", a.getProfissionalApoio());
-		adicionarCampo(itens, "Comprometimentos", "Motivo da matricula na SRM", a.getMotivoMatriculaSrm());
-		a.getDiagnosticos().forEach(d -> adicionarCampo(itens, "Comprometimentos", d.getComprometimento(), d.getCid()));
-		adicionarCampo(itens, "Historico", "Quem e o aluno", a.getQuemEAluno());
-		adicionarCampo(itens, "Historico", "Onde mora", a.getOndeMora());
-		adicionarCampo(itens, "Historico", "Com quem mora", a.getComQuemMora());
-		adicionarCampo(itens, "Historico", "Desenvolvimento", a.getDesenvolvimento());
-		adicionarCampo(itens, "Historico", "Gestacao", a.getGestacao());
+		adicionarCampo(itens, "Identificacao", "Serie", a.getSerie());
+		adicionarCampo(itens, "Identificacao", "Responsavel", a.getResponsavelNome());
+		adicionarCampo(itens, "Informacoes familiares", "Onde mora", a.getOndeMora());
+		adicionarCampo(itens, "Informacoes familiares", "Com quem mora", a.getComQuemMora());
+		adicionarCampo(itens, "Informacoes familiares", "Acompanha a rotina escolar", a.getAcompanhaRotinaEscolar());
+		adicionarCampo(itens, "Informacoes gerais", "Descricao da familia", a.getDescricaoFamilia());
+		adicionarCampo(itens, "Informacoes gerais", "Interesses e potencialidades", a.getInteressesPotencialidades());
+		adicionarCampo(itens, "Informacoes gerais", "Atividades preferidas", a.getAtividadesPreferidas());
+		adicionarCampo(itens, "Informacoes gerais", "Dificuldade importante", a.getDificuldadeImportante());
+		adicionarCampo(itens, "Informacoes gerais", "Orientacao para a escola", a.getOrientacaoEscola());
+		a.getDiagnosticos().forEach(d -> adicionarCampo(itens, "Saude", d.getComprometimento(), d.getCid()));
 		adicionarCampo(itens, "Saude", "Alergias", a.getAlergias());
 		adicionarCampo(itens, "Saude", "Restricoes alimentares", a.getRestricoesAlimentares());
-		adicionarCampo(itens, "Saude", "Crises recorrentes", a.getCrisesRecorrentes());
-		adicionarCampo(itens, "Saude", "Informacoes medicas", a.getInformacoesMedicas());
-		a.getMedicamentos().forEach(m -> adicionarCampo(itens, "Saude", "Medicamento: " + m.getNome(), combinar(m.getDosagem(), m.getHorario())));
-		a.getTerapias().forEach(t -> adicionarCampo(itens, "Saude", "Terapia: " + t.getTipo(), combinar(t.getFrequencia(), t.getProfissional())));
-		adicionarCampo(itens, "Perfil pedagogico", "Potencialidades", a.getPotencialidades());
-		adicionarCampo(itens, "Perfil pedagogico", "Interesses", a.getInteresses());
-		adicionarCampo(itens, "Perfil pedagogico", "Maior facilidade", a.getMaiorFacilidade());
-		adicionarCampo(itens, "Perfil pedagogico", "Maior dificuldade", a.getMaiorDificuldade());
-		adicionarCampo(itens, "Familia", "Rotina em casa", a.getRotinaCasa());
-		adicionarCampo(itens, "Familia", "Expectativas", a.getExpectativasFamilia());
-		adicionarCampo(itens, "Escola", "Professor regente", a.getProfessorRegente());
-		adicionarCampo(itens, "Escola", "Sala de recursos", a.getSalaRecursos());
-		adicionarCampo(itens, "Escola", "Equipe pedagogica", a.getEquipePedagogica());
+		a.getMedicamentos().forEach(m -> adicionarCampo(itens, "Saude", "Medicamento: " + m.getNome(), combinar(m.getDosagem(), m.getObservacoes())));
+		a.getTerapias().forEach(t -> adicionarCampo(itens, "Saude", "Terapia", t.getTipo()));
+		adicionarCampo(itens, "Comunicacao", "Forma de comunicacao", a.getComunicacaoTipo());
+		adicionarCampo(itens, "Comunicacao", "Como pede ajuda", a.getComoPedeAjuda());
+		adicionarCampo(itens, "Escola", "Adaptacao escolar", a.getAdaptacaoEscolar());
+		adicionarCampo(itens, "Escola", "Estrategias que funcionam", a.getEstrategiasFuncionam());
+		adicionarCampo(itens, "Escola", "Recomendacao anterior", a.getRecomendacaoProfessorAnterior());
 		adicionarCampo(itens, "Escola", "Observacoes gerais", a.getObservacoesGerais());
 		return itens;
 	}

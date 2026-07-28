@@ -1,8 +1,8 @@
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-import { View } from 'react-native';
-import { Button, HelperText, Snackbar, Text } from 'react-native-paper';
+import { Linking, View } from 'react-native';
+import { Button, Card, HelperText, IconButton, Snackbar, Text } from 'react-native-paper';
 
 import TextInput from '../../components/FormTextInput';
 
@@ -10,7 +10,7 @@ import DateField from '../../components/DateField';
 import FormSection from '../../components/FormSection';
 import Screen from '../../components/Screen';
 import SelectField from '../../components/SelectField';
-import { DOCUMENT_CATEGORIES, categoryLabel } from '../../constants/documentCategories';
+import { DOCUMENT_CATEGORIES, categoryLabel, isImageDocument } from '../../constants/documentCategories';
 import { ANAMNESE_ATTACHMENT_CATEGORIES } from '../../constants/anamnese';
 import { useAuth } from '../../context/AuthContext';
 import { salvarDocumentoAluno } from '../../services/documentosApi';
@@ -49,7 +49,9 @@ export default function DocumentoFormScreen({ route, navigation }) {
     });
 
     if (!result.canceled) {
-      setFile(result.assets[0]);
+      const selected = result.assets[0];
+      setFile(selected);
+      if (!values.titulo.trim()) setField('titulo', selected.name.replace(/\.[^.]+$/, ''));
     }
   }
 
@@ -69,9 +71,32 @@ export default function DocumentoFormScreen({ route, navigation }) {
         mimeType: asset.mimeType || 'image/jpeg',
         size: asset.fileSize || 0,
       });
+      if (!values.titulo.trim()) setField('titulo', 'Foto do documento');
       if (!anamnese) {
         setField('categoria', 'FOTO');
       }
+    }
+  }
+
+  async function previewFile() {
+    const uri = file?.uri || documento?.urlArquivo;
+    if (!uri) {
+      setMessage('Selecione um arquivo para visualizar.');
+      return;
+    }
+    const previewDocument = file ? {
+      urlArquivo: file.uri,
+      nomeArquivo: file.name,
+      tipoArquivo: file.mimeType,
+    } : documento;
+    if (isImageDocument(previewDocument)) {
+      navigation.navigate('DocumentoViewer', { documento: previewDocument });
+      return;
+    }
+    try {
+      await Linking.openURL(uri);
+    } catch {
+      setMessage('Não foi possível abrir este arquivo no dispositivo.');
     }
   }
 
@@ -125,9 +150,20 @@ export default function DocumentoFormScreen({ route, navigation }) {
           <Button mode="outlined" icon="file-upload-outline" onPress={pickDocument}>Selecionar arquivo</Button>
           <Button mode="outlined" icon="camera-outline" onPress={takePhoto}>Usar camera</Button>
         </View>
-        <Text style={styles.muted}>
-          {file ? `${file.name} ${file.size ? `(${Math.round(file.size / 1024)} KB)` : ''}` : documento?.nomeArquivo || 'PDF, DOC, DOCX, PNG, JPG ou JPEG'}
-        </Text>
+        {(file || documento?.nomeArquivo) ? (
+          <Card mode="outlined" style={styles.card}>
+            <Card.Content style={styles.itemRow}>
+              <View style={styles.flex}>
+                <Text style={styles.itemTitle}>{file?.name || documento.nomeArquivo}</Text>
+                <Text style={styles.muted}>
+                  {file?.size ? `${Math.round(file.size / 1024)} KB` : 'Arquivo já salvo'}
+                </Text>
+              </View>
+              <IconButton icon="eye-outline" accessibilityLabel="Visualizar arquivo" onPress={previewFile} />
+              {!!file && <IconButton icon="delete-outline" iconColor="#B42318" accessibilityLabel="Remover arquivo selecionado" onPress={() => setFile(null)} />}
+            </Card.Content>
+          </Card>
+        ) : <Text style={styles.muted}>PDF, DOC, DOCX, PNG, JPG ou JPEG</Text>}
       </FormSection>
 
       {!!error && <HelperText type="error" visible>{error}</HelperText>}
