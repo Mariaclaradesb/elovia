@@ -11,13 +11,15 @@ import FormSection from '../../components/FormSection';
 import Screen from '../../components/Screen';
 import SelectField from '../../components/SelectField';
 import { DOCUMENT_CATEGORIES, categoryLabel } from '../../constants/documentCategories';
+import { ANAMNESE_ATTACHMENT_CATEGORIES } from '../../constants/anamnese';
 import { useAuth } from '../../context/AuthContext';
 import { salvarDocumentoAluno } from '../../services/documentosApi';
+import { salvarAnexoAnamnese } from '../../services/anamneseApi';
 import { styles } from '../../theme/styles';
 
 export default function DocumentoFormScreen({ route, navigation }) {
   const { token } = useAuth();
-  const { aluno, documento } = route.params;
+  const { aluno, documento, anamnese = false } = route.params;
   const [values, setValues] = useState({
     titulo: documento?.titulo || '',
     descricao: documento?.descricao || '',
@@ -67,7 +69,9 @@ export default function DocumentoFormScreen({ route, navigation }) {
         mimeType: asset.mimeType || 'image/jpeg',
         size: asset.fileSize || 0,
       });
-      setField('categoria', 'FOTO');
+      if (!anamnese) {
+        setField('categoria', 'FOTO');
+      }
     }
   }
 
@@ -75,13 +79,17 @@ export default function DocumentoFormScreen({ route, navigation }) {
     setError('');
     setLoading(true);
     try {
-      await salvarDocumentoAluno({
-        alunoId: aluno.id,
-        documentoId: documento?.id,
-        token,
-        values,
-        file,
-      });
+      if (anamnese) {
+        await salvarAnexoAnamnese({ alunoId: aluno.id, token, values, file });
+      } else {
+        await salvarDocumentoAluno({
+          alunoId: aluno.id,
+          documentoId: documento?.id,
+          token,
+          values,
+          file,
+        });
+      }
       setMessage('Documento salvo.');
       setTimeout(() => navigation.goBack(), 700);
     } catch (err) {
@@ -97,7 +105,7 @@ export default function DocumentoFormScreen({ route, navigation }) {
         <SelectField
           label="Categoria"
           value={categoryLabel(values.categoria)}
-          options={DOCUMENT_CATEGORIES.map((item) => ({ value: item.value, label: item.label }))}
+          options={(anamnese ? ANAMNESE_ATTACHMENT_CATEGORIES : DOCUMENT_CATEGORIES).map((item) => ({ value: item.value, label: item.label }))}
           onChange={(value) => setField('categoria', value)}
         />
         <TextInput label="Titulo" mode="outlined" value={values.titulo} onChangeText={(value) => setField('titulo', value)} />

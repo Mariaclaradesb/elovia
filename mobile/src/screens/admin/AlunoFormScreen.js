@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { Button, Chip, HelperText, IconButton, ProgressBar, Snackbar, Text } from 'react-native-paper';
+import { Button, Chip, Dialog, HelperText, IconButton, Portal, ProgressBar, Snackbar, Text } from 'react-native-paper';
 
 import DateField from '../../components/DateField';
 import ComprometimentosInput from '../../components/ComprometimentosInput';
@@ -89,6 +89,8 @@ export default function AlunoFormScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [savedAluno, setSavedAluno] = useState(null);
+  const [showAnamneseChoice, setShowAnamneseChoice] = useState(false);
 
   useEffect(() => {
     apiRequest('/api/mediadores', { token })
@@ -221,13 +223,18 @@ export default function AlunoFormScreen({ route, navigation }) {
         formaComunicacao: listToText(form.formaComunicacao),
       };
 
-      await apiRequest(aluno ? `/api/alunos/${aluno.id}` : '/api/alunos', {
+      const saved = await apiRequest(aluno ? `/api/alunos/${aluno.id}` : '/api/alunos', {
         method: aluno ? 'PUT' : 'POST',
         token,
         body: payload,
       });
       setMessage('Aluno salvo.');
-      setTimeout(() => navigation.goBack(), 700);
+      if (aluno) {
+        setTimeout(() => navigation.goBack(), 700);
+      } else {
+        setSavedAluno(saved);
+        setShowAnamneseChoice(true);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -347,6 +354,28 @@ export default function AlunoFormScreen({ route, navigation }) {
       </View>
 
       <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>
+      <Portal>
+        <Dialog visible={showAnamneseChoice} onDismiss={() => {}}>
+          <Dialog.Title>Aluno cadastrado</Dialog.Title>
+          <Dialog.Content>
+            <Text>Deseja iniciar a Anamnese de {savedAluno?.nome} agora? Você também poderá preenchê-la depois pelo perfil do aluno.</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => {
+              setShowAnamneseChoice(false);
+              navigation.goBack();
+            }}>
+              Preencher depois
+            </Button>
+            <Button mode="contained" onPress={() => {
+              setShowAnamneseChoice(false);
+              navigation.replace('AnamneseWizard', { aluno: savedAluno });
+            }}>
+              Iniciar Anamnese
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </Screen>
   );
 }

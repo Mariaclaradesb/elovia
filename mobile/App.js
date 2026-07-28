@@ -16,6 +16,8 @@ import AdminHomeScreen from './src/screens/admin/AdminHomeScreen';
 import AlunoFormScreen from './src/screens/admin/AlunoFormScreen';
 import AlunoProfileScreen from './src/screens/admin/AlunoProfileScreen';
 import AlunosScreen from './src/screens/admin/AlunosScreen';
+import AnamneseViewScreen from './src/screens/anamnese/AnamneseViewScreen';
+import AnamneseWizardScreen from './src/screens/anamnese/AnamneseWizardScreen';
 import MediadorFormScreen from './src/screens/admin/MediadorFormScreen';
 import MediadoresScreen from './src/screens/admin/MediadoresScreen';
 import FirstAccessScreen from './src/screens/auth/FirstAccessScreen';
@@ -71,6 +73,8 @@ function AppNavigator() {
             />
             <Stack.Screen name="Alunos" component={AlunosScreen} options={{ headerShown: false }} />
             <Stack.Screen name="AlunoProfile" component={AlunoProfileScreen} options={{ title: 'Perfil do aluno' }} />
+            <Stack.Screen name="AnamneseView" component={AnamneseViewScreen} options={{ title: 'Anamnese' }} />
+            <Stack.Screen name="AnamneseWizard" component={AnamneseWizardScreen} options={{ title: 'Preencher anamnese' }} />
             <Stack.Screen
               name="AlunoForm"
               component={AlunoFormScreen}
@@ -95,6 +99,7 @@ function AppNavigator() {
             <Stack.Screen name="IniciarSessao" component={IniciarSessaoScreen} options={{ title: 'Iniciar acompanhamento' }} />
             <Stack.Screen name="SessaoAcompanhamento" component={SessaoAcompanhamentoScreen} options={{ title: 'Sessão em andamento' }} />
             <Stack.Screen name="AlunoProfile" component={AlunoProfileScreen} options={{ title: 'Perfil do aluno' }} />
+            <Stack.Screen name="AnamneseView" component={AnamneseViewScreen} options={{ title: 'Anamnese' }} />
             <Stack.Screen name="BibliotecaAluno" component={BibliotecaAlunoScreen} options={{ title: 'Biblioteca' }} />
             <Stack.Screen
               name="DocumentoForm"

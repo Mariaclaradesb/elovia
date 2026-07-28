@@ -901,4 +901,17 @@ export const styles = StyleSheet.create({
     height: 180,
     width: '100%',
   },
+  anamneseAccordionContent: {
+    gap: 10,
+    paddingBottom: 14,
+    paddingHorizontal: 14,
+  },
+  anamneseSearchResult: {
+    backgroundColor: colors.white,
+    borderColor: colors.line,
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: 5,
+    padding: 12,
+  },
 });

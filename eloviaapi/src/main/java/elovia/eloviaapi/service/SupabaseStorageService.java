@@ -32,6 +32,17 @@ public class SupabaseStorageService {
 	}
 
 	public String upload(String caminho, MultipartFile arquivo) {
+		try {
+			return upload(
+					caminho,
+					arquivo.getBytes(),
+					arquivo.getContentType() != null ? arquivo.getContentType() : "application/octet-stream");
+		} catch (IOException exception) {
+			throw new BusinessException("Nao foi possivel ler o arquivo enviado");
+		}
+	}
+
+	public String upload(String caminho, byte[] conteudo, String contentType) {
 		if (supabaseUrl.isBlank() || serviceRoleKey.isBlank()) {
 			throw new BusinessException("Configure SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY para enviar arquivos");
 		}
@@ -42,18 +53,17 @@ public class SupabaseStorageService {
 					.header("Authorization", "Bearer " + serviceRoleKey)
 					.header("apikey", serviceRoleKey)
 					.header("x-upsert", "true")
-					.header("Content-Type", arquivo.getContentType() != null ? arquivo.getContentType() : "application/octet-stream")
-					.PUT(HttpRequest.BodyPublishers.ofByteArray(arquivo.getBytes()))
+					.header("Content-Type", contentType != null ? contentType : "application/octet-stream")
+					.PUT(HttpRequest.BodyPublishers.ofByteArray(conteudo))
 					.build();
 
 			var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 			if (response.statusCode() < 200 || response.statusCode() >= 300) {
 				throw new BusinessException("Erro ao enviar arquivo para o Supabase Storage: " + response.body());
 			}
-
 			return publicUrl(caminho);
 		} catch (IOException exception) {
-			throw new BusinessException("Não foi possivel ler o arquivo enviado");
+			throw new BusinessException("Nao foi possivel enviar o arquivo ao Supabase Storage");
 		} catch (InterruptedException exception) {
 			Thread.currentThread().interrupt();
 			throw new BusinessException("Envio de arquivo interrompido");
@@ -65,9 +75,7 @@ public class SupabaseStorageService {
 	}
 
 	private String trimTrailingSlash(String value) {
-		if (value == null) {
-			return "";
-		}
+		if (value == null) return "";
 		return value.endsWith("/") ? value.substring(0, value.length() - 1) : value;
 	}
 

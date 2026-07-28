@@ -189,6 +189,9 @@ export default function AlunoProfileScreen({ route, navigation }) {
       <Button mode="contained" icon="folder-open-outline" onPress={() => navigation.navigate('BibliotecaAluno', { aluno })}>
         Abrir Biblioteca
       </Button>
+      <Button mode="contained-tonal" icon="clipboard-text-outline" onPress={() => navigation.navigate('AnamneseView', { aluno })}>
+        Abrir Anamnese
+      </Button>
       {user?.role === 'ADMIN' && (
         <Button mode="outlined" icon="pencil-outline" onPress={() => navigation.navigate('AlunoForm', { aluno })}>
           Editar cadastro
