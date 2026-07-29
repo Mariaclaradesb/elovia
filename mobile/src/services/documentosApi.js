@@ -1,19 +1,5 @@
 import { API_BASE_URL } from '../config/apiConfig';
-
-async function parseResponse(response) {
-  if (response.status === 204) {
-    return null;
-  }
-
-  const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
-
-  if (!response.ok) {
-    throw new Error(data?.message || `Erro HTTP ${response.status}`);
-  }
-
-  return data;
-}
+import { parseApiResponse } from './parseApiResponse';
 
 function documentToFilePart(file) {
   if (!file) {
@@ -34,7 +20,7 @@ export async function listarDocumentosAluno(alunoId, token) {
       Authorization: `Bearer ${token}`,
     },
   });
-  return parseResponse(response);
+  return parseApiResponse(response);
 }
 
 export async function buscarDocumento(id, token) {
@@ -44,7 +30,7 @@ export async function buscarDocumento(id, token) {
       Authorization: `Bearer ${token}`,
     },
   });
-  return parseResponse(response);
+  return parseApiResponse(response);
 }
 
 export async function salvarDocumentoAluno({ alunoId, documentoId, token, values, file }) {
@@ -70,7 +56,7 @@ export async function salvarDocumentoAluno({ alunoId, documentoId, token, values
     },
     body: data,
   });
-  return parseResponse(response);
+  return parseApiResponse(response);
 }
 
 export async function excluirDocumento(id, token) {
@@ -80,5 +66,5 @@ export async function excluirDocumento(id, token) {
       Authorization: `Bearer ${token}`,
     },
   });
-  return parseResponse(response);
+  return parseApiResponse(response);
 }

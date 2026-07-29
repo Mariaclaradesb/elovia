@@ -4,7 +4,7 @@ import { Button, Card, HelperText, Text } from 'react-native-paper';
 
 import AppLayout from '../../components/AppLayout';
 import EmptyState from '../../components/EmptyState';
-import { AlunoListItem } from '../../components/ListItems';
+import AlunoListItem from '../../components/lists/AlunoListItem';
 import QuickActionTile from '../../components/QuickActionTile';
 import SectionTitle from '../../components/SectionTitle';
 import { useAuth } from '../../context/AuthContext';

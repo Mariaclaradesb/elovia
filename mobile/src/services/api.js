@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../config/apiConfig';
+import { parseApiResponse } from './parseApiResponse';
 
 export async function apiRequest(path, { method = 'GET', body, token } = {}) {
   const headers = { Accept: 'application/json' };
@@ -17,16 +18,5 @@ export async function apiRequest(path, { method = 'GET', body, token } = {}) {
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  if (response.status === 204) {
-    return null;
-  }
-
-  const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
-
-  if (!response.ok) {
-    throw new Error(data?.message || `Erro HTTP ${response.status}`);
-  }
-
-  return data;
+  return parseApiResponse(response);
 }

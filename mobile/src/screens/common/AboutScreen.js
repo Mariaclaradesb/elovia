@@ -3,7 +3,6 @@ import { Card, Text } from 'react-native-paper';
 
 import AppLayout from '../../components/AppLayout';
 import { useAuth } from '../../context/AuthContext';
-import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
 
 export default function AboutScreen({ navigation }) {
@@ -33,11 +32,19 @@ export default function AboutScreen({ navigation }) {
       <Card style={styles.aboutCard}>
         <Card.Content style={styles.formGap}>
           <Text style={styles.infoLabel}>Desenvolvido por</Text>
-          <Text variant="titleMedium" style={[styles.title, { color: colors.purple }]}>
+          <Text variant="titleMedium" style={[styles.title, styles.aboutTitle]}>
             Maria Clara de Souza Barroso
           </Text>
           <Text style={styles.muted}>
             Projeto academico desenvolvido para apoiar a rotina de administradores e mediadores escolares.
+          </Text>
+        </Card.Content>
+      </Card>
+
+      <Card style={styles.aboutCard}>
+        <Card.Content style={styles.formGap}>
+          <Text style={styles.muted}>
+            Todos os dados são protegidos baseados na Lei Geral de Processamento de Dados (LGPD).
           </Text>
         </Card.Content>
       </Card>

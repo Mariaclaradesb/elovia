@@ -2,7 +2,6 @@ import { View } from 'react-native';
 import { Avatar, Card, Chip, IconButton, Text } from 'react-native-paper';
 
 import { categoryIcon, categoryLabel } from '../constants/documentCategories';
-import { colors } from '../theme';
 import { styles } from '../theme/styles';
 import { isoToDisplayDate } from '../utils/date';
 
@@ -16,7 +15,7 @@ export default function DocumentCard({ documento, onPress, onMenu }) {
           <Avatar.Icon
             size={42}
             icon={categoryIcon(documento.categoria)}
-            style={{ backgroundColor: inactive ? colors.inactive : colors.purple }}
+            style={[styles.avatarPurple, inactive && styles.avatarInactive]}
           />
           <View style={styles.flex}>
             <View style={styles.documentHeader}>

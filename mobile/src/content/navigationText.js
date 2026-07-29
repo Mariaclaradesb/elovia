@@ -1,0 +1,21 @@
+export const navigationText = {
+  brandName: 'Elovia',
+  defaultGreeting: 'Que bom te ver por aqui novamente.',
+  roles: { ADMIN: 'Administrador', MEDIADOR: 'Mediador' },
+  screens: {
+    mediatorNew: 'Novo mediador',
+    mediatorEdit: 'Editar mediador',
+    studentNew: 'Novo aluno',
+    studentEdit: 'Editar aluno',
+    studentProfile: 'Perfil do aluno',
+    anamnese: 'Anamnese',
+    anamneseForm: 'Preencher anamnese',
+    library: 'Biblioteca',
+    documentNew: 'Novo documento',
+    documentEdit: 'Editar documento',
+    document: 'Documento',
+    viewer: 'Visualizador',
+    startSession: 'Iniciar acompanhamento',
+    activeSession: 'Sess\u00e3o em andamento',
+  },
+};

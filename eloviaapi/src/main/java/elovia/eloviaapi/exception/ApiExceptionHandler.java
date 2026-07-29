@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -42,6 +43,12 @@ public class ApiExceptionHandler {
 				.orElse("Dados invalidos");
 
 		return ResponseEntity.badRequest().body(body(message));
+	}
+
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<Map<String, Object>> handleUnreadableMessage(HttpMessageNotReadableException exception) {
+		return ResponseEntity.badRequest().body(body(
+				"Dados invalidos. Confira a data informada no formato DD-MM-AAAA."));
 	}
 
 	private Map<String, Object> body(String message) {

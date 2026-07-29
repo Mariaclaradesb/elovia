@@ -19,6 +19,8 @@ export default function DateField({ label, value, onChange }) {
 
     if (/^\d{2}-\d{2}-\d{4}$/.test(formatted)) {
       onChange(displayToIsoDate(formatted));
+    } else {
+      onChange('');
     }
   }
 

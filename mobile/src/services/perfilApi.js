@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../config/apiConfig';
+import { parseApiResponse } from './parseApiResponse';
 
 export async function atualizarFotoPerfil(token, file) {
   const data = new FormData();
@@ -16,11 +17,5 @@ export async function atualizarFotoPerfil(token, file) {
     },
     body: data,
   });
-  const text = await response.text();
-  const result = text ? JSON.parse(text) : null;
-
-  if (!response.ok) {
-    throw new Error(result?.message || `Erro HTTP ${response.status}`);
-  }
-  return result;
+  return parseApiResponse(response);
 }

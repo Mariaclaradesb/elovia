@@ -193,7 +193,7 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
           </Card>
         </LinearGradient>
 
-        <View style={[styles.sessionSectionHeader, { paddingHorizontal: 16 }]}>
+        <View style={[styles.sessionSectionHeader, styles.sessionHorizontalPadding]}>
           <Text variant="titleMedium" style={styles.sectionTitle}>Alunos da sessão</Text>
           <Text style={styles.muted}>{sessao.alunos?.length || 0} selecionado(s)</Text>
         </View>
@@ -208,7 +208,7 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
                 {aluno.foto ? (
                   <Avatar.Image size={52} source={{ uri: aluno.foto }} />
                 ) : (
-                  <Avatar.Text size={52} label={initials(aluno.nome)} style={{ backgroundColor: colors.lavender }} />
+                  <Avatar.Text size={52} label={initials(aluno.nome)} style={styles.avatarLavender} />
                 )}
                 <View style={styles.flex}>
                   <Text numberOfLines={1} style={styles.itemTitle}>{aluno.nome}</Text>
@@ -221,7 +221,7 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
 
         {aberta ? (
           <>
-            <View style={[styles.sessionSectionHeader, { paddingHorizontal: 16 }]}>
+            <View style={[styles.sessionSectionHeader, styles.sessionHorizontalPadding]}>
               <Text variant="titleMedium" style={styles.sectionTitle}>Atalhos rápidos</Text>
             </View>
             <View style={styles.sessionShortcutGrid}>
@@ -239,7 +239,7 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
               })}
             </View>
 
-            <View style={{ paddingHorizontal: 16, gap: 10 }}>
+            <View style={styles.sessionActionGroup}>
               <Pressable onPress={() => openNew()}>
                 <LinearGradient
                   colors={[colors.teal, colors.purple]}
@@ -256,7 +256,7 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
                 mode="outlined"
                 icon="stop-circle-outline"
                 textColor={colors.danger}
-                style={[styles.sessionStopButton, { borderColor: colors.danger }]}
+                style={[styles.sessionStopButton, styles.sessionStopDanger]}
                 contentStyle={styles.sessionStopButtonContent}
                 onPress={() => setConfirmEnd(true)}
               >
@@ -265,13 +265,13 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
             </View>
           </>
         ) : (
-          <View style={{ paddingHorizontal: 16 }}>
+          <View style={styles.sessionHorizontalPadding}>
             <Chip icon="lock-outline" style={styles.inactiveChip}>Sessão finalizada — somente consulta</Chip>
           </View>
         )}
 
-        {!!error && <HelperText type="error" visible style={{ paddingHorizontal: 16 }}>{error}</HelperText>}
-        <Text variant="titleMedium" style={[styles.sectionTitle, { paddingHorizontal: 16 }]}>Timeline de observações</Text>
+        {!!error && <HelperText type="error" visible style={styles.sessionHorizontalPadding}>{error}</HelperText>}
+        <Text variant="titleMedium" style={[styles.sectionTitle, styles.sessionHorizontalPadding]}>Timeline de observações</Text>
         {timeline.length === 0 && <EmptyState text="Nenhuma observação encontrada." />}
         {timeline.map((item) => <TimelineItem key={item.id} item={item} onPress={() => openEdit(item)} />)}
       </ScrollView>
@@ -296,7 +296,7 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
           <Dialog.Content style={styles.appDialogContent}>
             <Text style={styles.appDialogText}>Resumo de registros desta sessão:</Text>
             {sessao.alunos?.map((aluno) => (
-              <Text key={aluno.id} style={styles.appDialogText}>• {aluno.nome}: <Text style={{ fontWeight: '800' }}>{counts[aluno.id] || 0} registro(s)</Text></Text>
+              <Text key={aluno.id} style={styles.appDialogText}>• {aluno.nome}: <Text style={styles.dialogEmphasis}>{counts[aluno.id] || 0} registro(s)</Text></Text>
             ))}
           </Dialog.Content>
           <Dialog.Actions style={styles.appDialogActions}>
@@ -345,10 +345,13 @@ function ObservationSheet({ visible, onDismiss, sessao, multiAluno, form, setFie
               return (
                 <Pressable
                   key={categoria.value}
-                  style={[
+                  style={({ pressed }) => [
                     styles.sessionShortcutCard,
-                    selected && { borderColor: color, borderWidth: 2, backgroundColor: `${color}14` },
+                    selected && styles.sessionShortcutCardSelected,
+                    selected && { borderColor: color, borderWidth: 2 },
+                    pressed && styles.sessionShortcutCardPressed,
                   ]}
+                  android_ripple={{ color: 'transparent' }}
                   onPress={() => selectCategory(categoria)}
                 >
                   <View style={[styles.sessionShortcutIcon, { backgroundColor: `${color}${selected ? '30' : '18'}` }]}>
@@ -371,11 +374,11 @@ function ObservationSheet({ visible, onDismiss, sessao, multiAluno, form, setFie
 
           {!!error && <HelperText type="error" visible>{error}</HelperText>}
 
-          <Button mode="contained" icon="content-save" contentStyle={{ minHeight: 52 }} onPress={onSave}>Salvar observação</Button>
+          <Button mode="contained" icon="content-save" contentStyle={styles.observationSaveContent} onPress={onSave}>Salvar observação</Button>
           {editing && (
-            <View style={{ flexDirection: 'row', gap: 8 }}>
-              <Button mode="outlined" icon="content-copy" style={{ flex: 1 }} onPress={onDuplicate}>Duplicar</Button>
-              <Button mode="outlined" icon="delete-outline" textColor={colors.danger} style={{ flex: 1, borderColor: colors.danger }} onPress={onDelete}>Excluir</Button>
+            <View style={styles.observationActions}>
+              <Button mode="outlined" icon="content-copy" style={styles.observationActionButton} onPress={onDuplicate}>Duplicar</Button>
+              <Button mode="outlined" icon="delete-outline" textColor={colors.danger} style={styles.observationDeleteButton} onPress={onDelete}>Excluir</Button>
             </View>
           )}
           <Button mode="text" onPress={onDismiss}>Cancelar</Button>

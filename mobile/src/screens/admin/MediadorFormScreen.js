@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Keyboard } from 'react-native';
 import { Button, Card, HelperText, Snackbar } from 'react-native-paper';
 
 import TextInput from '../../components/FormTextInput';
@@ -33,6 +34,7 @@ export default function MediadorFormScreen({ route, navigation }) {
   }
 
   async function save() {
+    Keyboard.dismiss();
     setError('');
     setLoading(true);
     try {

@@ -4,6 +4,8 @@ import { Avatar, Button, IconButton, Text } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { useAuth } from '../context/AuthContext';
+import { navigationText } from '../content/navigationText';
+import { getBottomMenuItems, getSideMenuItems } from '../navigation/menuItems';
 import { colors } from '../theme';
 import { styles } from '../theme/styles';
 import { firstName, initials } from '../utils/text';
@@ -34,10 +36,10 @@ export default function AppLayout({
             end={{ x: 1, y: 1 }}
             style={styles.brandHero}
           >
-            <View style={[styles.brandHeroContent, { padding: 16 }]}>
+            <View style={[styles.brandHeroContent, styles.brandHeroInner]}>
               <View style={styles.flex}>
                 <Text variant="headlineSmall" style={styles.brandHeroTitle}>{title || `Ola, ${firstName(user?.nome)}`}</Text>
-                <Text style={styles.brandHeroSubtitle}>{subtitle || 'Que bom te ver por aqui novamente.'}</Text>
+                <Text style={styles.brandHeroSubtitle}>{subtitle || navigationText.defaultGreeting}</Text>
               </View>
               <Image source={require('../../assets/logo_reduzida.png')} style={styles.heroLogoMark} resizeMode="contain" />
             </View>
@@ -76,7 +78,7 @@ function AppTopBar({ onMenu, user, navigation }) {
         <View style={styles.logoRow}>
           <IconButton icon="menu" onPress={onMenu} iconColor={colors.ink} />
           <Image source={require('../../assets/logo_reduzida.png')} style={styles.topLogoIcon} resizeMode="contain" />
-          <Text variant="headlineSmall" style={styles.topBrandName}>Elovia</Text>
+          <Text variant="headlineSmall" style={styles.topBrandName}>{navigationText.brandName}</Text>
         </View>
         <View style={styles.topActions}>
           <Pressable onPress={() => navigation.navigate('PerfilUsuario')}>
@@ -93,21 +95,7 @@ function AppTopBar({ onMenu, user, navigation }) {
 }
 
 function BottomMenu({ role, active, navigation, onMore }) {
-  const items = role === 'ADMIN'
-    ? [
-      { key: 'home', label: 'Início', icon: 'home-outline', action: () => navigation.navigate('AdminHome') },
-      { key: 'alunos', label: 'Alunos', icon: 'account-school-outline', action: () => navigation.navigate('Alunos') },
-      { key: 'plus', label: '', icon: 'plus', primary: true, action: () => navigation.navigate('AlunoForm') },
-      { key: 'mediadores', label: 'Mediadores', icon: 'account-heart-outline', action: () => navigation.navigate('Mediadores') },
-      { key: 'more', label: 'Mais', icon: 'dots-horizontal', action: onMore },
-    ]
-    : [
-      { key: 'home', label: 'Início', icon: 'home-outline', action: () => navigation.navigate('MediadorHome') },
-      { key: 'alunos', label: 'Alunos', icon: 'account-school-outline', action: () => navigation.navigate('MediadorAlunos') },
-      { key: 'plus', label: '', icon: 'plus', primary: true, action: () => navigation.navigate('IniciarSessao') },
-      { key: 'sessoes', label: 'Acomp.', icon: 'clipboard-text-clock-outline', action: () => navigation.navigate('Sessoes') },
-      { key: 'more', label: 'Mais', icon: 'dots-horizontal', action: onMore },
-    ];
+  const items = getBottomMenuItems(role, navigation, onMore, active);
 
   return (
     <View style={styles.bottomMenu}>
@@ -129,25 +117,8 @@ function BottomMenu({ role, active, navigation, onMore }) {
 }
 
 function SideMenu({ visible, onClose, role, user, navigation, signOut }) {
-  const roleLabel = role === 'ADMIN' ? 'Administrador' : 'Mediador';
-  const items = role === 'ADMIN'
-    ? [
-      { label: 'Início', icon: 'home-outline', route: 'AdminHome' },
-      { label: 'Meu perfil', icon: 'account-edit-outline', route: 'PerfilUsuario' },
-      { label: 'Alunos', icon: 'account-school-outline', route: 'Alunos' },
-      { label: 'Mediadores', icon: 'account-heart-outline', route: 'Mediadores' },
-      { label: 'Cadastrar aluno', icon: 'school-outline', route: 'AlunoForm' },
-      { label: 'Cadastrar mediador', icon: 'account-plus-outline', route: 'MediadorForm' },
-      { label: 'Sobre o app', icon: 'information-outline', route: 'About' },
-    ]
-    : [
-      { label: 'Início', icon: 'home-outline', route: 'MediadorHome' },
-      { label: 'Meu perfil', icon: 'account-edit-outline', route: 'PerfilUsuario' },
-      { label: 'Meus alunos', icon: 'account-school-outline', route: 'MediadorAlunos' },
-      { label: 'Acompanhamento', icon: 'clipboard-text-clock-outline', route: 'Sessoes' },
-      { label: 'Iniciar sessao', icon: 'play-circle-outline', route: 'IniciarSessao' },
-      { label: 'Sobre o app', icon: 'information-outline', route: 'About' },
-    ];
+  const roleLabel = navigationText.roles[role] || navigationText.roles.MEDIADOR;
+  const items = getSideMenuItems(role);
 
   function go(route) {
     onClose();

@@ -4,7 +4,8 @@ import { Card, HelperText, Text } from 'react-native-paper';
 
 import AppLayout from '../../components/AppLayout';
 import EmptyState from '../../components/EmptyState';
-import { AlunoListItem, MediadorListItem } from '../../components/ListItems';
+import AlunoListItem from '../../components/lists/AlunoListItem';
+import MediadorListItem from '../../components/lists/MediadorListItem';
 import QuickActionTile from '../../components/QuickActionTile';
 import SectionTitle from '../../components/SectionTitle';
 import StatCard from '../../components/StatCard';

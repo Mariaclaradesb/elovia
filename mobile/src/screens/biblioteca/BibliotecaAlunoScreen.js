@@ -10,7 +10,6 @@ import SelectField from '../../components/SelectField';
 import { SORT_OPTIONS, categoryLabel, tabForCategory } from '../../constants/documentCategories';
 import { useAuth } from '../../context/AuthContext';
 import { listarDocumentosAluno } from '../../services/documentosApi';
-import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
 import { initials } from '../../utils/text';
 
@@ -72,7 +71,7 @@ export default function BibliotecaAlunoScreen({ route, navigation }) {
               {aluno.foto ? (
                 <Image source={{ uri: aluno.foto }} style={styles.profilePhoto} />
               ) : (
-                <Avatar.Text size={70} label={initials(aluno.nome)} style={{ backgroundColor: colors.teal }} />
+                <Avatar.Text size={70} label={initials(aluno.nome)} style={styles.avatarTeal} />
               )}
               <View style={styles.flex}>
                 <Text variant="titleLarge" style={styles.title}>{aluno.nome}</Text>

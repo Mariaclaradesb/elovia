@@ -4,7 +4,7 @@ import { ActivityIndicator, HelperText, Searchbar, SegmentedButtons, Text } from
 
 import AppLayout from '../../components/AppLayout';
 import EmptyState from '../../components/EmptyState';
-import { AlunoListItem } from '../../components/ListItems';
+import AlunoListItem from '../../components/lists/AlunoListItem';
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
 import { colors } from '../../theme';

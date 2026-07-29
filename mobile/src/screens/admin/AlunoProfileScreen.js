@@ -7,7 +7,6 @@ import ListInput from '../../components/ListInput';
 import Screen from '../../components/Screen';
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
-import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
 import { isoToDisplayDate } from '../../utils/date';
 import { listToText, textToList } from '../../utils/listFields';
@@ -146,7 +145,7 @@ export default function AlunoProfileScreen({ route, navigation }) {
             {aluno.foto ? (
               <Image source={{ uri: aluno.foto }} style={styles.profilePhoto} />
             ) : (
-              <Avatar.Text size={76} label={initials(aluno.nome)} style={{ backgroundColor: colors.teal }} />
+              <Avatar.Text size={76} label={initials(aluno.nome)} style={styles.avatarTeal} />
             )}
             <View style={styles.flex}>
               <Text variant="headlineSmall" style={styles.title}>{aluno.nome}</Text>

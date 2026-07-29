@@ -183,12 +183,17 @@ MAIL_PASSWORD=sua-senha-smtp
 MAIL_FROM=no-reply@seu-dominio.com.br
 MAIL_SMTP_AUTH=true
 MAIL_STARTTLS_ENABLE=true
+MAIL_HEALTH_ENABLED=false
 PASSWORD_RESET_EXPIRATION_MINUTES=15
 ```
 
 Use como `MAIL_FROM` um remetente validado no provedor de e-mail. Quando
 `EMAIL_ENABLED=false`, o cadastro continua funcionando e a senha temporaria
 ainda aparece para o administrador, mas nenhum e-mail e enviado.
+
+O health check SMTP fica desativado por padrao para nao derrubar o health da
+API quando o envio de e-mail estiver desligado. Depois de configurar e validar
+o SMTP, `MAIL_HEALTH_ENABLED=true` pode ser usado para monitorar essa conexao.
 
 No Expo/mobile, use somente a URL publica do Northflank, por exemplo:
 

@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { ActivityIndicator, IconButton, Searchbar, SegmentedButtons, Snackbar } from 'react-native-paper';
 
 import AppLayout from '../../components/AppLayout';
-import { AlunoListItem } from '../../components/ListItems';
+import AlunoListItem from '../../components/lists/AlunoListItem';
 import EmptyState from '../../components/EmptyState';
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';

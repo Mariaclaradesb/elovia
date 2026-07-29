@@ -72,9 +72,11 @@ export default function LoginScreen({ navigation, route }) {
               right={<TextInput.Icon icon={showSenha ? 'eye-off-outline' : 'eye-outline'} onPress={() => setShowSenha((value) => !value)} />}
             />
             {!!error && <HelperText type="error" visible>{error}</HelperText>}
+            {/*
             <Button mode="text" style={styles.alignEnd} onPress={() => navigation.navigate('ForgotPassword', { email: email.trim() })}>
               Esqueci minha senha
             </Button>
+            */}
             <Button mode="contained" contentStyle={styles.primaryButtonContent} onPress={handleLogin} loading={loading} disabled={loading}>
               Entrar
             </Button>

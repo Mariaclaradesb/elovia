@@ -4,7 +4,7 @@ import { ActivityIndicator, IconButton, Searchbar, SegmentedButtons, Snackbar } 
 
 import AppLayout from '../../components/AppLayout';
 import EmptyState from '../../components/EmptyState';
-import { MediadorListItem } from '../../components/ListItems';
+import MediadorListItem from '../../components/lists/MediadorListItem';
 import TemporaryPasswordDialog from '../../components/TemporaryPasswordDialog';
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';

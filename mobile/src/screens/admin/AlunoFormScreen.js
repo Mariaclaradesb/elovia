@@ -14,15 +14,16 @@ import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
 import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
+import { normalizeDateForApi } from '../../utils/date';
 import { listToText, textToList } from '../../utils/listFields';
 import { cleanPhone, formatPhone } from '../../utils/masks';
 
 const STEPS = [
   'Dados pessoais',
   'Responsaveis',
-  'Clinico',
-  'Associacao',
-  'Pedagogico',
+  'Clínico',
+  'Associação',
+  'Pedagógico',
 ];
 
 function initialResponsaveis(aluno) {
@@ -143,6 +144,9 @@ export default function AlunoFormScreen({ route, navigation }) {
     if (!form.nome.trim() || !form.dataNascimento || !form.sexo || !form.escola.trim() || !form.turma.trim() || !form.turno) {
       return 'Preencha os dados pessoais obrigatorios.';
     }
+    if (!normalizeDateForApi(form.dataNascimento)) {
+      return 'Informe uma data de nascimento valida no formato DD-MM-AAAA.';
+    }
     return '';
   }
 
@@ -209,6 +213,7 @@ export default function AlunoFormScreen({ route, navigation }) {
         .map((item) => ({ nome: item.nome.trim(), cid: item.cid.trim() }));
       const payload = {
         ...form,
+        dataNascimento: normalizeDateForApi(form.dataNascimento),
         responsaveis,
         responsavel: principal.nome,
         telefoneResponsavel: principal.telefone,
@@ -281,11 +286,11 @@ export default function AlunoFormScreen({ route, navigation }) {
       )}
 
       {step === 1 && (
-        <FormSection title="Responsaveis obrigatorios">
+        <FormSection title="Responsáveis obrigatórios">
           {form.responsaveis.map((responsavel, index) => (
             <View key={`responsavel-${index}`} style={styles.responsavelBox}>
               <View style={styles.documentHeader}>
-                <Text style={styles.sectionTitle}>Responsavel {index + 1}</Text>
+                <Text style={styles.sectionTitle}>Responsável {index + 1}</Text>
                 {form.responsaveis.length > 1 && (
                   <IconButton icon="trash-can-outline" iconColor={colors.danger} onPress={() => removeResponsavel(index)} />
                 )}
@@ -296,13 +301,13 @@ export default function AlunoFormScreen({ route, navigation }) {
             </View>
           ))}
           <Button mode="outlined" icon="account-plus-outline" onPress={addResponsavel}>
-            Adicionar outro responsavel
+            Adicionar outro responsável
           </Button>
         </FormSection>
       )}
 
       {step === 2 && (
-        <FormSection title="Informacoes clinicas">
+        <FormSection title="Informações clínicas">
           <Text style={styles.muted}>Esta etapa pode ser preenchida depois.</Text>
           <ComprometimentosInput
             items={form.comprometimentos}
@@ -310,13 +315,13 @@ export default function AlunoFormScreen({ route, navigation }) {
             emInvestigacao={form.emInvestigacao}
             onInvestigacaoChange={(value) => setField('emInvestigacao', value)}
           />
-          <ListInput label="Observacoes iniciais" items={form.observacoesIniciais} onChange={(items) => setField('observacoesIniciais', items)} />
+          <ListInput label="Observações iniciais" items={form.observacoesIniciais} onChange={(items) => setField('observacoesIniciais', items)} />
         </FormSection>
       )}
 
       {step === 3 && (
-        <FormSection title="Associacao com mediadores">
-          <Text style={styles.muted}>Voce pode associar agora ou deixar para depois.</Text>
+        <FormSection title="Associação com mediadores">
+          <Text style={styles.muted}>Você pode associar agora ou deixar para depois.</Text>
           <View style={styles.chipWrap}>
             {mediadores.map((mediador) => (
               <Chip
@@ -348,7 +353,7 @@ export default function AlunoFormScreen({ route, navigation }) {
 
       <View style={styles.stepActions}>
         {step > 0 && <Button mode="outlined" onPress={() => setStep((current) => current - 1)}>Voltar</Button>}
-        {step < STEPS.length - 1 && <Button mode="contained-tonal" onPress={nextStep}>{step <= 1 ? 'Proximo' : 'Pular/Proximo'}</Button>}
+        {step < STEPS.length - 1 && <Button mode="contained-tonal" onPress={nextStep}>{step <= 1 ? 'Próximo' : 'Pular/Próximo'}</Button>}
         {step >= 2 && step < STEPS.length - 1 && <Button mode="contained" icon="content-save" onPress={save} loading={loading}>Salvar agora</Button>}
         {step === STEPS.length - 1 && <Button mode="contained" icon="check" onPress={save} loading={loading}>Finalizar</Button>}
       </View>
