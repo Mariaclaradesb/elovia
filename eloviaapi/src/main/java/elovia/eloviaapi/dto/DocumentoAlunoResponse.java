@@ -41,7 +41,7 @@ public record DocumentoAlunoResponse(
 				documento.getNomeArquivo(),
 				documento.getTipoArquivo(),
 				documento.getTamanhoArquivo(),
-				documento.getUrlArquivo(),
+				"/api/documentos/link/" + documento.getId(),
 				documento.getDataDocumento(),
 				documento.getDataUpload(),
 				documento.getCreatedAt(),

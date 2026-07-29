@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import elovia.eloviaapi.dto.DocumentoLinkResponse;
 import elovia.eloviaapi.dto.DocumentoAlunoResponse;
 import elovia.eloviaapi.model.CategoriaDocumento;
 import elovia.eloviaapi.service.DocumentoAlunoService;
@@ -75,5 +76,10 @@ public class DocumentoAlunoController {
 		return ResponseEntity.status(302)
 				.location(URI.create(documentoService.obterUrlDownload(id)))
 				.build();
+	}
+
+	@GetMapping({"/api/documentos/link/{id}", "/documentos/link/{id}"})
+	public DocumentoLinkResponse link(@PathVariable UUID id) {
+		return documentoService.obterLinkSeguro(id);
 	}
 }

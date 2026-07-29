@@ -6,7 +6,7 @@ import InfoGrid from '../../components/InfoGrid';
 import Screen from '../../components/Screen';
 import { categoryLabel } from '../../constants/documentCategories';
 import { useAuth } from '../../context/AuthContext';
-import { buscarDocumento, excluirDocumento } from '../../services/documentosApi';
+import { buscarDocumento, excluirDocumento, obterLinkDocumento } from '../../services/documentosApi';
 import { styles } from '../../theme/styles';
 import { isoToDisplayDate } from '../../utils/date';
 
@@ -33,6 +33,17 @@ export default function DocumentoDetailsScreen({ route, navigation }) {
       await excluirDocumento(documento.id, token);
       setConfirmDelete(false);
       navigation.goBack();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function download() {
+    try {
+      const link = await obterLinkDocumento(documento.id, token);
+      if (link?.urlArquivo) {
+        await Linking.openURL(link.urlArquivo);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -70,7 +81,7 @@ export default function DocumentoDetailsScreen({ route, navigation }) {
       <Button mode="contained" icon="eye-outline" onPress={() => navigation.navigate('DocumentoViewer', { documento })}>
         Visualizar
       </Button>
-      <Button mode="outlined" icon="download-outline" onPress={() => Linking.openURL(documento.urlArquivo)}>
+      <Button mode="outlined" icon="download-outline" onPress={download}>
         Baixar
       </Button>
       <Button mode="outlined" icon="pencil-outline" onPress={() => navigation.navigate('DocumentoForm', { aluno, documento })}>

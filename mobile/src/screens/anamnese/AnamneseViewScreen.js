@@ -7,6 +7,7 @@ import InfoGrid from '../../components/InfoGrid';
 import Screen from '../../components/Screen';
 import { useAuth } from '../../context/AuthContext';
 import { buscarAnamnese, buscarNaAnamnese, gerarRelatorioAnamnese, listarHistoricoAnamnese } from '../../services/anamneseApi';
+import { obterLinkDocumento } from '../../services/documentosApi';
 import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
 import { isoToDisplayDate } from '../../utils/date';
@@ -72,7 +73,10 @@ export default function AnamneseViewScreen({ route, navigation }) {
       const document = await gerarRelatorioAnamnese(aluno.id, token);
       setMessage('DOCX gerado e adicionado à Biblioteca.');
       await load();
-      if (document.urlArquivo) await Linking.openURL(document.urlArquivo);
+      if (document.id) {
+        const link = await obterLinkDocumento(document.id, token);
+        if (link?.urlArquivo) await Linking.openURL(link.urlArquivo);
+      }
     } catch (err) {
       setError(err.message);
     } finally {

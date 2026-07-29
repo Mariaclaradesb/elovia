@@ -33,6 +33,16 @@ export async function buscarDocumento(id, token) {
   return parseApiResponse(response);
 }
 
+export async function obterLinkDocumento(id, token) {
+  const response = await fetch(`${API_BASE_URL}/api/documentos/link/${id}`, {
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return parseApiResponse(response);
+}
+
 export async function salvarDocumentoAluno({ alunoId, documentoId, token, values, file }) {
   const data = new FormData();
   data.append('titulo', values.titulo);

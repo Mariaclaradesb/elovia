@@ -2,6 +2,7 @@ package elovia.eloviaapi.service;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import elovia.eloviaapi.dto.DocumentoLinkResponse;
 import elovia.eloviaapi.dto.DocumentoAlunoResponse;
 import elovia.eloviaapi.exception.BusinessException;
 import elovia.eloviaapi.exception.NotFoundException;
@@ -26,6 +28,7 @@ import elovia.eloviaapi.repository.DocumentoAlunoRepository;
 public class DocumentoAlunoService {
 
 	private static final Set<String> EXTENSOES_ACEITAS = Set.of("pdf", "doc", "docx", "png", "jpg", "jpeg");
+	private static final Duration LINK_DOWNLOAD_VALIDADE = Duration.ofMinutes(10);
 
 	private final DocumentoAlunoRepository documentoRepository;
 	private final AlunoRepository alunoRepository;
@@ -107,7 +110,21 @@ public class DocumentoAlunoService {
 
 	@Transactional(readOnly = true)
 	public String obterUrlDownload(UUID id) {
-		return findDocumentoAutorizado(id).getUrlArquivo();
+		return gerarLinkSeguro(findDocumentoAutorizado(id)).urlArquivo();
+	}
+
+	@Transactional(readOnly = true)
+	public DocumentoLinkResponse obterLinkSeguro(UUID id) {
+		return gerarLinkSeguro(findDocumentoAutorizado(id));
+	}
+
+	private DocumentoLinkResponse gerarLinkSeguro(DocumentoAluno documento) {
+		var caminho = documento.getCaminhoArquivo();
+		if (caminho == null || caminho.isBlank()) {
+			caminho = storageService.storagePathFromPublicUrl(documento.getUrlArquivo());
+		}
+		var expiraEm = Instant.now().plus(LINK_DOWNLOAD_VALIDADE);
+		return new DocumentoLinkResponse(storageService.signedUrl(caminho, LINK_DOWNLOAD_VALIDADE), expiraEm);
 	}
 
 	private DocumentoAluno findDocumentoAutorizado(UUID id) {
