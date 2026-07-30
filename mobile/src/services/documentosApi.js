@@ -1,17 +1,6 @@
 import { API_BASE_URL } from '../config/apiConfig';
 import { parseApiResponse } from './parseApiResponse';
-
-function documentToFilePart(file) {
-  if (!file) {
-    return null;
-  }
-
-  return {
-    uri: file.uri,
-    name: file.name || file.fileName || 'documento',
-    type: file.mimeType || file.type || 'application/octet-stream',
-  };
-}
+import { appendUploadFile } from './uploadFilePart';
 
 export async function listarDocumentosAluno(alunoId, token) {
   const response = await fetch(`${API_BASE_URL}/api/alunos/${alunoId}/documentos`, {
@@ -52,10 +41,7 @@ export async function salvarDocumentoAluno({ alunoId, documentoId, token, values
     data.append('dataDocumento', values.dataDocumento);
   }
 
-  const filePart = documentToFilePart(file);
-  if (filePart) {
-    data.append('arquivo', filePart);
-  }
+  await appendUploadFile(data, 'arquivo', file, 'documento');
 
   const path = documentoId ? `/api/documentos/${documentoId}` : `/api/alunos/${alunoId}/documentos`;
   const response = await fetch(`${API_BASE_URL}${path}`, {

@@ -1,5 +1,6 @@
 import { API_BASE_URL } from '../config/apiConfig';
 import { parseApiResponse } from './parseApiResponse';
+import { appendUploadFile } from './uploadFilePart';
 
 function authHeaders(token) {
   return { Accept: 'application/json', Authorization: `Bearer ${token}` };
@@ -49,13 +50,7 @@ export async function salvarAnexoAnamnese({ alunoId, token, values, file }) {
   data.append('descricao', values.descricao || '');
   data.append('categoria', values.categoria);
   if (values.dataDocumento) data.append('dataDocumento', values.dataDocumento);
-  if (file) {
-    data.append('arquivo', {
-      uri: file.uri,
-      name: file.name || file.fileName || 'anexo',
-      type: file.mimeType || file.type || 'application/octet-stream',
-    });
-  }
+  await appendUploadFile(data, 'arquivo', file, 'anexo');
   const response = await fetch(`${API_BASE_URL}/api/alunos/${alunoId}/anamnese/anexos`, {
     method: 'POST',
     headers: authHeaders(token),
