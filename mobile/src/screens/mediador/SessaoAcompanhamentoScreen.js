@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, View } from 'react-native';
-import { Avatar, Button, Card, Chip, Dialog, HelperText, Icon, Portal, Text } from 'react-native-paper';
+import { Avatar, Button, Card, Chip, Dialog, Icon, Portal, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import TextInput from '../../components/FormTextInput';
@@ -270,7 +271,7 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
           </View>
         )}
 
-        {!!error && <HelperText type="error" visible style={styles.sessionHorizontalPadding}>{error}</HelperText>}
+        <FeedbackMessage type="error" message={error} style={styles.sessionHorizontalPadding} />
         <Text variant="titleMedium" style={[styles.sectionTitle, styles.sessionHorizontalPadding]}>Timeline de observações</Text>
         {timeline.length === 0 && <EmptyState text="Nenhuma observação encontrada." />}
         {timeline.map((item) => <TimelineItem key={item.id} item={item} onPress={() => openEdit(item)} />)}
@@ -372,7 +373,7 @@ function ObservationSheet({ visible, onDismiss, sessao, multiAluno, form, setFie
           <TextInput label="Resultado" value={form.resultado} onChangeText={(value) => setField('resultado', value)} />
           <TextInput label="Observação complementar" value={form.observacaoComplementar} onChangeText={(value) => setField('observacaoComplementar', value)} />
 
-          {!!error && <HelperText type="error" visible>{error}</HelperText>}
+          <FeedbackMessage type="error" message={error} />
 
           <Button mode="contained" icon="content-save" contentStyle={styles.observationSaveContent} onPress={onSave}>Salvar observação</Button>
           {editing && (

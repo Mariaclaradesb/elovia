@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Image, View } from 'react-native';
-import { Button, Card, HelperText, Snackbar, Text } from 'react-native-paper';
+import { Button, Card, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 
 import TextInput from '../../components/FormTextInput';
 import AuthScreen from '../../components/AuthScreen';
+import AppSnackbar from '../../components/AppSnackbar';
 import { useAuth } from '../../context/AuthContext';
 import { styles } from '../../theme/styles';
 
@@ -13,6 +15,7 @@ export default function LoginScreen({ navigation, route }) {
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [message, setMessage] = useState(route.params?.message || '');
   const [showSenha, setShowSenha] = useState(false);
 
@@ -23,9 +26,15 @@ export default function LoginScreen({ navigation, route }) {
 
   async function handleLogin() {
     setError('');
+    setFieldErrors({});
 
-    if (!email.trim() || !senha) {
-      setError('Informe e-mail e senha.');
+    const nextFieldErrors = {
+      email: !email.trim() ? 'Informe seu e-mail.' : '',
+      senha: !senha ? 'Informe sua senha.' : '',
+    };
+    if (Object.values(nextFieldErrors).some(Boolean)) {
+      setFieldErrors(nextFieldErrors);
+      setError('Revise os campos destacados.');
       return;
     }
 
@@ -42,7 +51,7 @@ export default function LoginScreen({ navigation, route }) {
   return (
     <AuthScreen
       contentContainerStyle={styles.loginScroll}
-      footer={<Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>}
+      footer={<AppSnackbar visible={!!message} message={message} onDismiss={() => setMessage('')} />}
     >
         <View style={styles.authHero}>
           <Image source={require('../../../assets/logo_completa.png')} style={styles.loginLogo} resizeMode="contain" />
@@ -56,22 +65,32 @@ export default function LoginScreen({ navigation, route }) {
             <TextInput
               label="E-mail"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(value) => {
+                setEmail(value);
+                setFieldErrors((current) => ({ ...current, email: '' }));
+              }}
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
+              required
+              errorMessage={fieldErrors.email}
               left={<TextInput.Icon icon="email-outline" />}
             />
             <TextInput
               label="Senha"
               value={senha}
-              onChangeText={setSenha}
+              onChangeText={(value) => {
+                setSenha(value);
+                setFieldErrors((current) => ({ ...current, senha: '' }));
+              }}
               secureTextEntry={!showSenha}
               autoComplete="current-password"
+              required
+              errorMessage={fieldErrors.senha}
               left={<TextInput.Icon icon="lock-outline" />}
               right={<TextInput.Icon icon={showSenha ? 'eye-off-outline' : 'eye-outline'} onPress={() => setShowSenha((value) => !value)} />}
             />
-            {!!error && <HelperText type="error" visible>{error}</HelperText>}
+            <FeedbackMessage type="error" message={error} />
             {/*
             <Button mode="text" style={styles.alignEnd} onPress={() => navigation.navigate('ForgotPassword', { email: email.trim() })}>
               Esqueci minha senha

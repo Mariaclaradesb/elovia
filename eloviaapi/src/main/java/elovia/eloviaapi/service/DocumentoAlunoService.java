@@ -67,15 +67,13 @@ public class DocumentoAlunoService {
 			CategoriaDocumento categoria,
 			LocalDate dataDocumento,
 			MultipartFile arquivo) {
-		if (arquivo == null || arquivo.isEmpty()) {
-			throw new BusinessException("Selecione um arquivo");
-		}
-
 		var aluno = findAlunoAutorizado(alunoId);
 		var usuario = currentUserService.getCurrentUser();
 		var documento = new DocumentoAluno();
 		preencherMetadados(documento, titulo, descricao, categoria, dataDocumento);
-		preencherArquivo(documento, aluno.getId(), arquivo);
+		if (arquivo != null && !arquivo.isEmpty()) {
+			preencherArquivo(documento, aluno.getId(), arquivo);
+		}
 		documento.setAluno(aluno);
 		documento.setUsuarioUpload(usuario);
 
@@ -120,6 +118,9 @@ public class DocumentoAlunoService {
 
 	private DocumentoLinkResponse gerarLinkSeguro(DocumentoAluno documento) {
 		var caminho = documento.getCaminhoArquivo();
+		if ((caminho == null || caminho.isBlank()) && (documento.getUrlArquivo() == null || documento.getUrlArquivo().isBlank())) {
+			throw new BusinessException("Este registro nao possui arquivo anexado");
+		}
 		if (caminho == null || caminho.isBlank()) {
 			caminho = storageService.storagePathFromPublicUrl(documento.getUrlArquivo());
 		}

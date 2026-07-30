@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, View } from 'react-native';
-import { Card, HelperText, Text } from 'react-native-paper';
+import { Card, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 
 import AppLayout from '../../components/AppLayout';
 import EmptyState from '../../components/EmptyState';
@@ -58,7 +59,7 @@ export default function AdminHomeScreen({ navigation }) {
       subtitle="Gerencie alunos, mediadores e dados da escola."
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.tealDark} />}
     >
-      {!!error && <HelperText type="error" visible>{error}</HelperText>}
+      <FeedbackMessage type="error" message={error} />
 
       <Card style={styles.welcomeCard} mode="contained">
         <Card.Content style={styles.brandHeroContent}>

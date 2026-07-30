@@ -5,7 +5,7 @@ import TextInput from './FormTextInput';
 
 import { dateToIso, displayToIsoDate, formatDisplayDate, isoToDate, isoToDisplayDate } from '../utils/date';
 
-export default function DateField({ label, value, onChange }) {
+export default function DateField({ label, value, onChange, required = false, error, errorMessage }) {
   const [showPicker, setShowPicker] = useState(false);
   const [displayValue, setDisplayValue] = useState(isoToDisplayDate(value));
 
@@ -45,6 +45,9 @@ export default function DateField({ label, value, onChange }) {
         onChangeText={handleManualChange}
         placeholder="DD-MM-AAAA"
         keyboardType="number-pad"
+        required={required}
+        error={error}
+        errorMessage={errorMessage}
         right={<TextInput.Icon icon="calendar-month-outline" onPress={() => setShowPicker(true)} />}
       />
       {showPicker && (

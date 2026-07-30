@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { RefreshControl } from 'react-native';
-import { ActivityIndicator, HelperText, Searchbar, SegmentedButtons, Text } from 'react-native-paper';
+import { ActivityIndicator, Searchbar, SegmentedButtons, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 
 import AppLayout from '../../components/AppLayout';
 import EmptyState from '../../components/EmptyState';
@@ -73,7 +74,7 @@ export default function MediadorAlunosScreen({ navigation }) {
           { value: 'az', label: 'A-Z' },
         ]}
       />
-      {!!error && <HelperText type="error" visible>{error}</HelperText>}
+      <FeedbackMessage type="error" message={error} />
       {loading ? <ActivityIndicator color={colors.tealDark} /> : (
         filtered.length === 0
           ? <EmptyState text="Nenhum aluno encontrado." />

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Image, View } from 'react-native';
-import { Avatar, Button, Card, Chip, HelperText, SegmentedButtons, Text } from 'react-native-paper';
+import { Avatar, Button, Card, Chip, SegmentedButtons, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 
 import InfoGrid from '../../components/InfoGrid';
 import ListInput from '../../components/ListInput';
@@ -108,7 +109,7 @@ export default function AlunoProfileScreen({ route, navigation }) {
             <ListInput label="Objetivos do PDI" items={observacoesForm.objetivosPdi} onChange={(items) => setObservationField('objetivosPdi', items)} />
             <ListInput label="Forma de comunicação" items={observacoesForm.formaComunicacao} onChange={(items) => setObservationField('formaComunicacao', items)} />
             <ListInput label="Observações pedagógicas" items={observacoesForm.observacoes} onChange={(items) => setObservationField('observacoes', items)} />
-            {!!error && <HelperText type="error" visible>{error}</HelperText>}
+            <FeedbackMessage type="error" message={error} />
             <Button mode="contained" icon="content-save" loading={savingObservacoes} onPress={saveObservacoes}>Salvar observações</Button>
             <Button mode="text" onPress={() => setEditingObservacoes(false)}>Cancelar</Button>
           </Card.Content>

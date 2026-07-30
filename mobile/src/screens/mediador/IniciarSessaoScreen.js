@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Button, Card, Chip, HelperText, SegmentedButtons, Text } from 'react-native-paper';
+import { Button, Card, Chip, SegmentedButtons, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 
 import EmptyState from '../../components/EmptyState';
 import Screen from '../../components/Screen';
@@ -101,7 +102,7 @@ export default function IniciarSessaoScreen({ navigation }) {
         </Card.Content>
       </Card>
 
-      {!!error && <HelperText type="error" visible>{error}</HelperText>}
+      <FeedbackMessage type="error" message={error} />
       <Button mode="contained" icon="play-circle-outline" loading={loading} onPress={start}>Iniciar sessão</Button>
     </Screen>
   );

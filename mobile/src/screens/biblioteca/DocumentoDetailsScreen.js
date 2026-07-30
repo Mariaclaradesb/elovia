@@ -3,6 +3,7 @@ import { Button, Card, Dialog, Portal, Text } from 'react-native-paper';
 import { useEffect, useState } from 'react';
 
 import InfoGrid from '../../components/InfoGrid';
+import FeedbackMessage from '../../components/FeedbackMessage';
 import Screen from '../../components/Screen';
 import { categoryLabel } from '../../constants/documentCategories';
 import { useAuth } from '../../context/AuthContext';
@@ -74,7 +75,7 @@ export default function DocumentoDetailsScreen({ route, navigation }) {
               { label: 'Última edição', value: documento.usuarioUltimaEdicaoNome ? `${documento.usuarioUltimaEdicaoNome} em ${isoToDisplayDate(documento.dataUltimaEdicao)}` : 'Não editado', full: true },
             ]}
           />
-          {!!error && <Text style={styles.errorText}>{error}</Text>}
+          <FeedbackMessage type="error" message={error} />
         </Card.Content>
       </Card>
 

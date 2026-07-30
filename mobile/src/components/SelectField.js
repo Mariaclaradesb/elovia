@@ -5,7 +5,7 @@ import { Menu } from 'react-native-paper';
 import TextInput from './FormTextInput';
 import { styles } from '../theme/styles';
 
-export default function SelectField({ label, value, options, onChange }) {
+export default function SelectField({ label, value, options, onChange, required = false, error, errorMessage }) {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -26,6 +26,9 @@ export default function SelectField({ label, value, options, onChange }) {
               label={label}
               value={value}
               editable={false}
+              required={required}
+              error={error}
+              errorMessage={errorMessage}
               right={<TextInput.Icon icon="chevron-down" />}
             />
           </View>

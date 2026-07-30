@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, View } from 'react-native';
-import { Button, Card, HelperText, Text } from 'react-native-paper';
+import { Button, Card, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 
 import AppLayout from '../../components/AppLayout';
 import EmptyState from '../../components/EmptyState';
@@ -53,7 +54,7 @@ export default function MediadorHomeScreen({ navigation }) {
       subtitle="O Elovia está aqui para apoiar você no dia a dia."
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.tealDark} />}
     >
-      {!!error && <HelperText type="error" visible>{error}</HelperText>}
+      <FeedbackMessage type="error" message={error} />
 
       <SectionTitle title="Acesso rápido" />
       <View style={styles.actionGrid}>

@@ -35,19 +35,19 @@ public class DocumentoAluno {
 	@Column(nullable = false, length = 40)
 	private CategoriaDocumento categoria;
 
-	@Column(name = "nome_arquivo", nullable = false, length = 260)
+	@Column(name = "nome_arquivo", length = 260)
 	private String nomeArquivo;
 
-	@Column(name = "tipo_arquivo", nullable = false, length = 120)
+	@Column(name = "tipo_arquivo", length = 120)
 	private String tipoArquivo;
 
-	@Column(name = "tamanho_arquivo", nullable = false)
+	@Column(name = "tamanho_arquivo")
 	private long tamanhoArquivo;
 
-	@Column(name = "url_arquivo", nullable = false, length = 700)
+	@Column(name = "url_arquivo", length = 700)
 	private String urlArquivo;
 
-	@Column(name = "caminho_arquivo", nullable = false, length = 500)
+	@Column(name = "caminho_arquivo", length = 500)
 	private String caminhoArquivo;
 
 	@Column(name = "data_documento")

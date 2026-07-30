@@ -3,6 +3,7 @@ import { WebView } from 'react-native-webview';
 import { Text } from 'react-native-paper';
 import { useEffect, useState } from 'react';
 
+import FeedbackMessage from '../../components/FeedbackMessage';
 import { isImageDocument } from '../../constants/documentCategories';
 import { useAuth } from '../../context/AuthContext';
 import { obterLinkDocumento } from '../../services/documentosApi';
@@ -28,7 +29,7 @@ export default function DocumentoViewerScreen({ route }) {
   if (error) {
     return (
       <View style={styles.centered}>
-        <Text>{error}</Text>
+        <FeedbackMessage type="error" message={error} />
       </View>
     );
   }

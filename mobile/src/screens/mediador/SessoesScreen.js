@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshControl, View } from 'react-native';
-import { Button, Card, Chip, HelperText, Text } from 'react-native-paper';
+import { Button, Card, Chip, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 
 import AppLayout from '../../components/AppLayout';
 import EmptyState from '../../components/EmptyState';
@@ -64,7 +65,7 @@ export default function SessoesScreen({ navigation }) {
         </Button>
       </View>
 
-      {!!error && <HelperText type="error" visible>{error}</HelperText>}
+      <FeedbackMessage type="error" message={error} />
 
       {ativa && (
         <>

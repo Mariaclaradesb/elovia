@@ -4,10 +4,29 @@ import { Text, TextInput as PaperTextInput } from 'react-native-paper';
 import { colors } from '../theme';
 import { styles } from '../theme/styles';
 
-function FormTextInput({ label, placeholder, style, contentStyle, multiline, editable = true, ...props }) {
+function FormTextInput({
+  label,
+  placeholder,
+  style,
+  contentStyle,
+  multiline,
+  editable = true,
+  required = false,
+  error = false,
+  errorMessage = '',
+  onChangeText,
+  ...props
+}) {
+  const hasError = !!error || !!errorMessage;
+
   return (
     <View style={[styles.formField, style]}>
-      {!!label && <Text style={styles.formFieldLabel}>{label}</Text>}
+      {!!label && (
+        <Text style={styles.formFieldLabel}>
+          {label}
+          {required && <Text style={styles.requiredAsterisk}> *</Text>}
+        </Text>
+      )}
       <PaperTextInput
         {...props}
         mode="outlined"
@@ -15,15 +34,18 @@ function FormTextInput({ label, placeholder, style, contentStyle, multiline, edi
         placeholder={placeholder || label}
         multiline={multiline}
         editable={editable}
-        outlineColor={colors.inputBorder}
-        activeOutlineColor={colors.tealDark}
+        error={hasError}
+        onChangeText={onChangeText}
+        outlineColor={hasError ? colors.danger : colors.inputBorder}
+        activeOutlineColor={hasError ? colors.danger : colors.tealDark}
         cursorColor={colors.tealDark}
         selectionColor={colors.tealSoft}
         placeholderTextColor={colors.placeholder}
         style={[styles.formInput, !editable && styles.formInputDisabled]}
         contentStyle={[styles.formInputContent, multiline && styles.formInputMultiline, contentStyle]}
-        outlineStyle={styles.formInputOutline}
+        outlineStyle={[styles.formInputOutline, hasError && styles.formInputOutlineError]}
       />
+      {!!errorMessage && <Text style={styles.formFieldError}>{errorMessage}</Text>}
     </View>
   );
 }

@@ -1,8 +1,10 @@
 import { useCallback, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { ActivityIndicator, Button, Card, Chip, HelperText, List, ProgressBar, Searchbar, Snackbar, Text } from 'react-native-paper';
+import { ActivityIndicator, Button, Card, Chip, List, ProgressBar, Searchbar, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 
+import AppSnackbar from '../../components/AppSnackbar';
 import InfoGrid from '../../components/InfoGrid';
 import Screen from '../../components/Screen';
 import { useAuth } from '../../context/AuthContext';
@@ -169,11 +171,11 @@ export default function AnamneseViewScreen({ route, navigation }) {
         {!historico.length && <Text style={styles.muted}>Nenhuma edição registrada.</Text>}
       </AccordionSection>
 
-      {!!error && <HelperText type="error" visible>{error}</HelperText>}
+      <FeedbackMessage type="error" message={error} />
       {user?.role === 'ADMIN' && <Button mode="contained" icon="pencil-outline" onPress={() => navigation.navigate('AnamneseWizard', { aluno, startAt: anamnese.etapaAtual })}>Editar anamnese</Button>}
       <Button mode="contained-tonal" icon="file-word-outline" loading={generating} onPress={generateDocx}>Gerar DOCX</Button>
       <Button mode="outlined" icon="folder-open-outline" onPress={() => navigation.navigate('BibliotecaAluno', { aluno })}>Abrir Biblioteca</Button>
-      <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>
+      <AppSnackbar visible={!!message} message={message} onDismiss={() => setMessage('')} />
     </Screen>
   );
 }

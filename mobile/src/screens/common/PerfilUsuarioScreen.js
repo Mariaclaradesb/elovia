@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, HelperText, Snackbar, Text } from 'react-native-paper';
+import { Button, Card, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 
 import TextInput from '../../components/FormTextInput';
 import AppLayout from '../../components/AppLayout';
+import AppSnackbar from '../../components/AppSnackbar';
 import ProfilePhotoPicker from '../../components/ProfilePhotoPicker';
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
@@ -28,6 +30,7 @@ export default function PerfilUsuarioScreen({ navigation }) {
   const [fotoArquivo, setFotoArquivo] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   useEffect(() => {
     apiRequest('/api/auth/me', { token })
@@ -49,10 +52,24 @@ export default function PerfilUsuarioScreen({ navigation }) {
 
   function setField(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
+    setFieldErrors((current) => ({ ...current, [field]: '' }));
   }
 
   async function save() {
     setError('');
+    setFieldErrors({});
+    const nextFieldErrors = {
+      nome: !form.nome.trim() ? 'Informe seu nome completo.' : '',
+      cpf: !cleanCpf(form.cpf) ? 'Informe seu CPF.' : '',
+      email: !form.email.trim() ? 'Informe seu e-mail.' : '',
+    };
+
+    if (Object.values(nextFieldErrors).some(Boolean)) {
+      setFieldErrors(nextFieldErrors);
+      setError('Revise os campos destacados.');
+      return;
+    }
+
     setLoading(true);
     try {
       let updated = await apiRequest('/api/auth/me', {
@@ -103,9 +120,9 @@ export default function PerfilUsuarioScreen({ navigation }) {
             }}
             onError={setMessage}
           />
-          <TextInput label="Nome completo" value={form.nome} onChangeText={(value) => setField('nome', value)} />
-          <TextInput label="CPF" value={form.cpf} onChangeText={(value) => setField('cpf', formatCpf(value))} keyboardType="number-pad" />
-          <TextInput label="E-mail" value={form.email} onChangeText={(value) => setField('email', value)} keyboardType="email-address" autoCapitalize="none" />
+          <TextInput label="Nome completo" value={form.nome} onChangeText={(value) => setField('nome', value)} required errorMessage={fieldErrors.nome} />
+          <TextInput label="CPF" value={form.cpf} onChangeText={(value) => setField('cpf', formatCpf(value))} keyboardType="number-pad" required errorMessage={fieldErrors.cpf} />
+          <TextInput label="E-mail" value={form.email} onChangeText={(value) => setField('email', value)} keyboardType="email-address" autoCapitalize="none" required errorMessage={fieldErrors.email} />
           <TextInput label="Telefone" placeholder="(00) 0 0000-0000" value={form.telefone} onChangeText={(value) => setField('telefone', formatPhone(value))} keyboardType="phone-pad" />
           <TextInput label="Escola" value={form.escola} onChangeText={(value) => setField('escola', value)} />
           <TextInput label="Cargo" value={form.cargo} onChangeText={(value) => setField('cargo', value)} />
@@ -113,11 +130,11 @@ export default function PerfilUsuarioScreen({ navigation }) {
         </Card.Content>
       </Card>
 
-      {!!error && <HelperText type="error" visible>{error}</HelperText>}
+      <FeedbackMessage type="error" message={error} />
       <Button mode="contained" icon="content-save" buttonColor={colors.tealDark} onPress={save} loading={loading}>
         Salvar perfil
       </Button>
-      <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>
+      <AppSnackbar visible={!!message} message={message} onDismiss={() => setMessage('')} />
     </AppLayout>
   );
 }

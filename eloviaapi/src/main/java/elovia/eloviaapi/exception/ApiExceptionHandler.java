@@ -27,12 +27,12 @@ public class ApiExceptionHandler {
 
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException exception) {
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body("Email ou senha invalidos"));
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body("Email ou senha inválidos."));
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException exception) {
-		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body("Acesso negado"));
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body("Acesso negado."));
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -48,7 +48,7 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ResponseEntity<Map<String, Object>> handleUnreadableMessage(HttpMessageNotReadableException exception) {
 		return ResponseEntity.badRequest().body(body(
-				"Dados invalidos. Confira a data informada no formato DD-MM-AAAA."));
+				"Dados inválidos. Confira a data informada no formato DD-MM-AAAA."));
 	}
 
 	private Map<String, Object> body(String message) {

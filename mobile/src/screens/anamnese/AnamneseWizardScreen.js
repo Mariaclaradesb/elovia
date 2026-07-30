@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { ActivityIndicator, Button, Card, HelperText, ProgressBar, Snackbar, Text } from 'react-native-paper';
+import { ActivityIndicator, Button, Card, ProgressBar, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 
+import AppSnackbar from '../../components/AppSnackbar';
 import ChoiceChips from '../../components/ChoiceChips';
 import TextInput from '../../components/FormTextInput';
 import FormSection from '../../components/FormSection';
@@ -242,7 +244,7 @@ export default function AnamneseWizardScreen({ route, navigation }) {
         <ProgressBar progress={progress} color={colors.tealDark} style={styles.stepProgress} />
       </View>
       {renders[step - 1]()}
-      {!!error && <HelperText type="error" visible>{error}</HelperText>}
+      <FeedbackMessage type="error" message={error} />
       <View style={styles.stepActions}>
         {step > 1 && <Button mode="outlined" disabled={saving} onPress={back}>Voltar</Button>}
         <Button mode="text" icon="content-save-outline" loading={saving} onPress={() => persist()}>Salvar rascunho</Button>
@@ -250,7 +252,7 @@ export default function AnamneseWizardScreen({ route, navigation }) {
           {step === ANAMNESE_STEPS.length ? 'Concluir anamnese' : 'Salvar e continuar'}
         </Button>
       </View>
-      <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>
+      <AppSnackbar visible={!!message} message={message} onDismiss={() => setMessage('')} />
     </Screen>
   );
 }

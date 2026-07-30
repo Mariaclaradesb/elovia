@@ -44,7 +44,7 @@ public class DocumentoAlunoController {
 			@RequestParam(required = false) String descricao,
 			@RequestParam CategoriaDocumento categoria,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataDocumento,
-			@RequestParam MultipartFile arquivo) {
+			@RequestParam(required = false) MultipartFile arquivo) {
 		var response = documentoService.criar(alunoId, titulo, descricao, categoria, dataDocumento, arquivo);
 		return ResponseEntity.created(URI.create("/api/documentos/" + response.id())).body(response);
 	}

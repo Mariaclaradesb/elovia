@@ -11,6 +11,10 @@ export const formsStyles = {
     marginLeft: 4,
     textTransform: 'uppercase',
   },
+  requiredAsterisk: {
+    color: colors.danger,
+    fontFamily: 'Nunito_800ExtraBold',
+  },
   formInput: {
     backgroundColor: colors.inputBg,
     fontFamily: 'Nunito_400Regular',
@@ -29,6 +33,15 @@ export const formsStyles = {
     textAlignVertical: 'top',
   },
   formInputOutline: { borderRadius: 22, borderWidth: 1.5 },
+  formInputOutlineError: { borderColor: colors.danger, borderWidth: 2 },
+  formFieldError: {
+    color: colors.danger,
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 12,
+    lineHeight: 16,
+    marginLeft: 4,
+    marginTop: -2,
+  },
   selectAnchor: { width: '100%' },
   selectMenu: { borderRadius: 12, minWidth: 220 },
   listInputGroup: { gap: 8 },

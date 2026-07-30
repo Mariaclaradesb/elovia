@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { Button, Chip, Dialog, HelperText, IconButton, Portal, ProgressBar, Snackbar, Text } from 'react-native-paper';
+import { Button, Chip, Dialog, IconButton, Portal, ProgressBar, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 
+import AppSnackbar from '../../components/AppSnackbar';
 import DateField from '../../components/DateField';
 import ComprometimentosInput from '../../components/ComprometimentosInput';
 import TextInput from '../../components/FormTextInput';
@@ -90,6 +92,7 @@ export default function AlunoFormScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [savedAluno, setSavedAluno] = useState(null);
   const [showAnamneseChoice, setShowAnamneseChoice] = useState(false);
 
@@ -103,6 +106,7 @@ export default function AlunoFormScreen({ route, navigation }) {
 
   function setField(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
+    setFieldErrors((current) => ({ ...current, [field]: '' }));
   }
 
   function setResponsavel(index, field, value) {
@@ -112,6 +116,7 @@ export default function AlunoFormScreen({ route, navigation }) {
         currentIndex === index ? { ...responsavel, [field]: value } : responsavel
       )),
     }));
+    setFieldErrors((current) => ({ ...current, [`responsaveis.${index}.${field}`]: '' }));
   }
 
   function addResponsavel() {
@@ -128,6 +133,13 @@ export default function AlunoFormScreen({ route, navigation }) {
         ? current.responsaveis
         : current.responsaveis.filter((_, currentIndex) => currentIndex !== index),
     }));
+    setFieldErrors((current) => {
+      const next = {};
+      Object.entries(current).forEach(([key, value]) => {
+        if (!key.startsWith('responsaveis.')) next[key] = value;
+      });
+      return next;
+    });
   }
 
   function toggleMediador(id) {
@@ -140,42 +152,65 @@ export default function AlunoFormScreen({ route, navigation }) {
     });
   }
 
-  function validatePersonalStep() {
-    if (!form.nome.trim() || !form.dataNascimento || !form.sexo || !form.escola.trim() || !form.turma.trim() || !form.turno) {
-      return 'Preencha os dados pessoais obrigatorios.';
+  function getPersonalFieldErrors() {
+    const nextFieldErrors = {
+      nome: !form.nome.trim() ? 'Informe o nome do aluno.' : '',
+      dataNascimento: !form.dataNascimento ? 'Informe a data de nascimento.' : '',
+      sexo: !form.sexo ? 'Selecione o genero.' : '',
+      escola: !form.escola.trim() ? 'Informe a escola.' : '',
+      turma: !form.turma.trim() ? 'Informe a turma.' : '',
+      turno: !form.turno ? 'Selecione o turno.' : '',
+    };
+
+    if (form.dataNascimento && !normalizeDateForApi(form.dataNascimento)) {
+      nextFieldErrors.dataNascimento = 'Informe uma data valida no formato DD-MM-AAAA.';
     }
-    if (!normalizeDateForApi(form.dataNascimento)) {
-      return 'Informe uma data de nascimento valida no formato DD-MM-AAAA.';
-    }
-    return '';
+
+    return nextFieldErrors;
   }
 
-  function validateResponsaveisStep() {
-    const todosPreenchidos = form.responsaveis.length > 0
-      && form.responsaveis.every((item) => item.nome.trim() && cleanPhone(item.telefone).length >= 10);
-    if (!todosPreenchidos) {
-      return 'Preencha nome e telefone de todos os responsaveis adicionados.';
+  function getResponsaveisFieldErrors() {
+    const nextFieldErrors = {};
+
+    if (!form.responsaveis.length) {
+      nextFieldErrors['responsaveis.0.nome'] = 'Adicione pelo menos um responsavel.';
     }
-    return '';
+
+    form.responsaveis.forEach((item, index) => {
+      if (!item.nome.trim()) {
+        nextFieldErrors[`responsaveis.${index}.nome`] = 'Informe o nome do responsavel.';
+      }
+      if (cleanPhone(item.telefone).length < 10) {
+        nextFieldErrors[`responsaveis.${index}.telefone`] = 'Informe um telefone valido.';
+      }
+    });
+
+    return nextFieldErrors;
   }
 
-  function validateRequiredSteps() {
-    return validatePersonalStep() || validateResponsaveisStep();
+  function getRequiredFieldErrors() {
+    return {
+      ...getPersonalFieldErrors(),
+      ...getResponsaveisFieldErrors(),
+    };
   }
 
   function nextStep() {
     setError('');
+    setFieldErrors({});
     if (step === 0) {
-      const validation = validatePersonalStep();
-      if (validation) {
-        setError(validation);
+      const validationErrors = getPersonalFieldErrors();
+      if (Object.values(validationErrors).some(Boolean)) {
+        setFieldErrors(validationErrors);
+        setError('Revise os campos destacados.');
         return;
       }
     }
     if (step === 1) {
-      const validation = validateResponsaveisStep();
-      if (validation) {
-        setError(validation);
+      const validationErrors = getResponsaveisFieldErrors();
+      if (Object.values(validationErrors).some(Boolean)) {
+        setFieldErrors(validationErrors);
+        setError('Revise os campos destacados.');
         return;
       }
     }
@@ -184,10 +219,12 @@ export default function AlunoFormScreen({ route, navigation }) {
 
   async function save() {
     setError('');
-    const validation = validateRequiredSteps();
-    if (validation) {
-      setError(validation);
-      setStep(validation.includes('pessoais') ? 0 : 1);
+    setFieldErrors({});
+    const validationErrors = getRequiredFieldErrors();
+    if (Object.values(validationErrors).some(Boolean)) {
+      setFieldErrors(validationErrors);
+      setError('Revise os campos destacados.');
+      setStep(Object.keys(validationErrors).some((key) => key.startsWith('responsaveis.')) ? 1 : 0);
       return;
     }
 
@@ -247,6 +284,8 @@ export default function AlunoFormScreen({ route, navigation }) {
     }
   }
 
+  const canSaveNow = step >= 1 && !Object.values(getRequiredFieldErrors()).some(Boolean);
+
   return (
     <Screen>
       <View style={styles.stepHeader}>
@@ -258,8 +297,8 @@ export default function AlunoFormScreen({ route, navigation }) {
       {step === 0 && (
         <FormSection title="Dados pessoais obrigatorios">
           <StudentPhotoPicker value={form.foto} onChange={(value) => setField('foto', value)} onError={setMessage} />
-          <TextInput label="Nome" value={form.nome} onChangeText={(value) => setField('nome', value)} />
-          <DateField label="Data de nascimento" value={form.dataNascimento} onChange={(value) => setField('dataNascimento', value)} />
+          <TextInput label="Nome" value={form.nome} onChangeText={(value) => setField('nome', value)} required errorMessage={fieldErrors.nome} />
+          <DateField label="Data de nascimento" value={form.dataNascimento} onChange={(value) => setField('dataNascimento', value)} required errorMessage={fieldErrors.dataNascimento} />
           <SelectField
             label="Genero"
             value={form.sexo}
@@ -269,9 +308,11 @@ export default function AlunoFormScreen({ route, navigation }) {
               { value: 'Outro', label: 'Outro' },
             ]}
             onChange={(value) => setField('sexo', value)}
+            required
+            errorMessage={fieldErrors.sexo}
           />
-          <TextInput label="Escola" value={form.escola} editable={false} onChangeText={(value) => setField('escola', value)} />
-          <TextInput label="Turma" value={form.turma} onChangeText={(value) => setField('turma', value)} />
+          <TextInput label="Escola" value={form.escola} editable={false} onChangeText={(value) => setField('escola', value)} required errorMessage={fieldErrors.escola} />
+          <TextInput label="Turma" value={form.turma} onChangeText={(value) => setField('turma', value)} required errorMessage={fieldErrors.turma} />
           <SelectField
             label="Turno"
             value={form.turno}
@@ -281,6 +322,8 @@ export default function AlunoFormScreen({ route, navigation }) {
               { value: 'Integral', label: 'Integral' },
             ]}
             onChange={(value) => setField('turno', value)}
+            required
+            errorMessage={fieldErrors.turno}
           />
         </FormSection>
       )}
@@ -295,8 +338,8 @@ export default function AlunoFormScreen({ route, navigation }) {
                   <IconButton icon="trash-can-outline" iconColor={colors.danger} onPress={() => removeResponsavel(index)} />
                 )}
               </View>
-              <TextInput label="Nome" value={responsavel.nome} onChangeText={(value) => setResponsavel(index, 'nome', value)} />
-              <TextInput label="Telefone" placeholder="(00) 0 0000-0000" value={responsavel.telefone} onChangeText={(value) => setResponsavel(index, 'telefone', formatPhone(value))} keyboardType="phone-pad" />
+              <TextInput label="Nome" value={responsavel.nome} onChangeText={(value) => setResponsavel(index, 'nome', value)} required errorMessage={fieldErrors[`responsaveis.${index}.nome`]} />
+              <TextInput label="Telefone" placeholder="(00) 0 0000-0000" value={responsavel.telefone} onChangeText={(value) => setResponsavel(index, 'telefone', formatPhone(value))} keyboardType="phone-pad" required errorMessage={fieldErrors[`responsaveis.${index}.telefone`]} />
               <TextInput label="Email" value={responsavel.email} onChangeText={(value) => setResponsavel(index, 'email', value)} keyboardType="email-address" autoCapitalize="none" />
             </View>
           ))}
@@ -338,27 +381,27 @@ export default function AlunoFormScreen({ route, navigation }) {
       )}
 
       {step === 4 && (
-        <FormSection title="Pedagogico">
+        <FormSection title="Pedagógico">
           <Text style={styles.muted}>Campos opcionais para complementar o perfil do aluno.</Text>
-          <ListInput label="Estrategias que funcionam" items={form.estrategias} onChange={(items) => setField('estrategias', items)} />
+          <ListInput label="Estratégias que funcionam" items={form.estrategias} onChange={(items) => setField('estrategias', items)} />
           <ListInput label="Gatilhos" items={form.gatilhos} onChange={(items) => setField('gatilhos', items)} />
-          <ListInput label="Preferencias" items={form.preferencias} onChange={(items) => setField('preferencias', items)} />
+          <ListInput label="Preferências" items={form.preferencias} onChange={(items) => setField('preferencias', items)} />
           <ListInput label="Interesses" items={form.interesses} onChange={(items) => setField('interesses', items)} />
           <ListInput label="Objetivos do PDI" items={form.objetivosPdi} onChange={(items) => setField('objetivosPdi', items)} />
-          <ListInput label="Forma de comunicacao" items={form.formaComunicacao} onChange={(items) => setField('formaComunicacao', items)} />
+          <ListInput label="Forma de comunicação" items={form.formaComunicacao} onChange={(items) => setField('formaComunicacao', items)} />
         </FormSection>
       )}
 
-      {!!error && <HelperText type="error" visible>{error}</HelperText>}
+      <FeedbackMessage type="error" message={error} />
 
       <View style={styles.stepActions}>
         {step > 0 && <Button mode="outlined" onPress={() => setStep((current) => current - 1)}>Voltar</Button>}
         {step < STEPS.length - 1 && <Button mode="contained-tonal" onPress={nextStep}>{step <= 1 ? 'Próximo' : 'Pular/Próximo'}</Button>}
-        {step >= 2 && step < STEPS.length - 1 && <Button mode="contained" icon="content-save" onPress={save} loading={loading}>Salvar agora</Button>}
+        {canSaveNow && step < STEPS.length - 1 && <Button mode="contained" icon="content-save" onPress={save} loading={loading}>Salvar agora</Button>}
         {step === STEPS.length - 1 && <Button mode="contained" icon="check" onPress={save} loading={loading}>Finalizar</Button>}
       </View>
 
-      <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>
+      <AppSnackbar visible={!!message} message={message} onDismiss={() => setMessage('')} />
       <Portal>
         <Dialog visible={showAnamneseChoice} onDismiss={() => {}} style={styles.appDialog}>
           <Dialog.Title>Aluno cadastrado</Dialog.Title>

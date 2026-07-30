@@ -10,6 +10,7 @@ import { PaperProvider } from 'react-native-paper';
 import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthProvider } from './src/context/AuthContext';
+import { FeedbackProvider } from './src/context/FeedbackContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import { appTheme } from './src/theme';
 
@@ -26,9 +27,11 @@ export default function App() {
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <PaperProvider theme={appTheme}>
-        <AuthProvider>
-          <AppNavigator />
-        </AuthProvider>
+        <FeedbackProvider>
+          <AuthProvider>
+            <AppNavigator />
+          </AuthProvider>
+        </FeedbackProvider>
         <StatusBar style="dark" />
       </PaperProvider>
     </SafeAreaProvider>

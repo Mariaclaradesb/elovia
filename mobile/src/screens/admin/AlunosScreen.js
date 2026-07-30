@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { ActivityIndicator, IconButton, Searchbar, SegmentedButtons, Snackbar } from 'react-native-paper';
+import { ActivityIndicator, IconButton, Searchbar, SegmentedButtons } from 'react-native-paper';
 
 import AppLayout from '../../components/AppLayout';
+import AppSnackbar from '../../components/AppSnackbar';
 import AlunoListItem from '../../components/lists/AlunoListItem';
 import EmptyState from '../../components/EmptyState';
 import { useAuth } from '../../context/AuthContext';
@@ -97,7 +98,7 @@ export default function AlunosScreen({ navigation }) {
           />
         ))}
       </AppLayout>
-      <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>
+      <AppSnackbar visible={!!message} message={message} onDismiss={() => setMessage('')} />
     </View>
   );
 }

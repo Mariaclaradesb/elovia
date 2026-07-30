@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { ActivityIndicator, IconButton, Searchbar, SegmentedButtons, Snackbar } from 'react-native-paper';
+import { ActivityIndicator, IconButton, Searchbar, SegmentedButtons } from 'react-native-paper';
 
 import AppLayout from '../../components/AppLayout';
+import AppSnackbar from '../../components/AppSnackbar';
 import EmptyState from '../../components/EmptyState';
 import MediadorListItem from '../../components/lists/MediadorListItem';
 import TemporaryPasswordDialog from '../../components/TemporaryPasswordDialog';
@@ -100,7 +101,7 @@ export default function MediadoresScreen({ navigation }) {
         mediatorName={temporaryPassword?.name}
         onDismiss={() => setTemporaryPassword(null)}
       />
-      <Snackbar visible={!!message} onDismiss={() => setMessage('')}>{message}</Snackbar>
+      <AppSnackbar visible={!!message} message={message} onDismiss={() => setMessage('')} />
     </View>
   );
 }

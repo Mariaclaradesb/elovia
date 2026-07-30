@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Image } from 'react-native';
-import { Button, Card, HelperText, Text } from 'react-native-paper';
+import { Button, Card, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 
 import TextInput from '../../components/FormTextInput';
 
@@ -15,13 +16,28 @@ export default function FirstAccessScreen() {
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [showNovaSenha, setShowNovaSenha] = useState(false);
   const [showConfirmarSenha, setShowConfirmarSenha] = useState(false);
 
   async function handleSave() {
     setError('');
-    if (!novaSenha || !confirmarSenha) {
-      setError('Preencha todos os campos.');
+    setFieldErrors({});
+    const nextFieldErrors = {
+      novaSenha: !novaSenha ? 'Informe a nova senha.' : '',
+      confirmarSenha: !confirmarSenha ? 'Confirme a nova senha.' : '',
+    };
+
+    if (novaSenha && novaSenha.length < 8) {
+      nextFieldErrors.novaSenha = 'A senha deve ter pelo menos 8 caracteres.';
+    }
+    if (novaSenha && confirmarSenha && novaSenha !== confirmarSenha) {
+      nextFieldErrors.confirmarSenha = 'A confirmacao da senha nao confere.';
+    }
+
+    if (Object.values(nextFieldErrors).some(Boolean)) {
+      setFieldErrors(nextFieldErrors);
+      setError('Revise os campos destacados.');
       return;
     }
 
@@ -50,18 +66,28 @@ export default function FirstAccessScreen() {
           <TextInput
             label="Nova senha"
             value={novaSenha}
-            onChangeText={setNovaSenha}
+            onChangeText={(value) => {
+              setNovaSenha(value);
+              setFieldErrors((current) => ({ ...current, novaSenha: '' }));
+            }}
             secureTextEntry={!showNovaSenha}
+            required
+            errorMessage={fieldErrors.novaSenha}
             right={<TextInput.Icon icon={showNovaSenha ? 'eye-off-outline' : 'eye-outline'} onPress={() => setShowNovaSenha((value) => !value)} />}
           />
           <TextInput
             label="Confirmar senha"
             value={confirmarSenha}
-            onChangeText={setConfirmarSenha}
+            onChangeText={(value) => {
+              setConfirmarSenha(value);
+              setFieldErrors((current) => ({ ...current, confirmarSenha: '' }));
+            }}
             secureTextEntry={!showConfirmarSenha}
+            required
+            errorMessage={fieldErrors.confirmarSenha}
             right={<TextInput.Icon icon={showConfirmarSenha ? 'eye-off-outline' : 'eye-outline'} onPress={() => setShowConfirmarSenha((value) => !value)} />}
           />
-          {!!error && <HelperText type="error" visible>{error}</HelperText>}
+          <FeedbackMessage type="error" message={error} />
           <Button mode="contained" icon="content-save" onPress={handleSave} loading={loading}>Salvar</Button>
           <Button mode="text" icon="logout" onPress={signOut}>Sair</Button>
         </Card.Content>

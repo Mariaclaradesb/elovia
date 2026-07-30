@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Image } from 'react-native';
-import { Button, Card, HelperText, Text } from 'react-native-paper';
+import { Button, Card, Text } from 'react-native-paper';
+import FeedbackMessage from '../../components/FeedbackMessage';
 
 import TextInput from '../../components/FormTextInput';
 import AuthScreen from '../../components/AuthScreen';
@@ -15,14 +16,17 @@ export default function ForgotPasswordScreen({ navigation, route }) {
   const [codeRequested, setCodeRequested] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   async function requestCode() {
     setError('');
     setMessage('');
+    setFieldErrors({});
     if (!email.trim()) {
-      setError('Informe seu e-mail.');
+      setFieldErrors({ email: 'Informe seu e-mail.' });
+      setError('Revise os campos destacados.');
       return;
     }
 
@@ -43,19 +47,28 @@ export default function ForgotPasswordScreen({ navigation, route }) {
 
   async function resetPassword() {
     setError('');
+    setFieldErrors({});
+    const nextFieldErrors = {
+      codigo: !codigo ? 'Informe o codigo recebido.' : '',
+      novaSenha: !novaSenha ? 'Informe a nova senha.' : '',
+      confirmarSenha: !confirmarSenha ? 'Confirme a nova senha.' : '',
+    };
+
     if (!/^\d{8}$/.test(codigo)) {
-      setError('Informe o código de 8 dígitos recebido por e-mail.');
-      return;
+      nextFieldErrors.codigo = 'Informe o codigo de 8 digitos recebido por e-mail.';
     }
     if (novaSenha.length < 8) {
-      setError('A nova senha deve ter pelo menos 8 caracteres.');
-      return;
+      nextFieldErrors.novaSenha = 'A nova senha deve ter pelo menos 8 caracteres.';
     }
     if (novaSenha !== confirmarSenha) {
-      setError('A confirmação da senha não confere.');
-      return;
+      nextFieldErrors.confirmarSenha = 'A confirmacao da senha nao confere.';
     }
 
+    if (Object.values(nextFieldErrors).some(Boolean)) {
+      setFieldErrors(nextFieldErrors);
+      setError('Revise os campos destacados.');
+      return;
+    }
     setLoading(true);
     try {
       await apiRequest('/api/auth/redefinir-senha', {
@@ -91,11 +104,16 @@ export default function ForgotPasswordScreen({ navigation, route }) {
             <TextInput
               label="E-mail"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(value) => {
+                setEmail(value);
+                setFieldErrors((current) => ({ ...current, email: '' }));
+              }}
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
               editable={!codeRequested}
+              required
+              errorMessage={fieldErrors.email}
               left={<TextInput.Icon icon="email-outline" />}
             />
 
@@ -104,34 +122,49 @@ export default function ForgotPasswordScreen({ navigation, route }) {
                 <TextInput
                   label="Código de 8 dígitos"
                   value={codigo}
-                  onChangeText={(value) => setCodigo(value.replace(/\D/g, '').slice(0, 8))}
+                  onChangeText={(value) => {
+                    setCodigo(value.replace(/\D/g, '').slice(0, 8));
+                    setFieldErrors((current) => ({ ...current, codigo: '' }));
+                  }}
                   keyboardType="number-pad"
                   maxLength={8}
                   autoComplete="one-time-code"
+                  required
+                  errorMessage={fieldErrors.codigo}
                   left={<TextInput.Icon icon="shield-key-outline" />}
                 />
                 <TextInput
                   label="Nova senha"
                   value={novaSenha}
-                  onChangeText={setNovaSenha}
+                  onChangeText={(value) => {
+                    setNovaSenha(value);
+                    setFieldErrors((current) => ({ ...current, novaSenha: '' }));
+                  }}
                   secureTextEntry={!showPassword}
                   autoComplete="new-password"
+                  required
+                  errorMessage={fieldErrors.novaSenha}
                   left={<TextInput.Icon icon="lock-outline" />}
                   right={<TextInput.Icon icon={showPassword ? 'eye-off-outline' : 'eye-outline'} onPress={() => setShowPassword((value) => !value)} />}
                 />
                 <TextInput
                   label="Confirmar nova senha"
                   value={confirmarSenha}
-                  onChangeText={setConfirmarSenha}
+                  onChangeText={(value) => {
+                    setConfirmarSenha(value);
+                    setFieldErrors((current) => ({ ...current, confirmarSenha: '' }));
+                  }}
                   secureTextEntry={!showPassword}
                   autoComplete="new-password"
+                  required
+                  errorMessage={fieldErrors.confirmarSenha}
                   left={<TextInput.Icon icon="lock-check-outline" />}
                 />
               </>
             )}
 
-            {!!message && <HelperText type="info" visible>{message}</HelperText>}
-            {!!error && <HelperText type="error" visible>{error}</HelperText>}
+            <FeedbackMessage type="info" message={message} />
+            <FeedbackMessage type="error" message={error} />
 
             {codeRequested ? (
               <>

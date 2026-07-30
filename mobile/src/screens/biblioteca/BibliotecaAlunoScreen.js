@@ -5,6 +5,7 @@ import { Avatar, Button, Card, Menu, Searchbar, Text } from 'react-native-paper'
 import DocumentCard from '../../components/DocumentCard';
 import DocumentTabs from '../../components/DocumentTabs';
 import EmptyState from '../../components/EmptyState';
+import FeedbackMessage from '../../components/FeedbackMessage';
 import Screen from '../../components/Screen';
 import SelectField from '../../components/SelectField';
 import { SORT_OPTIONS, categoryLabel, tabForCategory } from '../../constants/documentCategories';
@@ -103,7 +104,7 @@ export default function BibliotecaAlunoScreen({ route, navigation }) {
           <SelectField label="Ordenar" value={SORT_OPTIONS.find((item) => item.value === sort)?.label} options={SORT_OPTIONS} onChange={setSort} />
         </View>
 
-        {!!error && <Text style={styles.errorText}>{error}</Text>}
+        <FeedbackMessage type="error" message={error} />
         {visibleDocs.length === 0 ? <EmptyState text="Nenhum documento encontrado." /> : visibleDocs.map((documento) => (
           <DocumentCard
             key={documento.id}
