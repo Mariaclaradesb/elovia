@@ -18,6 +18,7 @@
       }
     },
     "web": {
+      "output": "static",
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
