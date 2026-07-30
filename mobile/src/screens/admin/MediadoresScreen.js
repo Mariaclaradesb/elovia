@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { ActivityIndicator, IconButton, Searchbar, SegmentedButtons } from 'react-native-paper';
+import { ActivityIndicator, Button, Searchbar, SegmentedButtons, Text } from 'react-native-paper';
 
+import AppDialog from '../../components/AppDialog';
 import AppLayout from '../../components/AppLayout';
 import AppSnackbar from '../../components/AppSnackbar';
 import EmptyState from '../../components/EmptyState';
@@ -20,6 +21,7 @@ export default function MediadoresScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [temporaryPassword, setTemporaryPassword] = useState(null);
+  const [mediadorToDeactivate, setMediadorToDeactivate] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -46,10 +48,12 @@ export default function MediadoresScreen({ navigation }) {
         : new Date(b.dataCriacao || 0).getTime() - new Date(a.dataCriacao || 0).getTime()
     ));
 
-  async function deactivate(id) {
+  async function deactivate(mediador) {
+    if (!mediador?.id) return;
     try {
-      await apiRequest(`/api/mediadores/${id}/desativar`, { method: 'PATCH', token });
+      await apiRequest(`/api/mediadores/${mediador.id}/desativar`, { method: 'PATCH', token });
       setMessage('Mediador desativado.');
+      setMediadorToDeactivate(null);
       load();
     } catch (err) {
       setMessage(err.message);
@@ -79,22 +83,33 @@ export default function MediadoresScreen({ navigation }) {
           ]}
         />
         {loading ? <ActivityIndicator color={colors.tealDark} /> : filtered.length === 0 ? (
-          <EmptyState text="Nenhum mediador encontrado." />
+          <EmptyState />
         ) : filtered.map((mediador) => (
           <MediadorListItem
             key={mediador.id}
             mediador={mediador}
             onPress={() => navigation.navigate('MediadorForm', { mediador })}
-            actions={(
-              <View style={styles.rowEnd}>
-                <IconButton icon="pencil-outline" onPress={() => navigation.navigate('MediadorForm', { mediador })} />
-                {mediador.primeiroAcesso && <IconButton icon="lock-reset" onPress={() => resetPassword(mediador.id)} />}
-                {mediador.ativo && <IconButton icon="account-off-outline" iconColor={colors.danger} onPress={() => deactivate(mediador.id)} />}
-              </View>
-            )}
+            actions={[
+              { icon: 'pencil', label: 'Editar mediador', onPress: () => navigation.navigate('MediadorForm', { mediador }) },
+              ...(mediador.primeiroAcesso ? [{ icon: 'lock-reset', label: 'Redefinir senha', onPress: () => resetPassword(mediador.id) }] : []),
+              ...(mediador.ativo ? [{ icon: 'account-off-outline', label: 'Desativar mediador', color: colors.danger, onPress: () => setMediadorToDeactivate(mediador) }] : []),
+            ]}
           />
         ))}
       </AppLayout>
+      <AppDialog
+        visible={!!mediadorToDeactivate}
+        title="Desativar mediador?"
+        onDismiss={() => setMediadorToDeactivate(null)}
+        actions={[
+          <Button key="cancel" onPress={() => setMediadorToDeactivate(null)}>Cancelar</Button>,
+          <Button key="confirm" mode="contained" buttonColor={colors.danger} onPress={() => deactivate(mediadorToDeactivate)}>
+            Desativar
+          </Button>,
+        ]}
+      >
+        <Text>Tem certeza que deseja desativar {mediadorToDeactivate?.nome}? Essa pessoa deixará de acessar os alunos vinculados.</Text>
+      </AppDialog>
       <TemporaryPasswordDialog
         visible={!!temporaryPassword}
         password={temporaryPassword?.value || ''}

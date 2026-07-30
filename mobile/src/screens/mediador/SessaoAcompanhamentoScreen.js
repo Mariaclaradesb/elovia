@@ -273,7 +273,7 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
 
         <FeedbackMessage type="error" message={error} style={styles.sessionHorizontalPadding} />
         <Text variant="titleMedium" style={[styles.sectionTitle, styles.sessionHorizontalPadding]}>Timeline de observações</Text>
-        {timeline.length === 0 && <EmptyState text="Nenhuma observação encontrada." />}
+        {timeline.length === 0 && <EmptyState />}
         {timeline.map((item) => <TimelineItem key={item.id} item={item} onPress={() => openEdit(item)} />)}
       </ScrollView>
 

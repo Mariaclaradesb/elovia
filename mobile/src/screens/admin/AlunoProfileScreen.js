@@ -47,7 +47,7 @@ export default function AlunoProfileScreen({ route, navigation }) {
       ? aluno.comprometimentos
         .map((item) => `${item.nome}${item.cid ? ` - CID ${item.cid}` : ' - CID não informado'}`)
         .join('\n')
-      : 'Nenhum comprometimento informado';
+      : 'Ainda não há registros.';
 
     return (
       <InfoGrid

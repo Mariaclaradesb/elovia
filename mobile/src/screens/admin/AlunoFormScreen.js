@@ -22,7 +22,7 @@ import { cleanPhone, formatPhone } from '../../utils/masks';
 
 const STEPS = [
   'Dados pessoais',
-  'Responsaveis',
+  'Responsáveis',
   'Clínico',
   'Associação',
   'Pedagógico',
@@ -284,7 +284,7 @@ export default function AlunoFormScreen({ route, navigation }) {
     }
   }
 
-  const canSaveNow = step >= 1 && !Object.values(getRequiredFieldErrors()).some(Boolean);
+  const canSaveNow = (aluno ? step >= 0 : step >= 1) && !Object.values(getRequiredFieldErrors()).some(Boolean);
 
   return (
     <Screen>
@@ -295,12 +295,12 @@ export default function AlunoFormScreen({ route, navigation }) {
       </View>
 
       {step === 0 && (
-        <FormSection title="Dados pessoais obrigatorios">
+        <FormSection title="Dados pessoais obrigatórios">
           <StudentPhotoPicker value={form.foto} onChange={(value) => setField('foto', value)} onError={setMessage} />
           <TextInput label="Nome" value={form.nome} onChangeText={(value) => setField('nome', value)} required errorMessage={fieldErrors.nome} />
           <DateField label="Data de nascimento" value={form.dataNascimento} onChange={(value) => setField('dataNascimento', value)} required errorMessage={fieldErrors.dataNascimento} />
           <SelectField
-            label="Genero"
+            label="Gênero"
             value={form.sexo}
             options={[
               { value: 'Feminino', label: 'Feminino' },

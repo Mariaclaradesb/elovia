@@ -85,7 +85,7 @@ export default function IniciarSessaoScreen({ navigation }) {
       <Card style={styles.card}>
         <Card.Content style={styles.formGap}>
           <Text style={styles.sectionTitle}>Alunos vinculados</Text>
-          {alunos.length === 0 ? <EmptyState text="Nenhum aluno vinculado." /> : (
+          {alunos.length === 0 ? <EmptyState /> : (
             <View style={styles.chipWrap}>
               {alunos.map((aluno) => (
                 <Chip

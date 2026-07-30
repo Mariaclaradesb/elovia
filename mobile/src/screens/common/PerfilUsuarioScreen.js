@@ -113,9 +113,13 @@ export default function PerfilUsuarioScreen({ navigation }) {
       <Card style={styles.card}>
         <Card.Content style={styles.formGap}>
           <ProfilePhotoPicker
-            value={fotoArquivo?.uri || foto}
+            value={foto}
             onChange={(asset) => {
               setFotoArquivo(asset);
+              if (asset.skipPreview) {
+                setMessage('Foto capturada. Toque em Salvar perfil para atualizar.');
+                return;
+              }
               setFoto(asset.uri);
             }}
             onError={setMessage}

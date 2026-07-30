@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { ActivityIndicator, IconButton, Searchbar, SegmentedButtons } from 'react-native-paper';
+import { ActivityIndicator, Button, Searchbar, SegmentedButtons, Text } from 'react-native-paper';
 
+import AppDialog from '../../components/AppDialog';
 import AppLayout from '../../components/AppLayout';
 import AppSnackbar from '../../components/AppSnackbar';
 import AlunoListItem from '../../components/lists/AlunoListItem';
@@ -19,6 +20,7 @@ export default function AlunosScreen({ navigation }) {
   const [order, setOrder] = useState('cadastro');
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [alunoToArchive, setAlunoToArchive] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -51,10 +53,12 @@ export default function AlunosScreen({ navigation }) {
         : new Date(b.criadoEm || 0).getTime() - new Date(a.criadoEm || 0).getTime()
     ));
 
-  async function archive(id) {
+  async function archive(aluno) {
+    if (!aluno?.id) return;
     try {
-      await apiRequest(`/api/alunos/${id}/desativar`, { method: 'PATCH', token });
+      await apiRequest(`/api/alunos/${aluno.id}/desativar`, { method: 'PATCH', token });
       setMessage('Aluno desativado.');
+      setAlunoToArchive(null);
       load();
     } catch (err) {
       setMessage(err.message);
@@ -83,21 +87,32 @@ export default function AlunosScreen({ navigation }) {
           ]}
         />
         {loading ? <ActivityIndicator color={colors.tealDark} /> : filtered.length === 0 ? (
-          <EmptyState text="Nenhum aluno encontrado." />
+          <EmptyState />
         ) : filtered.map((aluno) => (
           <AlunoListItem
             key={aluno.id}
             aluno={aluno}
             onPress={() => navigation.navigate('AlunoProfile', { aluno })}
-            actions={(
-              <View style={styles.rowEnd}>
-                <IconButton icon="pencil-outline" onPress={() => navigation.navigate('AlunoForm', { aluno })} />
-                {aluno.ativo && <IconButton icon="account-cancel-outline" iconColor={colors.danger} onPress={() => archive(aluno.id)} />}
-              </View>
-            )}
+            actions={[
+              { icon: 'pencil', label: 'Editar aluno', onPress: () => navigation.navigate('AlunoForm', { aluno }) },
+              ...(aluno.ativo ? [{ icon: 'account-cancel-outline', label: 'Desativar aluno', color: colors.danger, onPress: () => setAlunoToArchive(aluno) }] : []),
+            ]}
           />
         ))}
       </AppLayout>
+      <AppDialog
+        visible={!!alunoToArchive}
+        title="Desativar aluno?"
+        onDismiss={() => setAlunoToArchive(null)}
+        actions={[
+          <Button key="cancel" onPress={() => setAlunoToArchive(null)}>Cancelar</Button>,
+          <Button key="confirm" mode="contained" buttonColor={colors.danger} onPress={() => archive(alunoToArchive)}>
+            Desativar
+          </Button>,
+        ]}
+      >
+        <Text>Tem certeza que deseja desativar {alunoToArchive?.nome}? O cadastro ficará indisponível nas listas ativas.</Text>
+      </AppDialog>
       <AppSnackbar visible={!!message} message={message} onDismiss={() => setMessage('')} />
     </View>
   );

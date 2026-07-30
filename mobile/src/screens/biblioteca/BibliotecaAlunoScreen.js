@@ -105,7 +105,7 @@ export default function BibliotecaAlunoScreen({ route, navigation }) {
         </View>
 
         <FeedbackMessage type="error" message={error} />
-        {visibleDocs.length === 0 ? <EmptyState text="Nenhum documento encontrado." /> : visibleDocs.map((documento) => (
+        {visibleDocs.length === 0 ? <EmptyState /> : visibleDocs.map((documento) => (
           <DocumentCard
             key={documento.id}
             documento={documento}

@@ -32,13 +32,15 @@ export default function ListInput({ label, items, onChange }) {
         multiline
         right={<TextInput.Icon icon="plus-circle-outline" onPress={addItem} />}
       />
-      <View style={styles.chipWrap}>
-        {items.map((item, index) => (
-          <Chip key={`${item}-${index}`} onClose={() => removeItem(index)}>
-            {item}
-          </Chip>
-        ))}
-      </View>
+      {!!items.length && (
+        <View style={styles.chipWrap}>
+          {items.map((item, index) => (
+            <Chip key={`${item}-${index}`} onClose={() => removeItem(index)}>
+              {item}
+            </Chip>
+          ))}
+        </View>
+      )}
     </View>
   );
 }

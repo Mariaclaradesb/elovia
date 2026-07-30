@@ -77,7 +77,7 @@ export default function MediadorAlunosScreen({ navigation }) {
       <FeedbackMessage type="error" message={error} />
       {loading ? <ActivityIndicator color={colors.tealDark} /> : (
         filtered.length === 0
-          ? <EmptyState text="Nenhum aluno encontrado." />
+          ? <EmptyState />
           : filtered.map((aluno) => (
             <AlunoListItem key={aluno.id} aluno={aluno} onPress={() => navigation.navigate('AlunoProfile', { aluno })} />
           ))

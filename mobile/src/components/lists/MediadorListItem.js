@@ -1,29 +1,57 @@
 import { View } from 'react-native';
-import { Avatar, Card, Chip, Divider, Text } from 'react-native-paper';
+import { Avatar, Card, IconButton, Text } from 'react-native-paper';
 
+import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
 import { initials } from '../../utils/text';
 
 export default function MediadorListItem({ mediador, actions, onPress }) {
   const disabled = !mediador.ativo;
+  const actionItems = Array.isArray(actions) ? actions : [];
+  const statusStyle = disabled ? styles.studentListStatusInactive : styles.studentListStatusActive;
 
   return (
-    <Card style={[styles.card, disabled && styles.inactiveCard]} onPress={onPress}>
-      <Card.Content>
-        <View style={styles.itemRow}>
+    <Card style={[styles.studentListCard, disabled && styles.inactiveCard]} onPress={onPress}>
+      <View style={[styles.studentListStatusDot, statusStyle]} />
+      <Card.Content style={styles.studentListContent}>
+        <View style={styles.studentListRow}>
           {mediador.foto ? (
-            <Avatar.Image size={42} source={{ uri: mediador.foto }} />
+            <Avatar.Image size={44} source={{ uri: mediador.foto }} />
           ) : (
-            <Avatar.Text size={42} label={initials(mediador.nome)} style={[styles.avatarPurple, disabled && styles.avatarInactive]} />
+            <Avatar.Text
+              size={44}
+              label={initials(mediador.nome)}
+              style={[styles.avatarPurple, disabled && styles.avatarInactive]}
+              labelStyle={{ fontSize: 16, fontWeight: '900' }}
+            />
           )}
-          <View style={styles.flex}>
-            <Text variant="titleMedium" style={[styles.itemTitle, disabled && styles.inactiveText]}>{mediador.nome}</Text>
-            <Text style={styles.muted}>{mediador.email}</Text>
-            <Text style={styles.muted}>{mediador.escola} - {mediador.cargo}</Text>
-            <Chip compact style={[styles.statusChip, disabled && styles.inactiveChip]} textStyle={disabled && styles.inactiveChipText}>{mediador.ativo ? 'Ativo' : 'Desativado'}</Chip>
+          <View style={styles.studentListInfo}>
+            <Text numberOfLines={1} style={[styles.studentListName, disabled && styles.inactiveText]}>{mediador.nome}</Text>
+            <Text numberOfLines={1} style={styles.studentListMeta}>{mediador.cargo || 'Cargo não informado'} · {mediador.escola || mediador.email}</Text>
           </View>
+          {disabled && (
+            <View style={[styles.studentListBadge, styles.studentListBadgeDisabled]}>
+              <Text numberOfLines={1} style={[styles.studentListBadgeText, styles.studentListBadgeDisabledText]}>
+                Desativado
+              </Text>
+            </View>
+          )}
+          {!!actionItems.length && (
+            <View style={styles.studentListActions}>
+              {actionItems.map((item) => (
+                <IconButton
+                  key={item.icon}
+                  icon={item.icon}
+                  size={20}
+                  iconColor={item.color || colors.muted}
+                  onPress={item.onPress}
+                  style={styles.studentListActionButton}
+                  accessibilityLabel={item.label}
+                />
+              ))}
+            </View>
+          )}
         </View>
-        {actions ? <><Divider style={styles.divider} />{actions}</> : null}
       </Card.Content>
     </Card>
   );

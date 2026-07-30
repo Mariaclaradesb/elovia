@@ -50,6 +50,15 @@ export const dataDisplayStyles = {
   rowEnd: { alignItems: 'center', flexDirection: 'row', justifyContent: 'flex-end' },
   fab: { backgroundColor: colors.yellow, bottom: 104, position: 'absolute', right: 22 },
   empty: { alignItems: 'center', gap: 12, paddingVertical: 22 },
+  emptyInline: {
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderColor: colors.line,
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: 10,
+    paddingVertical: 18,
+  },
   profileHeader: { alignItems: 'center', flexDirection: 'row', gap: 14 },
   profilePhoto: { borderRadius: 38, height: 76, width: 76 },
   profilePhotoPicker: {

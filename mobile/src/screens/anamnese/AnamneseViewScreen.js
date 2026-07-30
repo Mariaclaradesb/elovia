@@ -5,6 +5,7 @@ import { ActivityIndicator, Button, Card, Chip, List, ProgressBar, Searchbar, Te
 import FeedbackMessage from '../../components/FeedbackMessage';
 
 import AppSnackbar from '../../components/AppSnackbar';
+import EmptyState from '../../components/EmptyState';
 import InfoGrid from '../../components/InfoGrid';
 import Screen from '../../components/Screen';
 import { useAuth } from '../../context/AuthContext';
@@ -20,12 +21,17 @@ function textList(value, other) {
 }
 
 function AccordionSection({ title, icon, items, children }) {
+  const visibleItems = items?.filter((item) => item.value != null && item.value !== '');
+  const hasItems = !!visibleItems?.length;
+  const hasChildren = Array.isArray(children) ? children.some(Boolean) : !!children;
+
   return (
     <Card style={styles.card}>
       <List.Accordion title={title} left={(props) => <List.Icon {...props} icon={icon} color={colors.purple} />}>
         <View style={styles.anamneseAccordionContent}>
-          {items && <InfoGrid items={items.filter((item) => item.value != null && item.value !== '')} />}
+          {hasItems && <InfoGrid items={visibleItems} />}
           {children}
+          {!hasItems && !hasChildren && <EmptyState compact />}
         </View>
       </List.Accordion>
     </Card>
@@ -112,7 +118,7 @@ export default function AnamneseViewScreen({ route, navigation }) {
       {!!query && <Card style={styles.card}><Card.Content style={styles.formGap}>
         <View style={styles.documentHeader}><Text style={styles.sectionTitle}>Resultados da pesquisa</Text><Chip compact>{results.length}</Chip></View>
         {results.map((item, index) => <View key={`${item.secao}-${item.campo}-${index}`} style={styles.anamneseSearchResult}><Text style={styles.infoLabel}>{item.secao} · {item.campo}</Text><Text style={styles.infoValue}>{item.valor}</Text></View>)}
-        {!results.length && <Text style={styles.muted}>Nenhum resultado encontrado.</Text>}
+        {!results.length && <EmptyState compact text="Ainda não há registros para essa pesquisa." />}
       </Card.Content></Card>}
 
       <AccordionSection title="Identificação" icon="account-school-outline" items={[
@@ -143,10 +149,12 @@ export default function AnamneseViewScreen({ route, navigation }) {
         { label: 'Alergias', value: anamnese.alergias, full: true },
         { label: 'Restrições alimentares', value: anamnese.restricoesAlimentares, full: true },
       ]}>
-        <View style={styles.chipWrap}>{anamnese.diagnosticos?.map((item) => <Chip key={item.id || `${item.nome}-${item.cid}`} icon="medical-bag">{item.nome}{item.cid ? ` · CID ${item.cid}` : ''}</Chip>)}</View>
+        {!!anamnese.diagnosticos?.length && <View style={styles.chipWrap}>{anamnese.diagnosticos.map((item) => <Chip key={item.id || `${item.nome}-${item.cid}`} icon="medical-bag">{item.nome}{item.cid ? ` - CID ${item.cid}` : ''}</Chip>)}</View>}
+        {!anamnese.diagnosticos?.length && <EmptyState compact />}
         {anamnese.medicamentos?.map((item, index) => <InfoGrid key={`med-${index}`} items={[
-          { label: 'Medicamento', value: item.nome, full: true }, { label: 'Dosagem', value: item.dosagem }, { label: 'Observação', value: item.observacao, full: true },
+          { label: 'Medicamento', value: item.nome, full: true }, { label: 'Dosagem', value: item.dosagem }, { label: 'Observacao', value: item.observacao, full: true },
         ]} />)}
+        {!anamnese.medicamentos?.length && <EmptyState compact />}
       </AccordionSection>
 
       <AccordionSection title="Comunicação" icon="message-text-outline" items={[
@@ -163,12 +171,12 @@ export default function AnamneseViewScreen({ route, navigation }) {
 
       <AccordionSection title="Documentos" icon="folder-multiple-outline">
         {anamnese.anexos?.map((document) => <Button key={document.id} mode="outlined" icon="file-document-outline" onPress={() => navigation.navigate('DocumentoDetails', { documento: document, aluno })}>{document.titulo}</Button>)}
-        {!anamnese.anexos?.length && <Text style={styles.muted}>Nenhum documento vinculado.</Text>}
+        {!anamnese.anexos?.length && <EmptyState compact />}
       </AccordionSection>
 
       <AccordionSection title="Histórico de edições" icon="clock-edit-outline">
         {historico.slice(0, 20).map((item) => <View key={item.id} style={styles.infoTile}><Text style={styles.infoLabel}>Etapa {item.etapa} · {item.usuarioNome || 'Sistema'}</Text><Text style={styles.infoValue}>{item.resumo}</Text>{!!item.editadoEm && <Text style={styles.muted}>{new Date(item.editadoEm).toLocaleString('pt-BR')}</Text>}</View>)}
-        {!historico.length && <Text style={styles.muted}>Nenhuma edição registrada.</Text>}
+        {!historico.length && <EmptyState compact />}
       </AccordionSection>
 
       <FeedbackMessage type="error" message={error} />

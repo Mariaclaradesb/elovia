@@ -3,8 +3,20 @@ import { Image, View } from 'react-native';
 import { Avatar, Button, Text } from 'react-native-paper';
 
 import { styles } from '../theme/styles';
+import { preparePickedImage } from '../utils/imageAssets';
 
 export default function ProfilePhotoPicker({ value, onChange, onError }) {
+  async function handleResult(result, source) {
+    if (!result?.canceled && result?.assets?.[0]) {
+      try {
+        const image = await preparePickedImage(result.assets[0], `perfil-${Date.now()}.jpg`);
+        onChange({ ...image, source, skipPreview: source === 'camera' });
+      } catch {
+        onError?.('Nao foi possivel preparar a foto. Tente escolher uma imagem da galeria.');
+      }
+    }
+  }
+
   async function openPicker(useCamera) {
     const permission = useCamera
       ? await ImagePicker.requestCameraPermissionsAsync()
@@ -15,17 +27,26 @@ export default function ProfilePhotoPicker({ value, onChange, onError }) {
       return;
     }
 
-    const result = useCamera
-      ? await ImagePicker.launchCameraAsync({ allowsEditing: true, aspect: [1, 1], quality: 0.75 })
-      : await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: 'images',
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.75,
-      });
+    try {
+      const result = useCamera
+        ? await ImagePicker.launchCameraAsync({
+          allowsEditing: false,
+          base64: false,
+          exif: false,
+          quality: 0.35,
+          legacy: true,
+        })
+        : await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: 'images',
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.75,
+          legacy: true,
+        });
 
-    if (!result.canceled && result.assets?.[0]) {
-      onChange(result.assets[0]);
+      await handleResult(result, useCamera ? 'camera' : 'library');
+    } catch {
+      onError?.('Nao foi possivel abrir a camera. Tente selecionar uma foto da galeria.');
     }
   }
 
@@ -38,9 +59,10 @@ export default function ProfilePhotoPicker({ value, onChange, onError }) {
       )}
       <View style={styles.profilePhotoActions}>
         <Text style={styles.itemTitle}>Foto de perfil</Text>
-        <Text style={styles.muted}>Use a camera ou escolha uma foto da galeria.</Text>
-        <View style={styles.fileActionsRow}>
-          <Button mode="outlined" icon="camera-outline" onPress={() => openPicker(true)}>Camera</Button>
+          {/* <Text style={styles.muted}>Use a camera ou escolha uma foto da galeria.</Text> */}
+          <Text style={styles.muted}>Escolha uma foto da galeria.</Text>
+          <View style={styles.fileActionsRow}>
+          {/* <Button mode="outlined" icon="camera-outline" onPress={() => openPicker(true)}>Camera</Button> */}
           <Button mode="outlined" icon="image-outline" onPress={() => openPicker(false)}>Galeria</Button>
         </View>
       </View>

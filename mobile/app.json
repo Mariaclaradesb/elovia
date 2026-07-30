@@ -27,6 +27,7 @@
       [
         "expo-image-picker",
         {
+          "cameraPermission": "Permita que o Elovia acesse a câmera para tirar fotos de perfil e dos alunos.",
           "photosPermission": "Permita que o Elovia acesse suas fotos para cadastrar a imagem do aluno."
         }
       ],

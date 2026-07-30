@@ -75,7 +75,7 @@ export default function SessoesScreen({ navigation }) {
       )}
 
       <Text style={styles.sectionTitle}>Histórico</Text>
-      {historico.length === 0 ? <EmptyState text="Nenhuma sessão finalizada." /> : historico.map((sessao) => (
+      {historico.length === 0 ? <EmptyState /> : historico.map((sessao) => (
         <SessaoCard key={sessao.id} sessao={sessao} onPress={() => navigation.navigate('SessaoAcompanhamento', { sessao })} />
       ))}
     </AppLayout>

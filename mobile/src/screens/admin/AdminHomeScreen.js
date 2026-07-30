@@ -73,7 +73,7 @@ export default function AdminHomeScreen({ navigation }) {
       <View style={styles.statsGrid}>
         <StatCard label="Alunos" value={dashboard?.quantidadeAlunos ?? '-'} color={colors.teal} icon="school" />
         <StatCard label="Mediadores" value={dashboard?.quantidadeMediadores ?? '-'} color={colors.purple} icon="account-heart" />
-        <StatCard label="Sem mediador" value={dashboard?.quantidadeAlunosSemMediador ?? '-'} color={colors.yellow} icon="account-alert" />
+        <StatCard label="Alunos sem mediador" value={dashboard?.quantidadeAlunosSemMediador ?? '-'} color={colors.yellow} icon="account-alert" />
       </View>
 
       <SectionTitle title="Acesso rápido" />
@@ -85,7 +85,7 @@ export default function AdminHomeScreen({ navigation }) {
       </View>
 
       <SectionTitle title="Últimos cadastros" />
-      {alunos.length === 0 && mediadores.length === 0 && <EmptyState text="Nenhum cadastro encontrado." />}
+      {alunos.length === 0 && mediadores.length === 0 && <EmptyState />}
       {alunos.slice(0, 3).map((aluno) => (
         <AlunoListItem
           key={aluno.id}

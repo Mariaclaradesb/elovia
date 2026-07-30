@@ -147,7 +147,7 @@ export default function DocumentoFormScreen({ route, navigation }) {
         <View style={styles.filePickerBox}>
           <View style={styles.fileActions}>
             <Button mode="outlined" icon="file-upload-outline" onPress={pickDocument}>Selecionar arquivo</Button>
-            <Button mode="outlined" icon="camera-outline" onPress={takePhoto}>Usar camera</Button>
+            {/* <Button mode="outlined" icon="camera-outline" onPress={takePhoto}>Usar camera</Button> */}
           </View>
           {(file || documento?.nomeArquivo) ? (
             <Card mode="outlined" style={styles.card}>

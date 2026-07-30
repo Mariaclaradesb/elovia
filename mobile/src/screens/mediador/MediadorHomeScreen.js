@@ -81,7 +81,7 @@ export default function MediadorHomeScreen({ navigation }) {
       <Button mode="outlined" icon="calendar-clock" onPress={() => navigation.navigate('Sessoes')}>
         Ver sessões
       </Button>
-      {alunos.length === 0 ? <EmptyState text="Nenhum aluno vinculado." /> : alunos.map((aluno) => (
+      {alunos.length === 0 ? <EmptyState /> : alunos.map((aluno) => (
         <AlunoListItem key={aluno.id} aluno={aluno} onPress={() => navigation.navigate('AlunoProfile', { aluno })} />
       ))}
     </AppLayout>
