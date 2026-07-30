@@ -40,10 +40,14 @@ public record AlunoResponse(
 		Instant atualizadoEm) {
 
 	public static AlunoResponse from(Aluno aluno) {
+		return from(aluno, aluno.getFoto());
+	}
+
+	public static AlunoResponse from(Aluno aluno, String foto) {
 		return new AlunoResponse(
 				aluno.getId(),
 				aluno.getNome(),
-				aluno.getFoto(),
+				foto,
 				aluno.getDataNascimento(),
 				aluno.getSexo(),
 				aluno.getEscola(),

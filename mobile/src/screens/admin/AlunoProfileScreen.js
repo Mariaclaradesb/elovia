@@ -10,6 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
 import { styles } from '../../theme/styles';
 import { isoToDisplayDate } from '../../utils/date';
+import { getDisplayImageUri } from '../../utils/imageUri';
 import { listToText, textToList } from '../../utils/listFields';
 import { initials } from '../../utils/text';
 
@@ -38,6 +39,7 @@ export default function AlunoProfileScreen({ route, navigation }) {
       </Screen>
     );
   }
+  const foto = getDisplayImageUri(aluno.foto);
 
   function renderInfo() {
     const responsaveis = aluno.responsaveis?.length
@@ -143,8 +145,8 @@ export default function AlunoProfileScreen({ route, navigation }) {
       <Card style={styles.card}>
         <Card.Content>
           <View style={styles.profileHeader}>
-            {aluno.foto ? (
-              <Image source={{ uri: aluno.foto }} style={styles.profilePhoto} />
+            {foto ? (
+              <Image source={{ uri: foto }} style={styles.profilePhoto} />
             ) : (
               <Avatar.Text size={76} label={initials(aluno.nome)} style={styles.avatarTeal} />
             )}

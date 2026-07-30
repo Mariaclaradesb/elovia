@@ -24,6 +24,7 @@ import {
 } from '../../services/acompanhamentoApi';
 import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
+import { getDisplayImageUri } from '../../utils/imageUri';
 import { initials } from '../../utils/text';
 
 const STUDENT_ACCENTS = [colors.teal, colors.purple, colors.yellow];
@@ -206,8 +207,8 @@ export default function SessaoAcompanhamentoScreen({ route, navigation }) {
               style={[styles.sessionStudentCard, { borderBottomColor: STUDENT_ACCENTS[index % STUDENT_ACCENTS.length] }]}
             >
               <Card.Content style={styles.sessionStudentContent}>
-                {aluno.foto ? (
-                  <Avatar.Image size={52} source={{ uri: aluno.foto }} />
+                {getDisplayImageUri(aluno.foto) ? (
+                  <Avatar.Image size={52} source={{ uri: getDisplayImageUri(aluno.foto) }} />
                 ) : (
                   <Avatar.Text size={52} label={initials(aluno.nome)} style={styles.avatarLavender} />
                 )}

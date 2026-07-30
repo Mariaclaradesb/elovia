@@ -3,10 +3,12 @@ import { Avatar, Card, IconButton, Text } from 'react-native-paper';
 
 import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
+import { getDisplayImageUri } from '../../utils/imageUri';
 
 export default function AlunoListItem({ aluno, actions, onPress }) {
   const disabled = !aluno.ativo;
   const mediadores = aluno.mediadorIds?.length || 0;
+  const foto = getDisplayImageUri(aluno.foto);
   const hasMediator = mediadores > 0;
   const badgeText = disabled ? 'Desativado' : !hasMediator ? 'Sem mediador' : '';
   const actionItems = Array.isArray(actions) ? actions : [];
@@ -21,8 +23,8 @@ export default function AlunoListItem({ aluno, actions, onPress }) {
       <View style={[styles.studentListStatusDot, statusStyle]} />
       <Card.Content style={styles.studentListContent}>
         <View style={styles.studentListRow}>
-          {aluno.foto ? (
-            <Avatar.Image size={44} source={{ uri: aluno.foto }} />
+          {foto ? (
+            <Avatar.Image size={44} source={{ uri: foto }} />
           ) : (
             <Avatar.Text
               size={44}

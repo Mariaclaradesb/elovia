@@ -12,6 +12,10 @@ public record AlunoSessaoResponse(
 		long quantidadeRegistros) {
 
 	public static AlunoSessaoResponse from(Aluno aluno, long quantidadeRegistros) {
-		return new AlunoSessaoResponse(aluno.getId(), aluno.getNome(), aluno.getFoto(), aluno.getTurma(), quantidadeRegistros);
+		return from(aluno, aluno.getFoto(), quantidadeRegistros);
+	}
+
+	public static AlunoSessaoResponse from(Aluno aluno, String foto, long quantidadeRegistros) {
+		return new AlunoSessaoResponse(aluno.getId(), aluno.getNome(), foto, aluno.getTurma(), quantidadeRegistros);
 	}
 }

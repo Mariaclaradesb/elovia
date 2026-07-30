@@ -4,8 +4,11 @@ import { Avatar, Button, Text } from 'react-native-paper';
 
 import { styles } from '../theme/styles';
 import { preparePickedImage } from '../utils/imageAssets';
+import { getDisplayImageUri } from '../utils/imageUri';
 
 export default function ProfilePhotoPicker({ value, onChange, onError }) {
+  const previewUri = getDisplayImageUri(value);
+
   async function handleResult(result, source) {
     if (!result?.canceled && result?.assets?.[0]) {
       try {
@@ -52,8 +55,8 @@ export default function ProfilePhotoPicker({ value, onChange, onError }) {
 
   return (
     <View style={styles.profilePhotoPicker}>
-      {value ? (
-        <Image source={{ uri: value }} style={styles.profilePhotoLarge} />
+      {previewUri ? (
+        <Image source={{ uri: previewUri }} style={styles.profilePhotoLarge} />
       ) : (
         <Avatar.Icon icon="account-circle-outline" size={112} />
       )}

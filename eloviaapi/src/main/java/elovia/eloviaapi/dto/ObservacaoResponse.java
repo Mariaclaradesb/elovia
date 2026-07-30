@@ -26,13 +26,17 @@ public record ObservacaoResponse(
 		Instant updatedAt) {
 
 	public static ObservacaoResponse from(Observacao observacao) {
+		return from(observacao, observacao.getAluno().getFoto());
+	}
+
+	public static ObservacaoResponse from(Observacao observacao, String alunoFoto) {
 		var aluno = observacao.getAluno();
 		return new ObservacaoResponse(
 				observacao.getId(),
 				observacao.getSessao().getId(),
 				aluno.getId(),
 				aluno.getNome(),
-				aluno.getFoto(),
+				alunoFoto,
 				observacao.getCategoria(),
 				observacao.getDescricao(),
 				observacao.getDisciplina(),

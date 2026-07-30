@@ -2,10 +2,13 @@ package elovia.eloviaapi.service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import elovia.eloviaapi.dto.AlunoObservacoesRequest;
 import elovia.eloviaapi.dto.AlunoRequest;
@@ -29,14 +32,21 @@ public class AlunoService {
 	private final AlunoRepository alunoRepository;
 	private final UsuarioRepository usuarioRepository;
 	private final CurrentUserService currentUserService;
+	private final SupabaseStorageService storageService;
+	private final FotoPerfilService fotoPerfilService;
+	private static final Set<String> EXTENSOES_FOTO_ACEITAS = Set.of("png", "jpg", "jpeg", "webp");
 
 	public AlunoService(
 			AlunoRepository alunoRepository,
 			UsuarioRepository usuarioRepository,
-			CurrentUserService currentUserService) {
+			CurrentUserService currentUserService,
+			SupabaseStorageService storageService,
+			FotoPerfilService fotoPerfilService) {
 		this.alunoRepository = alunoRepository;
 		this.usuarioRepository = usuarioRepository;
 		this.currentUserService = currentUserService;
+		this.storageService = storageService;
+		this.fotoPerfilService = fotoPerfilService;
 	}
 
 	@Transactional(readOnly = true)
@@ -46,13 +56,13 @@ public class AlunoService {
 				? alunoRepository.findByAdministradorIdOrderByNomeAsc(usuario.getId())
 				: alunoRepository.findByAtivoTrueAndMediadoresIdOrderByNomeAsc(usuario.getId());
 		return alunos.stream()
-				.map(AlunoResponse::from)
+				.map(this::toResponse)
 				.toList();
 	}
 
 	@Transactional(readOnly = true)
 	public AlunoResponse findById(UUID id) {
-		return AlunoResponse.from(findEntityById(id));
+		return toResponse(findEntityById(id));
 	}
 
 	@Transactional
@@ -63,7 +73,7 @@ public class AlunoService {
 		var savedAluno = alunoRepository.save(aluno);
 		syncMediadores(savedAluno, request.mediadorIds());
 		atualizarNecessidadeMediador(savedAluno);
-		return AlunoResponse.from(savedAluno);
+		return toResponse(savedAluno);
 	}
 
 	@Transactional
@@ -74,7 +84,7 @@ public class AlunoService {
 			syncMediadores(aluno, request.mediadorIds());
 		}
 		atualizarNecessidadeMediador(aluno);
-		return AlunoResponse.from(aluno);
+		return toResponse(aluno);
 	}
 
 	@Transactional
@@ -94,7 +104,30 @@ public class AlunoService {
 		aluno.setObjetivosPdi(request.objetivosPdi());
 		aluno.setFormaComunicacao(request.formaComunicacao());
 		aluno.setObservacoes(request.observacoes());
-		return AlunoResponse.from(aluno);
+		return toResponse(aluno);
+	}
+
+	@Transactional
+	public AlunoResponse atualizarFoto(UUID id, MultipartFile arquivo) {
+		if (arquivo == null || arquivo.isEmpty()) {
+			throw new BusinessException("Selecione uma foto");
+		}
+		if (arquivo.getContentType() == null || !arquivo.getContentType().startsWith("image/")) {
+			throw new BusinessException("Envie uma imagem PNG ou JPG");
+		}
+
+		var aluno = findEntityById(id);
+		var nomeOriginal = arquivo.getOriginalFilename() != null ? arquivo.getOriginalFilename() : "aluno.jpg";
+		var extensao = obterExtensao(nomeOriginal);
+		if (!EXTENSOES_FOTO_ACEITAS.contains(extensao)) {
+			throw new BusinessException("Envie uma imagem PNG ou JPG");
+		}
+
+		var nomeLimpo = nomeOriginal.replaceAll("[^a-zA-Z0-9._-]", "_");
+		var caminho = "alunos/" + aluno.getId() + "/perfil/" + UUID.randomUUID() + "-" + nomeLimpo;
+		storageService.upload(caminho, arquivo);
+		aluno.setFoto(caminho);
+		return toResponse(aluno);
 	}
 
 	Aluno findEntityById(UUID id) {
@@ -111,7 +144,7 @@ public class AlunoService {
 		var aluno = findEntityById(alunoId);
 		syncMediadores(aluno, request.mediadorIds());
 		atualizarNecessidadeMediador(aluno);
-		return AlunoResponse.from(aluno);
+		return toResponse(aluno);
 	}
 
 	@Transactional
@@ -127,7 +160,7 @@ public class AlunoService {
 
 	private void fillAluno(Aluno aluno, AlunoRequest request) {
 		aluno.setNome(request.nome());
-		aluno.setFoto(request.foto());
+		aluno.setFoto(normalizeFoto(request.foto()));
 		aluno.setDataNascimento(request.dataNascimento());
 		aluno.setSexo(request.sexo());
 		aluno.setEscola(request.escola());
@@ -223,6 +256,28 @@ public class AlunoService {
 
 	private String normalizeOptional(String value) {
 		return value == null || value.isBlank() ? null : value.trim();
+	}
+
+	private String normalizeFoto(String value) {
+		if (value == null || value.isBlank()) return null;
+		var foto = value.trim();
+		var lower = foto.toLowerCase(Locale.ROOT);
+		if (lower.startsWith("file:") || lower.startsWith("content:") || lower.startsWith("blob:") || lower.startsWith("data:")) {
+			return null;
+		}
+		return foto;
+	}
+
+	private String obterExtensao(String nomeArquivo) {
+		var index = nomeArquivo.lastIndexOf('.');
+		if (index < 0 || index == nomeArquivo.length() - 1) {
+			return "";
+		}
+		return nomeArquivo.substring(index + 1).toLowerCase(Locale.ROOT);
+	}
+
+	private AlunoResponse toResponse(Aluno aluno) {
+		return AlunoResponse.from(aluno, fotoPerfilService.urlAcessivel(aluno.getFoto()));
 	}
 
 	private void syncMediadores(Aluno aluno, List<UUID> mediadorIds) {

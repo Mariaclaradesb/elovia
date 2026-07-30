@@ -3,20 +3,22 @@ import { Avatar, Card, IconButton, Text } from 'react-native-paper';
 
 import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
+import { getDisplayImageUri } from '../../utils/imageUri';
 import { initials } from '../../utils/text';
 
 export default function MediadorListItem({ mediador, actions, onPress }) {
   const disabled = !mediador.ativo;
   const actionItems = Array.isArray(actions) ? actions : [];
   const statusStyle = disabled ? styles.studentListStatusInactive : styles.studentListStatusActive;
+  const foto = getDisplayImageUri(mediador.foto);
 
   return (
     <Card style={[styles.studentListCard, disabled && styles.inactiveCard]} onPress={onPress}>
       <View style={[styles.studentListStatusDot, statusStyle]} />
       <Card.Content style={styles.studentListContent}>
         <View style={styles.studentListRow}>
-          {mediador.foto ? (
-            <Avatar.Image size={44} source={{ uri: mediador.foto }} />
+          {foto ? (
+            <Avatar.Image size={44} source={{ uri: foto }} />
           ) : (
             <Avatar.Text
               size={44}

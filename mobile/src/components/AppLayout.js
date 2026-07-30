@@ -8,6 +8,7 @@ import { navigationText } from '../content/navigationText';
 import { getBottomMenuItems, getSideMenuItems } from '../navigation/menuItems';
 import { colors } from '../theme';
 import { styles } from '../theme/styles';
+import { getDisplayImageUri } from '../utils/imageUri';
 import { firstName, initials } from '../utils/text';
 import Screen from './Screen';
 
@@ -72,6 +73,8 @@ export default function AppLayout({
 }
 
 function AppTopBar({ onMenu, user, navigation }) {
+  const foto = getDisplayImageUri(user?.foto);
+
   return (
     <LinearGradient colors={[colors.lavenderSoft, colors.tealSoft]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.appTopBarGradient}>
       <View style={styles.appTopBar}>
@@ -82,8 +85,8 @@ function AppTopBar({ onMenu, user, navigation }) {
         </View>
         <View style={styles.topActions}>
           <Pressable onPress={() => navigation.navigate('PerfilUsuario')}>
-            {user?.foto ? (
-              <Avatar.Image size={42} source={{ uri: user.foto }} style={styles.topAvatar} />
+            {foto ? (
+              <Avatar.Image size={42} source={{ uri: foto }} style={styles.topAvatar} />
             ) : (
               <Avatar.Text size={42} label={initials(user?.nome)} style={styles.topAvatar} />
             )}
@@ -119,6 +122,7 @@ function BottomMenu({ role, active, navigation, onMore }) {
 function SideMenu({ visible, onClose, role, user, navigation, signOut }) {
   const roleLabel = navigationText.roles[role] || navigationText.roles.MEDIADOR;
   const items = getSideMenuItems(role);
+  const foto = getDisplayImageUri(user?.foto);
 
   function go(route) {
     onClose();
@@ -132,8 +136,8 @@ function SideMenu({ visible, onClose, role, user, navigation, signOut }) {
         <View style={styles.sidePanel}>
           <LinearGradient colors={[colors.purple, colors.teal]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.sideHeader}>
             <IconButton icon="close" iconColor={colors.white} onPress={onClose} style={styles.sideClose} />
-            {user?.foto ? (
-              <Avatar.Image size={78} source={{ uri: user.foto }} style={styles.sideAvatar} />
+            {foto ? (
+              <Avatar.Image size={78} source={{ uri: foto }} style={styles.sideAvatar} />
             ) : (
               <Avatar.Text size={78} label={initials(user?.nome)} style={styles.sideAvatar} />
             )}

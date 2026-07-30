@@ -5,13 +5,16 @@ import { Avatar, Button, Text } from 'react-native-paper';
 
 import { styles } from '../theme/styles';
 import { preparePickedImage } from '../utils/imageAssets';
+import { getDisplayImageUri } from '../utils/imageUri';
 
 export default function StudentPhotoPicker({ value, onChange, onError }) {
+  const previewUri = getDisplayImageUri(value);
+
   async function handleResult(result) {
     if (!result?.canceled && result?.assets?.[0]?.uri) {
       try {
         const image = await preparePickedImage(result.assets[0], `aluno-${Date.now()}.jpg`);
-        onChange(image.uri);
+        onChange(image.uri, image);
       } catch {
         onError?.('Não foi possível preparar a foto. Tente escolher uma imagem da galeria.');
       }
@@ -64,8 +67,8 @@ export default function StudentPhotoPicker({ value, onChange, onError }) {
 
   return (
     <View style={styles.photoPicker}>
-      {value ? (
-        <Image source={{ uri: value }} style={styles.studentPhoto} />
+      {previewUri ? (
+        <Image source={{ uri: previewUri }} style={styles.studentPhoto} />
       ) : (
         <Avatar.Icon icon="camera-plus-outline" size={92} />
       )}

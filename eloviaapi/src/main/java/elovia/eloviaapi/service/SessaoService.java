@@ -28,16 +28,19 @@ public class SessaoService {
 	private final ObservacaoRepository observacaoRepository;
 	private final AlunoService alunoService;
 	private final CurrentUserService currentUserService;
+	private final FotoPerfilService fotoPerfilService;
 
 	public SessaoService(
 			SessaoAcompanhamentoRepository sessaoRepository,
 			ObservacaoRepository observacaoRepository,
 			AlunoService alunoService,
-			CurrentUserService currentUserService) {
+			CurrentUserService currentUserService,
+			FotoPerfilService fotoPerfilService) {
 		this.sessaoRepository = sessaoRepository;
 		this.observacaoRepository = observacaoRepository;
 		this.alunoService = alunoService;
 		this.currentUserService = currentUserService;
+		this.fotoPerfilService = fotoPerfilService;
 	}
 
 	@Transactional(readOnly = true)
@@ -141,7 +144,10 @@ public class SessaoService {
 
 	private SessaoResponse toResponse(SessaoAcompanhamento sessao) {
 		var alunos = sessao.getAlunos().stream()
-				.map(aluno -> AlunoSessaoResponse.from(aluno, observacaoRepository.countBySessaoIdAndAlunoId(sessao.getId(), aluno.getId())))
+				.map(aluno -> AlunoSessaoResponse.from(
+						aluno,
+						fotoPerfilService.urlAcessivel(aluno.getFoto()),
+						observacaoRepository.countBySessaoIdAndAlunoId(sessao.getId(), aluno.getId())))
 				.toList();
 		return SessaoResponse.from(sessao, alunos);
 	}

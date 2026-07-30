@@ -12,6 +12,7 @@ import { SORT_OPTIONS, categoryLabel, tabForCategory } from '../../constants/doc
 import { useAuth } from '../../context/AuthContext';
 import { listarDocumentosAluno } from '../../services/documentosApi';
 import { styles } from '../../theme/styles';
+import { getDisplayImageUri } from '../../utils/imageUri';
 import { initials } from '../../utils/text';
 
 export default function BibliotecaAlunoScreen({ route, navigation }) {
@@ -62,6 +63,7 @@ export default function BibliotecaAlunoScreen({ route, navigation }) {
   }, [documentos, search, sort, tab, tipo]);
 
   const visibleDocs = filtered.slice(0, visibleCount);
+  const foto = getDisplayImageUri(aluno.foto);
 
   return (
     <View style={styles.flex}>
@@ -69,8 +71,8 @@ export default function BibliotecaAlunoScreen({ route, navigation }) {
         <Card style={styles.card}>
           <Card.Content>
             <View style={styles.profileHeader}>
-              {aluno.foto ? (
-                <Image source={{ uri: aluno.foto }} style={styles.profilePhoto} />
+              {foto ? (
+                <Image source={{ uri: foto }} style={styles.profilePhoto} />
               ) : (
                 <Avatar.Text size={70} label={initials(aluno.nome)} style={styles.avatarTeal} />
               )}

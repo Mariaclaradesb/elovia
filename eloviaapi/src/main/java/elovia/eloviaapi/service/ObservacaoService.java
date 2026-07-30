@@ -21,21 +21,24 @@ public class ObservacaoService {
 	private final ObservacaoRepository observacaoRepository;
 	private final SessaoService sessaoService;
 	private final AlunoService alunoService;
+	private final FotoPerfilService fotoPerfilService;
 
 	public ObservacaoService(
 			ObservacaoRepository observacaoRepository,
 			SessaoService sessaoService,
-			AlunoService alunoService) {
+			AlunoService alunoService,
+			FotoPerfilService fotoPerfilService) {
 		this.observacaoRepository = observacaoRepository;
 		this.sessaoService = sessaoService;
 		this.alunoService = alunoService;
+		this.fotoPerfilService = fotoPerfilService;
 	}
 
 	@Transactional(readOnly = true)
 	public List<ObservacaoResponse> findTimeline(UUID sessaoId) {
 		sessaoService.findEntityById(sessaoId);
 		return observacaoRepository.findBySessaoIdOrderByCreatedAtDesc(sessaoId).stream()
-				.map(ObservacaoResponse::from)
+				.map(this::toResponse)
 				.toList();
 	}
 
@@ -53,7 +56,7 @@ public class ObservacaoService {
 		observacao.setSessao(sessao);
 		observacao.setAluno(alunoService.findEntityById(request.alunoId()));
 		fill(observacao, request);
-		return ObservacaoResponse.from(observacaoRepository.save(observacao));
+		return toResponse(observacaoRepository.save(observacao));
 	}
 
 	@Transactional
@@ -68,7 +71,7 @@ public class ObservacaoService {
 		}
 		observacao.setAluno(alunoService.findEntityById(request.alunoId()));
 		fill(observacao, request);
-		return ObservacaoResponse.from(observacao);
+		return toResponse(observacao);
 	}
 
 	@Transactional
@@ -98,5 +101,9 @@ public class ObservacaoService {
 		observacao.setObservacaoComplementar(request.observacaoComplementar());
 		observacao.setTipoRegistro(request.tipoRegistro() != null ? request.tipoRegistro() : TipoRegistro.MANUAL);
 		observacao.setAudioUrl(request.audioUrl());
+	}
+
+	private ObservacaoResponse toResponse(Observacao observacao) {
+		return ObservacaoResponse.from(observacao, fotoPerfilService.urlAcessivel(observacao.getAluno().getFoto()));
 	}
 }

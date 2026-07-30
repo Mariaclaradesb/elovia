@@ -3,6 +3,7 @@ import { Avatar, Card, Text } from 'react-native-paper';
 
 import { categoriaObservacaoColor, categoriaObservacaoIcon, categoriaObservacaoLabel } from '../constants/acompanhamento';
 import { styles } from '../theme/styles';
+import { getDisplayImageUri } from '../utils/imageUri';
 
 function hora(value) {
   if (!value) return '';
@@ -11,13 +12,14 @@ function hora(value) {
 
 export default function TimelineItem({ item, onPress }) {
   const color = categoriaObservacaoColor(item.categoria);
+  const alunoFoto = getDisplayImageUri(item.alunoFoto);
 
   return (
     <Card style={styles.card} onPress={onPress}>
       <Card.Content>
         <View style={styles.itemRow}>
-          {item.alunoFoto ? (
-            <Avatar.Image size={46} source={{ uri: item.alunoFoto }} />
+          {alunoFoto ? (
+            <Avatar.Image size={46} source={{ uri: alunoFoto }} />
           ) : (
             <Avatar.Icon size={46} icon={categoriaObservacaoIcon(item.categoria)} style={{ backgroundColor: color }} />
           )}

@@ -14,9 +14,11 @@ import SelectField from '../../components/SelectField';
 import StudentPhotoPicker from '../../components/StudentPhotoPicker';
 import { useAuth } from '../../context/AuthContext';
 import { apiRequest } from '../../services/api';
+import { atualizarFotoAluno } from '../../services/alunoFotosApi';
 import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
 import { normalizeDateForApi } from '../../utils/date';
+import { getDisplayImageUri } from '../../utils/imageUri';
 import { listToText, textToList } from '../../utils/listFields';
 import { cleanPhone, formatPhone } from '../../utils/masks';
 
@@ -95,6 +97,7 @@ export default function AlunoFormScreen({ route, navigation }) {
   const [fieldErrors, setFieldErrors] = useState({});
   const [savedAluno, setSavedAluno] = useState(null);
   const [showAnamneseChoice, setShowAnamneseChoice] = useState(false);
+  const [fotoArquivo, setFotoArquivo] = useState(null);
 
   useEffect(() => {
     apiRequest('/api/mediadores', { token })
@@ -250,6 +253,7 @@ export default function AlunoFormScreen({ route, navigation }) {
         .map((item) => ({ nome: item.nome.trim(), cid: item.cid.trim() }));
       const payload = {
         ...form,
+        foto: getDisplayImageUri(form.foto),
         dataNascimento: normalizeDateForApi(form.dataNascimento),
         responsaveis,
         responsavel: principal.nome,
@@ -265,11 +269,15 @@ export default function AlunoFormScreen({ route, navigation }) {
         formaComunicacao: listToText(form.formaComunicacao),
       };
 
-      const saved = await apiRequest(aluno ? `/api/alunos/${aluno.id}` : '/api/alunos', {
+      let saved = await apiRequest(aluno ? `/api/alunos/${aluno.id}` : '/api/alunos', {
         method: aluno ? 'PUT' : 'POST',
         token,
         body: payload,
       });
+      if (fotoArquivo) {
+        saved = await atualizarFotoAluno(saved.id, token, fotoArquivo);
+        setFotoArquivo(null);
+      }
       setMessage('Aluno salvo.');
       if (aluno) {
         setTimeout(() => navigation.goBack(), 700);
@@ -296,7 +304,14 @@ export default function AlunoFormScreen({ route, navigation }) {
 
       {step === 0 && (
         <FormSection title="Dados pessoais obrigatórios">
-          <StudentPhotoPicker value={form.foto} onChange={(value) => setField('foto', value)} onError={setMessage} />
+          <StudentPhotoPicker
+            value={form.foto}
+            onChange={(value, asset) => {
+              setField('foto', value);
+              setFotoArquivo(asset);
+            }}
+            onError={setMessage}
+          />
           <TextInput label="Nome" value={form.nome} onChangeText={(value) => setField('nome', value)} required errorMessage={fieldErrors.nome} />
           <DateField label="Data de nascimento" value={form.dataNascimento} onChange={(value) => setField('dataNascimento', value)} required errorMessage={fieldErrors.dataNascimento} />
           <SelectField
