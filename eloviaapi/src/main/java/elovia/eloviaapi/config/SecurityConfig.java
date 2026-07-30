@@ -1,5 +1,6 @@
 package elovia.eloviaapi.config;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,9 @@ import elovia.eloviaapi.security.JwtAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
+
+	@Value("${app.cors.allowed-origin-patterns:https://snack.expo.dev,http://localhost:8081,http://localhost:19006,http://localhost:3000,https://*.vercel.app}")
+	private String allowedOriginPatterns;
 
 	@Bean
 	SecurityFilterChain securityFilterChain(
@@ -95,14 +99,19 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		var config = new CorsConfiguration();
-		config.setAllowedOrigins(List.of(
-				"https://snack.expo.dev",
-				"http://localhost:8081"));
+		config.setAllowedOriginPatterns(parseCsv(allowedOriginPatterns));
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-		config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+		config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
 
 		var source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", config);
 		return source;
+	}
+
+	private List<String> parseCsv(String value) {
+		return Arrays.stream(value.split(","))
+				.map(String::trim)
+				.filter(item -> !item.isBlank())
+				.toList();
 	}
 }

@@ -60,6 +60,8 @@ management:
         include: health,info
 
 app:
+  cors:
+    allowed-origin-patterns: ${CORS_ALLOWED_ORIGIN_PATTERNS:https://snack.expo.dev,http://localhost:8081,http://localhost:19006,http://localhost:3000,https://*.vercel.app}
   security:
     enabled: ${SECURITY_ENABLED:true}
   jwt:
