@@ -1,10 +1,25 @@
 import * as SecureStore from 'expo-secure-store';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { STORAGE_KEYS } from '../config/apiConfig';
 import { apiRequest } from '../services/api';
 
 const AuthContext = createContext(null);
+
+const authStorage = Platform.OS === 'web'
+  ? {
+      async getItemAsync(key) {
+        return globalThis.localStorage?.getItem(key) ?? null;
+      },
+      async setItemAsync(key, value) {
+        globalThis.localStorage?.setItem(key, value);
+      },
+      async deleteItemAsync(key) {
+        globalThis.localStorage?.removeItem(key);
+      },
+    }
+  : SecureStore;
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
@@ -13,8 +28,8 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     async function loadSession() {
-      const savedToken = await SecureStore.getItemAsync(STORAGE_KEYS.token);
-      const savedUser = await SecureStore.getItemAsync(STORAGE_KEYS.user);
+      const savedToken = await authStorage.getItemAsync(STORAGE_KEYS.token);
+      const savedUser = await authStorage.getItemAsync(STORAGE_KEYS.user);
 
       if (savedToken && savedUser) {
         setToken(savedToken);
@@ -23,7 +38,7 @@ export function AuthProvider({ children }) {
 
         apiRequest('/api/auth/me', { token: savedToken })
           .then(async (freshUser) => {
-            await SecureStore.setItemAsync(STORAGE_KEYS.user, JSON.stringify(freshUser));
+            await authStorage.setItemAsync(STORAGE_KEYS.user, JSON.stringify(freshUser));
             setUser(freshUser);
           })
           .catch(() => {});
@@ -41,8 +56,8 @@ export function AuthProvider({ children }) {
       body: { email: email.trim(), senha },
     });
 
-    await SecureStore.setItemAsync(STORAGE_KEYS.token, data.token);
-    await SecureStore.setItemAsync(STORAGE_KEYS.user, JSON.stringify(data.usuario));
+    await authStorage.setItemAsync(STORAGE_KEYS.token, data.token);
+    await authStorage.setItemAsync(STORAGE_KEYS.user, JSON.stringify(data.usuario));
     setToken(data.token);
     setUser(data.usuario);
 
@@ -55,8 +70,8 @@ export function AuthProvider({ children }) {
       body: payload,
     });
 
-    await SecureStore.setItemAsync(STORAGE_KEYS.token, data.token);
-    await SecureStore.setItemAsync(STORAGE_KEYS.user, JSON.stringify(data.usuario));
+    await authStorage.setItemAsync(STORAGE_KEYS.token, data.token);
+    await authStorage.setItemAsync(STORAGE_KEYS.user, JSON.stringify(data.usuario));
     setToken(data.token);
     setUser(data.usuario);
 
@@ -64,13 +79,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   const updateUser = useCallback(async (nextUser) => {
-    await SecureStore.setItemAsync(STORAGE_KEYS.user, JSON.stringify(nextUser));
+    await authStorage.setItemAsync(STORAGE_KEYS.user, JSON.stringify(nextUser));
     setUser(nextUser);
   }, []);
 
   const signOut = useCallback(async () => {
-    await SecureStore.deleteItemAsync(STORAGE_KEYS.token);
-    await SecureStore.deleteItemAsync(STORAGE_KEYS.user);
+    await authStorage.deleteItemAsync(STORAGE_KEYS.token);
+    await authStorage.deleteItemAsync(STORAGE_KEYS.user);
     setToken(null);
     setUser(null);
   }, []);
