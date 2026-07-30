@@ -18,7 +18,7 @@ export default function ProfilePhotoPicker({ value, onChange, onError }) {
     const result = useCamera
       ? await ImagePicker.launchCameraAsync({ allowsEditing: true, aspect: [1, 1], quality: 0.75 })
       : await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: 'images',
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.75,
@@ -34,7 +34,7 @@ export default function ProfilePhotoPicker({ value, onChange, onError }) {
       {value ? (
         <Image source={{ uri: value }} style={styles.profilePhotoLarge} />
       ) : (
-        <Avatar.Icon icon="account-camera-outline" size={112} />
+        <Avatar.Icon icon="account-circle-outline" size={112} />
       )}
       <View style={styles.profilePhotoActions}>
         <Text style={styles.itemTitle}>Foto de perfil</Text>

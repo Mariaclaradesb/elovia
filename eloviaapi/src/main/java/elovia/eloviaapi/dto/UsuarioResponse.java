@@ -22,13 +22,17 @@ public record UsuarioResponse(
 		Instant ultimoLogin) {
 
 	public static UsuarioResponse from(Usuario usuario) {
+		return from(usuario, usuario.getFoto());
+	}
+
+	public static UsuarioResponse from(Usuario usuario, String foto) {
 		return new UsuarioResponse(
 				usuario.getId(),
 				usuario.getNome(),
 				usuario.getCpf(),
 				usuario.getEmail(),
 				usuario.getTelefone(),
-				usuario.getFoto(),
+				foto,
 				usuario.getEscola(),
 				usuario.getCargo(),
 				usuario.getMatricula(),

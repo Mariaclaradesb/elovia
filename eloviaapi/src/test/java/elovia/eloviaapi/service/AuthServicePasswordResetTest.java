@@ -45,6 +45,7 @@ class AuthServicePasswordResetTest {
 				mock(JwtService.class),
 				mock(CurrentUserService.class),
 				mock(SupabaseStorageService.class),
+				mock(FotoPerfilService.class),
 				notificationService,
 				15);
 

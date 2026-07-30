@@ -18,7 +18,15 @@ export function AuthProvider({ children }) {
 
       if (savedToken && savedUser) {
         setToken(savedToken);
-        setUser(JSON.parse(savedUser));
+        const cachedUser = JSON.parse(savedUser);
+        setUser(cachedUser);
+
+        apiRequest('/api/auth/me', { token: savedToken })
+          .then(async (freshUser) => {
+            await SecureStore.setItemAsync(STORAGE_KEYS.user, JSON.stringify(freshUser));
+            setUser(freshUser);
+          })
+          .catch(() => {});
       }
 
       setBooting(false);

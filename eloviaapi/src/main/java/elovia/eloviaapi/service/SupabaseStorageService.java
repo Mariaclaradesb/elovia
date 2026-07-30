@@ -2,6 +2,7 @@ package elovia.eloviaapi.service;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -113,12 +114,37 @@ public class SupabaseStorageService {
 		}
 	}
 
+	public String signedUrlFromReference(String referencia, Duration validade) {
+		var caminho = storagePathFromReference(referencia);
+		if (caminho == null || caminho.isBlank()) {
+			return referencia;
+		}
+		if (supabaseUrl.isBlank() || serviceRoleKey.isBlank()) {
+			return referencia;
+		}
+		return signedUrl(caminho, validade);
+	}
+
+	public String storagePathFromReference(String referencia) {
+		if (referencia == null || referencia.isBlank()) return null;
+		var value = referencia.trim();
+
+		var publicPath = storagePathFromPublicUrl(value);
+		if (publicPath != null) return publicPath;
+
+		var signedPath = storagePathAfterMarker(value, "/storage/v1/object/sign/" + bucket + "/");
+		if (signedPath != null) return signedPath;
+
+		if (isStoragePath(value)) {
+			return value.replaceFirst("^/+", "");
+		}
+		return null;
+	}
+
 	public String storagePathFromPublicUrl(String url) {
 		if (url == null || url.isBlank()) return null;
 		var marker = "/storage/v1/object/public/" + bucket + "/";
-		var markerIndex = url.indexOf(marker);
-		if (markerIndex < 0) return null;
-		return url.substring(markerIndex + marker.length());
+		return storagePathAfterMarker(url, marker);
 	}
 
 	private String extractSignedUrl(String body) {
@@ -135,6 +161,25 @@ public class SupabaseStorageService {
 
 	private String encodePath(String caminho) {
 		return URLEncoder.encode(caminho, StandardCharsets.UTF_8).replace("+", "%20").replace("%2F", "/");
+	}
+
+	private String storagePathAfterMarker(String url, String marker) {
+		var markerIndex = url.indexOf(marker);
+		if (markerIndex < 0) return null;
+		var path = url.substring(markerIndex + marker.length());
+		var endIndex = path.length();
+		var queryIndex = path.indexOf('?');
+		if (queryIndex >= 0) endIndex = Math.min(endIndex, queryIndex);
+		var fragmentIndex = path.indexOf('#');
+		if (fragmentIndex >= 0) endIndex = Math.min(endIndex, fragmentIndex);
+		return URLDecoder.decode(path.substring(0, endIndex), StandardCharsets.UTF_8);
+	}
+
+	private boolean isStoragePath(String value) {
+		return !value.contains("://")
+				&& !value.startsWith("data:")
+				&& !value.startsWith("content:")
+				&& !value.startsWith("file:");
 	}
 
 	private String normalizeSignedUrl(String signedUrl) {

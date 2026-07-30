@@ -1,4 +1,5 @@
-import { Image, SafeAreaView } from 'react-native';
+import { Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActivityIndicator } from 'react-native-paper';
 
 import { colors } from '../../theme';

@@ -27,13 +27,17 @@ public record MediadorResponse(
 	}
 
 	public static MediadorResponse from(Usuario usuario, String senhaTemporaria) {
+		return from(usuario, usuario.getFoto(), senhaTemporaria);
+	}
+
+	public static MediadorResponse from(Usuario usuario, String foto, String senhaTemporaria) {
 		return new MediadorResponse(
 				usuario.getId(),
 				usuario.getNome(),
 				usuario.getCpf(),
 				usuario.getEmail(),
 				usuario.getTelefone(),
-				usuario.getFoto(),
+				foto,
 				usuario.getEscola(),
 				usuario.getAdministrador() != null ? usuario.getAdministrador().getId() : null,
 				usuario.getCargo(),

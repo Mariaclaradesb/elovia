@@ -44,6 +44,7 @@ public class AuthService {
 	private final JwtService jwtService;
 	private final CurrentUserService currentUserService;
 	private final SupabaseStorageService storageService;
+	private final FotoPerfilService fotoPerfilService;
 	private final NotificationService notificationService;
 	private final int resetExpirationMinutes;
 	private final SecureRandom secureRandom = new SecureRandom();
@@ -55,6 +56,7 @@ public class AuthService {
 			JwtService jwtService,
 			CurrentUserService currentUserService,
 			SupabaseStorageService storageService,
+			FotoPerfilService fotoPerfilService,
 			NotificationService notificationService,
 			@Value("${app.password-reset.expiration-minutes:15}") int resetExpirationMinutes) {
 		this.usuarioRepository = usuarioRepository;
@@ -63,6 +65,7 @@ public class AuthService {
 		this.jwtService = jwtService;
 		this.currentUserService = currentUserService;
 		this.storageService = storageService;
+		this.fotoPerfilService = fotoPerfilService;
 		this.notificationService = notificationService;
 		this.resetExpirationMinutes = resetExpirationMinutes;
 	}
@@ -78,7 +81,7 @@ public class AuthService {
 		}
 
 		usuario.setUltimoLogin(Instant.now());
-		return new LoginResponse(jwtService.generate(usuario), UsuarioResponse.from(usuario));
+		return new LoginResponse(jwtService.generate(usuario), usuarioResponse(usuario));
 	}
 
 	@Transactional
@@ -109,11 +112,11 @@ public class AuthService {
 		usuario.setUltimoLogin(Instant.now());
 
 		var salvo = usuarioRepository.save(usuario);
-		return new LoginResponse(jwtService.generate(salvo), UsuarioResponse.from(salvo));
+		return new LoginResponse(jwtService.generate(salvo), usuarioResponse(salvo));
 	}
 
 	public UsuarioResponse me() {
-		return UsuarioResponse.from(currentUserService.getCurrentUser());
+		return usuarioResponse(currentUserService.getCurrentUser());
 	}
 
 	@Transactional
@@ -139,7 +142,7 @@ public class AuthService {
 		usuario.setEscola(request.escola());
 		usuario.setCargo(request.cargo());
 		usuario.setMatricula(request.matricula());
-		return UsuarioResponse.from(usuario);
+		return usuarioResponse(usuario);
 	}
 
 	@Transactional
@@ -155,8 +158,9 @@ public class AuthService {
 		var nomeOriginal = arquivo.getOriginalFilename() != null ? arquivo.getOriginalFilename() : "perfil.jpg";
 		var nomeLimpo = nomeOriginal.replaceAll("[^a-zA-Z0-9._-]", "_");
 		var caminho = "perfis/" + usuario.getId() + "/" + UUID.randomUUID() + "-" + nomeLimpo;
-		usuario.setFoto(storageService.upload(caminho, arquivo));
-		return UsuarioResponse.from(usuario);
+		storageService.upload(caminho, arquivo);
+		usuario.setFoto(caminho);
+		return usuarioResponse(usuario);
 	}
 
 	@Transactional
@@ -173,7 +177,11 @@ public class AuthService {
 
 		usuario.setSenha(passwordEncoder.encode(request.novaSenha()));
 		usuario.setPrimeiroAcesso(false);
-		return UsuarioResponse.from(usuario);
+		return usuarioResponse(usuario);
+	}
+
+	private UsuarioResponse usuarioResponse(Usuario usuario) {
+		return UsuarioResponse.from(usuario, fotoPerfilService.urlAcessivel(usuario.getFoto()));
 	}
 
 	@Transactional

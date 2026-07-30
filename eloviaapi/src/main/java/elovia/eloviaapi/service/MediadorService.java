@@ -25,28 +25,31 @@ public class MediadorService {
 	private final PasswordEncoder passwordEncoder;
 	private final NotificationService notificationService;
 	private final CurrentUserService currentUserService;
+	private final FotoPerfilService fotoPerfilService;
 	private final SecureRandom secureRandom = new SecureRandom();
 
 	public MediadorService(
 			UsuarioRepository usuarioRepository,
 			PasswordEncoder passwordEncoder,
 			NotificationService notificationService,
-			CurrentUserService currentUserService) {
+			CurrentUserService currentUserService,
+			FotoPerfilService fotoPerfilService) {
 		this.usuarioRepository = usuarioRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.notificationService = notificationService;
 		this.currentUserService = currentUserService;
+		this.fotoPerfilService = fotoPerfilService;
 	}
 
 	public List<MediadorResponse> findAll() {
 		var admin = currentUserService.getCurrentUser();
 		return usuarioRepository.findByRoleAndAdministradorIdOrderByNomeAsc(Role.MEDIADOR, admin.getId()).stream()
-				.map(MediadorResponse::from)
+				.map(this::mediadorResponse)
 				.toList();
 	}
 
 	public MediadorResponse findById(UUID id) {
-		return MediadorResponse.from(findMediador(id));
+		return mediadorResponse(findMediador(id));
 	}
 
 	@Transactional
@@ -64,7 +67,7 @@ public class MediadorService {
 		mediador.setSenha(passwordEncoder.encode(temporaryPassword));
 		var saved = usuarioRepository.save(mediador);
 		notificationService.sendTemporaryPassword(saved, temporaryPassword);
-		return MediadorResponse.from(saved, temporaryPassword);
+		return mediadorResponse(saved, temporaryPassword);
 	}
 
 	@Transactional
@@ -74,7 +77,7 @@ public class MediadorService {
 		validateUnique(request.email(), request.cpf(), id);
 		fillMediador(mediador, request);
 		mediador.setEscola(admin.getEscola());
-		return MediadorResponse.from(mediador);
+		return mediadorResponse(mediador);
 	}
 
 	@Transactional
@@ -93,7 +96,18 @@ public class MediadorService {
 		mediador.setSenha(passwordEncoder.encode(temporaryPassword));
 		mediador.setPrimeiroAcesso(true);
 		notificationService.sendTemporaryPassword(mediador, temporaryPassword);
-		return MediadorResponse.from(mediador, temporaryPassword);
+		return mediadorResponse(mediador, temporaryPassword);
+	}
+
+	private MediadorResponse mediadorResponse(Usuario mediador) {
+		return mediadorResponse(mediador, null);
+	}
+
+	private MediadorResponse mediadorResponse(Usuario mediador, String temporaryPassword) {
+		return MediadorResponse.from(
+				mediador,
+				fotoPerfilService.urlAcessivel(mediador.getFoto()),
+				temporaryPassword);
 	}
 
 	private Usuario findMediador(UUID id) {
