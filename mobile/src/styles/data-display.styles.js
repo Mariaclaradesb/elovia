@@ -1,16 +1,45 @@
+import { Platform } from 'react-native';
+
 import { colors } from '../theme/colors';
+
+const isWeb = Platform.OS === 'web';
 
 export const dataDisplayStyles = {
   avatarTeal: { backgroundColor: colors.teal },
   avatarPurple: { backgroundColor: colors.purple },
   avatarLavender: { backgroundColor: colors.lavender },
   avatarInactive: { backgroundColor: colors.inactive },
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  statCard: { borderRadius: 18, flexBasis: '31%', flexGrow: 1, minWidth: 104 },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    ...(isWeb && {
+      gap: 12,
+    }),
+  },
+  statCard: {
+    borderRadius: 18,
+    flexBasis: '31%',
+    flexGrow: 1,
+    minWidth: 104,
+    ...(isWeb && {
+      borderRadius: 12,
+      flexBasis: 0,
+      maxWidth: 260,
+      minWidth: 180,
+    }),
+  },
   statContent: { alignItems: 'center', gap: 6 },
   statValue: { color: colors.ink, fontWeight: '900' },
   quickGrid: { gap: 10 },
-  actionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  actionGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    ...(isWeb && {
+      gap: 12,
+    }),
+  },
   actionTile: {
     alignItems: 'center',
     backgroundColor: colors.white,
@@ -26,6 +55,14 @@ export const dataDisplayStyles = {
     shadowColor: '#0F172A',
     shadowOpacity: 0.06,
     shadowRadius: 8,
+    ...(isWeb && {
+      borderRadius: 12,
+      flexBasis: 0,
+      maxWidth: 210,
+      minHeight: 96,
+      minWidth: 150,
+      padding: 14,
+    }),
   },
   actionIconCircle: { backgroundColor: '#F2ECFF', margin: 0 },
   actionTileText: {
@@ -41,6 +78,9 @@ export const dataDisplayStyles = {
     borderRadius: 22,
     borderWidth: 1,
     elevation: 0,
+    ...(isWeb && {
+      borderRadius: 12,
+    }),
   },
   itemRow: { alignItems: 'flex-start', flexDirection: 'row', gap: 12 },
   itemTitle: { color: colors.ink, fontWeight: '800' },
@@ -58,6 +98,9 @@ export const dataDisplayStyles = {
     borderWidth: 1,
     gap: 10,
     paddingVertical: 18,
+    ...(isWeb && {
+      borderRadius: 12,
+    }),
   },
   profileHeader: { alignItems: 'center', flexDirection: 'row', gap: 14 },
   profilePhoto: { borderRadius: 38, height: 76, width: 76 },
@@ -97,6 +140,10 @@ export const dataDisplayStyles = {
     flexGrow: 1,
     gap: 4,
     padding: 10,
+    ...(isWeb && {
+      borderRadius: 12,
+      flexBasis: '31%',
+    }),
   },
   infoTileFull: { flexBasis: '100%' },
 };

@@ -1,4 +1,8 @@
+import { Platform } from 'react-native';
+
 import { colors } from '../theme/colors';
+
+const isWeb = Platform.OS === 'web';
 
 export const formsStyles = {
   formGap: { gap: 16 },
@@ -32,7 +36,13 @@ export const formsStyles = {
     paddingTop: 16,
     textAlignVertical: 'top',
   },
-  formInputOutline: { borderRadius: 22, borderWidth: 1.5 },
+  formInputOutline: {
+    borderRadius: 22,
+    borderWidth: 1.5,
+    ...(isWeb && {
+      borderRadius: 12,
+    }),
+  },
   formInputOutlineError: { borderColor: colors.danger, borderWidth: 2 },
   formFieldError: {
     color: colors.danger,
@@ -53,6 +63,9 @@ export const formsStyles = {
     flexDirection: 'row',
     gap: 14,
     padding: 12,
+    ...(isWeb && {
+      borderRadius: 12,
+    }),
   },
   studentPhoto: { borderRadius: 46, height: 92, width: 92 },
 };

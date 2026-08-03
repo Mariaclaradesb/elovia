@@ -1,7 +1,7 @@
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { Button, Card, IconButton, Text } from 'react-native-paper';
 import FeedbackMessage from '../../components/FeedbackMessage';
 
@@ -33,6 +33,7 @@ export default function DocumentoFormScreen({ route, navigation }) {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [message, setMessage] = useState('');
+  const canUseCamera = Platform.OS !== 'web';
 
   function setField(field, value) {
     setValues((current) => ({ ...current, [field]: value }));
@@ -41,13 +42,7 @@ export default function DocumentoFormScreen({ route, navigation }) {
 
   async function pickDocument() {
     const result = await DocumentPicker.getDocumentAsync({
-      type: [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'image/png',
-        'image/jpeg',
-      ],
+      type: '*/*',
       copyToCacheDirectory: true,
       multiple: false,
     });
@@ -147,7 +142,7 @@ export default function DocumentoFormScreen({ route, navigation }) {
         <View style={styles.filePickerBox}>
           <View style={styles.fileActions}>
             <Button mode="outlined" icon="file-upload-outline" onPress={pickDocument}>Selecionar arquivo</Button>
-            {/* <Button mode="outlined" icon="camera-outline" onPress={takePhoto}>Usar camera</Button> */}
+            {canUseCamera && <Button mode="outlined" icon="camera-outline" onPress={takePhoto}>Usar camera</Button>}
           </View>
           {(file || documento?.nomeArquivo) ? (
             <Card mode="outlined" style={styles.card}>
@@ -161,7 +156,7 @@ export default function DocumentoFormScreen({ route, navigation }) {
                 {!!file && <IconButton icon="delete-outline" iconColor="#B42318" accessibilityLabel="Remover arquivo selecionado" onPress={() => setFile(null)} />}
               </Card.Content>
             </Card>
-          ) : <Text style={styles.muted}>PDF, DOC, DOCX, PNG, JPG ou JPEG</Text>}
+          ) : <Text style={styles.muted}>Selecione PDF, Word, planilhas, imagens ou outros arquivos.</Text>}
         </View>
       </FormSection>
       <FeedbackMessage type="error" message={error} />

@@ -1,4 +1,8 @@
+import { Platform } from 'react-native';
+
 import { colors } from '../theme/colors';
+
+const isWeb = Platform.OS === 'web';
 
 export const appLayoutStyles = {
   appTopBar: {
@@ -7,6 +11,10 @@ export const appLayoutStyles = {
     justifyContent: 'space-between',
     minHeight: 62,
     paddingHorizontal: 8,
+    ...(isWeb && {
+      minHeight: 58,
+      paddingHorizontal: 12,
+    }),
   },
   appTopBarGradient: {
     borderRadius: 22,
@@ -16,6 +24,10 @@ export const appLayoutStyles = {
     shadowColor: colors.purple,
     shadowOpacity: 0.1,
     shadowRadius: 10,
+    ...(isWeb && {
+      borderRadius: 12,
+      marginBottom: 8,
+    }),
   },
   compactPageHeader: {
     alignItems: 'center',
@@ -23,6 +35,12 @@ export const appLayoutStyles = {
     gap: 3,
     paddingHorizontal: 18,
     paddingVertical: 14,
+    ...(isWeb && {
+      alignItems: 'flex-start',
+      borderRadius: 12,
+      paddingHorizontal: 22,
+      paddingVertical: 16,
+    }),
   },
   compactPageTitle: {
     color: colors.ink,
@@ -45,12 +63,18 @@ export const appLayoutStyles = {
     backgroundColor: colors.lavender,
     borderRadius: 22,
     overflow: 'hidden',
+    ...(isWeb && {
+      borderRadius: 12,
+    }),
   },
   welcomeCard: {
     backgroundColor: '#F0FBF8',
     borderColor: '#DDF8F0',
     borderRadius: 20,
     borderWidth: 1,
+    ...(isWeb && {
+      borderRadius: 12,
+    }),
   },
   gradientCard: {
     backgroundColor: colors.purple,
@@ -59,6 +83,9 @@ export const appLayoutStyles = {
     borderRadius: 20,
     borderRightColor: colors.yellow,
     borderRightWidth: 5,
+    ...(isWeb && {
+      borderRadius: 12,
+    }),
   },
   gradientCardTitle: { color: colors.white, fontWeight: '900' },
   gradientCardSubtitle: { color: colors.white, opacity: 0.92 },
@@ -67,8 +94,17 @@ export const appLayoutStyles = {
     flexDirection: 'row',
     gap: 14,
     minHeight: 128,
+    ...(isWeb && {
+      minHeight: 112,
+    }),
   },
-  brandHeroInner: { padding: 16 },
+  brandHeroInner: {
+    padding: 16,
+    ...(isWeb && {
+      paddingHorizontal: 22,
+      paddingVertical: 18,
+    }),
+  },
   brandHeroTitle: { color: colors.ink, fontWeight: '900', lineHeight: 32 },
   brandHeroSubtitle: {
     color: colors.ink,
@@ -76,7 +112,15 @@ export const appLayoutStyles = {
     lineHeight: 22,
     marginTop: 8,
   },
-  heroLogoMark: { height: 118, opacity: 0.95, width: 118 },
+  heroLogoMark: {
+    height: 118,
+    opacity: 0.95,
+    width: 118,
+    ...(isWeb && {
+      height: 92,
+      width: 92,
+    }),
+  },
   bottomMenu: {
     alignItems: 'center',
     backgroundColor: colors.white,
@@ -91,6 +135,18 @@ export const appLayoutStyles = {
     paddingTop: 8,
     position: 'absolute',
     right: 0,
+    ...(isWeb && {
+      borderColor: colors.line,
+      borderRadius: 18,
+      borderWidth: 1,
+      bottom: 18,
+      left: 0,
+      marginHorizontal: 'auto',
+      maxWidth: 620,
+      paddingBottom: 8,
+      right: 0,
+      width: 'calc(100% - 48px)',
+    }),
   },
   bottomMenuItem: { alignItems: 'center', flex: 1, minHeight: 64 },
   bottomIconWrap: {
@@ -127,6 +183,10 @@ export const appLayoutStyles = {
     elevation: 16,
     overflow: 'hidden',
     width: '82%',
+    ...(isWeb && {
+      maxWidth: 360,
+      width: '32%',
+    }),
   },
   sideHeader: { minHeight: 190, padding: 22, paddingTop: 34 },
   sideClose: { alignSelf: 'flex-end', margin: 0 },
@@ -141,7 +201,13 @@ export const appLayoutStyles = {
     minHeight: 54,
   },
   sideItemText: { color: colors.ink, flex: 1, fontSize: 16, fontWeight: '700' },
-  aboutCard: { backgroundColor: colors.white, borderRadius: 20 },
+  aboutCard: {
+    backgroundColor: colors.white,
+    borderRadius: 20,
+    ...(isWeb && {
+      borderRadius: 12,
+    }),
+  },
   aboutTitle: { color: colors.purple },
   aboutLogo: { alignSelf: 'center', height: 180, width: '100%' },
 };

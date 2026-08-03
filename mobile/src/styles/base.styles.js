@@ -1,4 +1,9 @@
+import { Platform } from 'react-native';
+
 import { colors } from '../theme/colors';
+
+const isWeb = Platform.OS === 'web';
+const webPageMaxWidth = 1120;
 
 export const baseStyles = {
   flex: {
@@ -7,6 +12,9 @@ export const baseStyles = {
   safe: {
     flex: 1,
     backgroundColor: colors.bg,
+    ...(isWeb && {
+      minHeight: '100vh',
+    }),
   },
   modernHeader: {
     borderBottomLeftRadius: 22,
@@ -17,6 +25,10 @@ export const baseStyles = {
     shadowOffset: { height: 3, width: 0 },
     shadowOpacity: 0.12,
     shadowRadius: 10,
+    ...(isWeb && {
+      borderBottomLeftRadius: 14,
+      borderBottomRightRadius: 14,
+    }),
   },
   modernHeaderRow: {
     alignItems: 'center',
@@ -40,6 +52,13 @@ export const baseStyles = {
     gap: 14,
     padding: 16,
     paddingBottom: 118,
+    ...(isWeb && {
+      alignSelf: 'center',
+      maxWidth: webPageMaxWidth,
+      paddingBottom: 108,
+      paddingHorizontal: 32,
+      width: '100%',
+    }),
   },
   screenWithTopInset: {
     paddingTop: 8,

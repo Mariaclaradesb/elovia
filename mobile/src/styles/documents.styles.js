@@ -26,5 +26,4 @@ export const documentsStyles = {
   errorText: { color: colors.danger },
   viewer: { backgroundColor: colors.ink, flex: 1 },
   viewerImage: { flex: 1, height: '100%', width: '100%' },
-  webViewer: { flex: 1 },
 };

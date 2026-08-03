@@ -1,6 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect } from 'react';
-import { Image, View } from 'react-native';
+import { Image, Platform, View } from 'react-native';
 import { Avatar, Button, Text } from 'react-native-paper';
 
 import { styles } from '../theme/styles';
@@ -9,6 +9,7 @@ import { getDisplayImageUri } from '../utils/imageUri';
 
 export default function StudentPhotoPicker({ value, onChange, onError }) {
   const previewUri = getDisplayImageUri(value);
+  const canUseCamera = Platform.OS !== 'web';
 
   async function handleResult(result) {
     if (!result?.canceled && result?.assets?.[0]?.uri) {
@@ -74,10 +75,11 @@ export default function StudentPhotoPicker({ value, onChange, onError }) {
       )}
       <View style={styles.flex}>
         <Text style={styles.itemTitle}>Foto do aluno</Text>
-        {/* <Text style={styles.muted}>Selecione da galeria ou tire uma foto agora.</Text> */}
-        <Text style={styles.muted}>Selecione uma foto da galeria.</Text>
+        <Text style={styles.muted}>
+          {canUseCamera ? 'Selecione da galeria ou tire uma foto agora.' : 'Selecione uma foto da galeria.'}
+        </Text>
         <View style={styles.fileActions}>
-          {/* <Button mode="outlined" icon="camera-outline" onPress={takePhoto}>Tirar foto</Button> */}
+          {canUseCamera && <Button mode="outlined" icon="camera-outline" onPress={takePhoto}>Tirar foto</Button>}
           <Button mode="outlined" icon="image-plus" onPress={pickImage}>Galeria</Button>
         </View>
       </View>

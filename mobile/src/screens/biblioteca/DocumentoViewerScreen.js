@@ -1,6 +1,5 @@
-import { Image, View } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { Text } from 'react-native-paper';
+import { Image, Linking, Platform, View } from 'react-native';
+import { Button, Text } from 'react-native-paper';
 import { useEffect, useState } from 'react';
 
 import FeedbackMessage from '../../components/FeedbackMessage';
@@ -14,6 +13,21 @@ export default function DocumentoViewerScreen({ route }) {
   const { documento } = route.params;
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
+
+  async function openFile() {
+    if (!url) return;
+
+    if (Platform.OS === 'web') {
+      globalThis.window?.open(url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    try {
+      await Linking.openURL(url);
+    } catch {
+      setError('Nao foi possivel abrir este arquivo neste dispositivo.');
+    }
+  }
 
   useEffect(() => {
     if (!documento?.id) {
@@ -50,5 +64,13 @@ export default function DocumentoViewerScreen({ route }) {
     );
   }
 
-  return <WebView source={{ uri: url }} style={styles.webViewer} />;
+  return (
+    <View style={styles.centered}>
+      <Text variant="titleMedium" style={styles.title}>{documento?.titulo || 'Arquivo pronto'}</Text>
+      <Text style={styles.muted}>Abra o arquivo no navegador ou aplicativo padrao do dispositivo.</Text>
+      <Button mode="contained" icon="open-in-new" onPress={openFile}>
+        Abrir arquivo
+      </Button>
+    </View>
+  );
 }

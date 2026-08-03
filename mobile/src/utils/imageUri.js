@@ -10,6 +10,15 @@ export function isTemporaryImageUri(uri) {
 export function getDisplayImageUri(uri) {
   if (typeof uri !== 'string') return '';
   const value = uri.trim();
+  if (!value) return '';
+  if (isTemporaryImageUri(value)) return value;
+  if (!/^https?:\/\//i.test(value)) return '';
+  return value;
+}
+
+export function getRemoteImageUri(uri) {
+  if (typeof uri !== 'string') return '';
+  const value = uri.trim();
   if (!value || isTemporaryImageUri(value)) return '';
   if (!/^https?:\/\//i.test(value)) return '';
   return value;

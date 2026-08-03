@@ -18,7 +18,7 @@ import { atualizarFotoAluno } from '../../services/alunoFotosApi';
 import { colors } from '../../theme';
 import { styles } from '../../theme/styles';
 import { normalizeDateForApi } from '../../utils/date';
-import { getDisplayImageUri } from '../../utils/imageUri';
+import { getRemoteImageUri } from '../../utils/imageUri';
 import { listToText, textToList } from '../../utils/listFields';
 import { cleanPhone, formatPhone } from '../../utils/masks';
 
@@ -253,7 +253,7 @@ export default function AlunoFormScreen({ route, navigation }) {
         .map((item) => ({ nome: item.nome.trim(), cid: item.cid.trim() }));
       const payload = {
         ...form,
-        foto: getDisplayImageUri(form.foto),
+        foto: getRemoteImageUri(form.foto),
         dataNascimento: normalizeDateForApi(form.dataNascimento),
         responsaveis,
         responsavel: principal.nome,

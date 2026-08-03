@@ -1,5 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
-import { Image, View } from 'react-native';
+import { Image, Platform, View } from 'react-native';
 import { Avatar, Button, Text } from 'react-native-paper';
 
 import { styles } from '../theme/styles';
@@ -8,12 +8,13 @@ import { getDisplayImageUri } from '../utils/imageUri';
 
 export default function ProfilePhotoPicker({ value, onChange, onError }) {
   const previewUri = getDisplayImageUri(value);
+  const canUseCamera = Platform.OS !== 'web';
 
   async function handleResult(result, source) {
     if (!result?.canceled && result?.assets?.[0]) {
       try {
         const image = await preparePickedImage(result.assets[0], `perfil-${Date.now()}.jpg`);
-        onChange({ ...image, source, skipPreview: source === 'camera' });
+        onChange({ ...image, source });
       } catch {
         onError?.('Nao foi possivel preparar a foto. Tente escolher uma imagem da galeria.');
       }
@@ -62,10 +63,13 @@ export default function ProfilePhotoPicker({ value, onChange, onError }) {
       )}
       <View style={styles.profilePhotoActions}>
         <Text style={styles.itemTitle}>Foto de perfil</Text>
-          {/* <Text style={styles.muted}>Use a camera ou escolha uma foto da galeria.</Text> */}
-          <Text style={styles.muted}>Escolha uma foto da galeria.</Text>
-          <View style={styles.fileActionsRow}>
-          {/* <Button mode="outlined" icon="camera-outline" onPress={() => openPicker(true)}>Camera</Button> */}
+        <Text style={styles.muted}>
+          {canUseCamera ? 'Use a camera ou escolha uma foto da galeria.' : 'Escolha uma foto da galeria.'}
+        </Text>
+        <View style={styles.fileActionsRow}>
+          {canUseCamera && (
+            <Button mode="outlined" icon="camera-outline" onPress={() => openPicker(true)}>Camera</Button>
+          )}
           <Button mode="outlined" icon="image-outline" onPress={() => openPicker(false)}>Galeria</Button>
         </View>
       </View>

@@ -116,10 +116,6 @@ export default function PerfilUsuarioScreen({ navigation }) {
             value={foto}
             onChange={(asset) => {
               setFotoArquivo(asset);
-              if (asset.skipPreview) {
-                setMessage('Foto capturada. Toque em Salvar perfil para atualizar.');
-                return;
-              }
               setFoto(asset.uri);
             }}
             onError={setMessage}

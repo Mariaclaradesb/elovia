@@ -1,4 +1,8 @@
+import { Platform } from 'react-native';
+
 import { colors } from '../theme/colors';
+
+const isWeb = Platform.OS === 'web';
 
 export const commonStyles = {
   card: {
@@ -7,6 +11,12 @@ export const commonStyles = {
     shadowColor: colors.purple,
     shadowOpacity: 0.06,
     shadowRadius: 10,
+    ...(isWeb && {
+      borderColor: colors.line,
+      borderRadius: 12,
+      borderWidth: 1,
+      elevation: 0,
+    }),
   },
   inactiveCard: {
     backgroundColor: colors.inactiveBg,
@@ -25,6 +35,9 @@ export const commonStyles = {
   headerCard: {
     borderRadius: 20,
     overflow: 'hidden',
+    ...(isWeb && {
+      borderRadius: 12,
+    }),
   },
   headerContent: {
     alignItems: 'center',
