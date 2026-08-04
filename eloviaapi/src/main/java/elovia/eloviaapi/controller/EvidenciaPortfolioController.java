@@ -36,9 +36,10 @@ public class EvidenciaPortfolioController {
 			@RequestParam(required = false) String tags,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime horario,
-			@RequestParam MultipartFile foto) {
+			@RequestParam(required = false) List<MultipartFile> fotos,
+			@RequestParam(required = false) MultipartFile foto) {
 		var result = service.create(alunoId, disciplina, titulo, tipoAtividade, statusAtividade,
-				descricao, observacoesComplementares, tags, data, horario, foto);
+				descricao, observacoesComplementares, tags, data, horario, combine(fotos, foto));
 		return ResponseEntity.created(URI.create("/api/portfolio/evidencias/" + result.id())).body(result);
 	}
 
@@ -52,14 +53,22 @@ public class EvidenciaPortfolioController {
 			@RequestParam(required = false) String tags,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime horario,
+			@RequestParam(required = false) List<MultipartFile> fotos,
 			@RequestParam(required = false) MultipartFile foto) {
 		return service.update(id, disciplina, titulo, tipoAtividade, statusAtividade,
-				descricao, observacoesComplementares, tags, data, horario, foto);
+				descricao, observacoesComplementares, tags, data, horario, combine(fotos, foto));
 	}
 
 	@DeleteMapping("/portfolio/evidencias/{id}")
 	public ResponseEntity<Void> delete(@PathVariable UUID id) {
 		service.delete(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	private List<MultipartFile> combine(List<MultipartFile> fotos, MultipartFile foto) {
+		var result = new java.util.ArrayList<MultipartFile>();
+		if (fotos != null) result.addAll(fotos);
+		if (foto != null && !foto.isEmpty()) result.add(foto);
+		return result;
 	}
 }

@@ -15,6 +15,7 @@ import elovia.eloviaapi.repository.EvidenciaPortfolioRepository;
 public class EvidenciaPortfolioService {
 	private static final Set<String> IMAGE_TYPES = Set.of("image/jpeg", "image/png", "image/webp");
 	private static final long MAX_IMAGE_SIZE = 12L * 1024 * 1024;
+	private static final int MAX_PHOTOS = 10;
 	private static final Duration LINK_DURATION = Duration.ofHours(1);
 	private final EvidenciaPortfolioRepository repository;
 	private final AlunoService alunoService;
@@ -41,7 +42,7 @@ public class EvidenciaPortfolioService {
 	@Transactional
 	public EvidenciaPortfolioResponse create(UUID alunoId, String disciplina, String titulo,
 			TipoAtividadePortfolio tipo, StatusAtividadePortfolio status, String descricao,
-			String observacoes, String tags, LocalDate data, LocalTime horario, MultipartFile foto) {
+			String observacoes, String tags, LocalDate data, LocalTime horario, List<MultipartFile> fotos) {
 		var user = currentUserService.getCurrentUser();
 		if (user.getRole() != Role.MEDIADOR) throw new BusinessException("Somente mediadores podem cadastrar evidencias");
 		var evidence = new EvidenciaPortfolio();
@@ -49,18 +50,18 @@ public class EvidenciaPortfolioService {
 		evidence.setMediador(user);
 		evidence.setCadastradoPor(user);
 		fill(evidence, disciplina, titulo, tipo, status, descricao, observacoes, tags, data, horario);
-		storePhoto(evidence, foto, true);
+		storePhotos(evidence, fotos, true);
 		return response(repository.save(evidence));
 	}
 
 	@Transactional
 	public EvidenciaPortfolioResponse update(UUID id, String disciplina, String titulo,
 			TipoAtividadePortfolio tipo, StatusAtividadePortfolio status, String descricao,
-			String observacoes, String tags, LocalDate data, LocalTime horario, MultipartFile foto) {
+			String observacoes, String tags, LocalDate data, LocalTime horario, List<MultipartFile> fotos) {
 		var evidence = findAuthorized(id);
 		ensureOwner(evidence);
 		fill(evidence, disciplina, titulo, tipo, status, descricao, observacoes, tags, data, horario);
-		storePhoto(evidence, foto, false);
+		storePhotos(evidence, fotos, false);
 		evidence.setUsuarioUltimaEdicao(currentUserService.getCurrentUser());
 		return response(evidence);
 	}
@@ -105,29 +106,31 @@ public class EvidenciaPortfolioService {
 				.map(v -> v.substring(0, Math.min(v.length(), 60))).limit(12).forEach(evidence.getTags()::add);
 	}
 
-	private void storePhoto(EvidenciaPortfolio evidence, MultipartFile photo, boolean required) {
-		if (photo == null || photo.isEmpty()) {
-			if (required) throw new BusinessException("Fotografe a atividade antes de salvar");
-			return;
+	private void storePhotos(EvidenciaPortfolio evidence, List<MultipartFile> photos, boolean required) {
+		var validPhotos = photos == null ? List.<MultipartFile>of() : photos.stream().filter(photo -> photo != null && !photo.isEmpty()).toList();
+		if (required && validPhotos.isEmpty()) throw new BusinessException("Fotografe a atividade antes de salvar");
+		if (evidence.getFotos().size() + validPhotos.size() > MAX_PHOTOS) throw new BusinessException("Cada evidencia pode ter no maximo 10 fotos");
+		for (MultipartFile photo : validPhotos) {
+			if (photo.getSize() > MAX_IMAGE_SIZE || !IMAGE_TYPES.contains(photo.getContentType())) {
+				throw new BusinessException("Envie imagens JPG, PNG ou WEBP de ate 12 MB cada");
+			}
+			var original = photo.getOriginalFilename() != null ? photo.getOriginalFilename() : "evidencia.jpg";
+			var safe = original.replaceAll("[^a-zA-Z0-9._-]", "_");
+			var path = "alunos/" + evidence.getAluno().getId() + "/portfolio/" + UUID.randomUUID() + "-" + safe;
+			storageService.upload(path, photo);
+			var stored = new EvidenciaPortfolioFoto();
+			stored.setCaminho(path); stored.setNome(original); stored.setTipo(photo.getContentType());
+			evidence.addFoto(stored);
 		}
-		if (photo.getSize() > MAX_IMAGE_SIZE || !IMAGE_TYPES.contains(photo.getContentType())) {
-			throw new BusinessException("Envie uma imagem JPG, PNG ou WEBP de ate 12 MB");
-		}
-		var original = photo.getOriginalFilename() != null ? photo.getOriginalFilename() : "evidencia.jpg";
-		var safe = original.replaceAll("[^a-zA-Z0-9._-]", "_");
-		var path = "alunos/" + evidence.getAluno().getId() + "/portfolio/" + UUID.randomUUID() + "-" + safe;
-		storageService.upload(path, photo);
-		evidence.setFotoCaminho(path);
-		evidence.setFotoNome(original);
-		evidence.setFotoTipo(photo.getContentType());
 	}
 
 	private EvidenciaPortfolioResponse response(EvidenciaPortfolio e) {
+		var photoUrls = e.getFotos().stream().map(photo -> storageService.signedUrl(photo.getCaminho(), LINK_DURATION)).toList();
 		return new EvidenciaPortfolioResponse(e.getId(), e.getAluno().getId(), e.getAluno().getNome(),
 			e.getMediador().getId(), e.getMediador().getNome(), e.getCadastradoPor().getId(),
 			e.getCadastradoPor().getNome(), e.getDisciplina(), e.getTitulo(), e.getTipoAtividade(),
 			e.getStatusAtividade(), e.getDescricao(), e.getObservacoesComplementares(),
-			storageService.signedUrl(e.getFotoCaminho(), LINK_DURATION), e.getData(), e.getHorario(),
+			photoUrls.isEmpty() ? null : photoUrls.get(0), photoUrls, e.getData(), e.getHorario(),
 			e.getRegistradoEm(), e.getCriadoEm(), e.getAtualizadoEm(), Set.copyOf(e.getTags()));
 	}
 

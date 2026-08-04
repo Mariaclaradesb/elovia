@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import jakarta.persistence.*;
@@ -22,9 +24,8 @@ public class EvidenciaPortfolio {
 	@Enumerated(EnumType.STRING) @Column(name = "status_atividade", nullable = false, length = 30) private StatusAtividadePortfolio statusAtividade = StatusAtividadePortfolio.CONCLUIDA;
 	@Column(columnDefinition = "text") private String descricao;
 	@Column(name = "observacoes_complementares", columnDefinition = "text") private String observacoesComplementares;
-	@Column(name = "foto_caminho", nullable = false, length = 500) private String fotoCaminho;
-	@Column(name = "foto_nome", nullable = false, length = 260) private String fotoNome;
-	@Column(name = "foto_tipo", nullable = false, length = 120) private String fotoTipo;
+	@OneToMany(mappedBy = "evidencia", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("ordem ASC") private List<EvidenciaPortfolioFoto> fotos = new ArrayList<>();
 	@Column(nullable = false) private LocalDate data;
 	@Column(nullable = false) private LocalTime horario;
 	@Column(name = "registrado_em", nullable = false) private Instant registradoEm;
@@ -48,9 +49,8 @@ public class EvidenciaPortfolio {
 	public StatusAtividadePortfolio getStatusAtividade() { return statusAtividade; } public void setStatusAtividade(StatusAtividadePortfolio v) { statusAtividade = v; }
 	public String getDescricao() { return descricao; } public void setDescricao(String v) { descricao = v; }
 	public String getObservacoesComplementares() { return observacoesComplementares; } public void setObservacoesComplementares(String v) { observacoesComplementares = v; }
-	public String getFotoCaminho() { return fotoCaminho; } public void setFotoCaminho(String v) { fotoCaminho = v; }
-	public String getFotoNome() { return fotoNome; } public void setFotoNome(String v) { fotoNome = v; }
-	public String getFotoTipo() { return fotoTipo; } public void setFotoTipo(String v) { fotoTipo = v; }
+	public List<EvidenciaPortfolioFoto> getFotos() { return fotos; }
+	public void addFoto(EvidenciaPortfolioFoto foto) { foto.setEvidencia(this); foto.setOrdem(fotos.size()); fotos.add(foto); }
 	public LocalDate getData() { return data; } public void setData(LocalDate v) { data = v; }
 	public LocalTime getHorario() { return horario; } public void setHorario(LocalTime v) { horario = v; }
 	public Instant getRegistradoEm() { return registradoEm; } public void setRegistradoEm(Instant v) { registradoEm = v; }
