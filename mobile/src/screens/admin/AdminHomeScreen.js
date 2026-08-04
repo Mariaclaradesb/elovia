@@ -26,11 +26,9 @@ export default function AdminHomeScreen({ navigation }) {
   const load = useCallback(async () => {
     setError('');
     try {
-      const [dash, alunosData, mediadoresData] = await Promise.all([
-        apiRequest('/api/admin/dashboard', { token }),
-        apiRequest('/api/alunos', { token }),
-        apiRequest('/api/mediadores', { token }),
-      ]);
+      const dash = await apiRequest('/api/admin/dashboard', { token });
+      const alunosData = await apiRequest('/api/alunos', { token });
+      const mediadoresData = await apiRequest('/api/mediadores', { token });
       setDashboard(dash);
       setAlunos(alunosData.filter((aluno) => aluno.administradorId === user?.id));
       setMediadores(mediadoresData.filter((mediador) => mediador.administradorId === user?.id));
