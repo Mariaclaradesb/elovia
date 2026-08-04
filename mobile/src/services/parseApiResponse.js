@@ -14,8 +14,17 @@ export async function parseApiResponse(response) {
 
   if (!response.ok) {
     const message = typeof data === 'string' ? data : data?.message;
-    throw new Error(message || `Erro HTTP ${response.status}`);
+    throw new ApiError(message || `Erro HTTP ${response.status}`, response.status, data);
   }
 
   return data;
+}
+
+export class ApiError extends Error {
+  constructor(message, status, data) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.data = data;
+  }
 }

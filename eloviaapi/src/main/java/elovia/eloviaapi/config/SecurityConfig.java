@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -53,10 +54,11 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.exceptionHandling(exception -> exception
 						.authenticationEntryPoint((request, response, authException) ->
-								response.sendError(HttpStatus.UNAUTHORIZED.value(), "Não autenticado"))
+								writeJsonError(response, HttpStatus.UNAUTHORIZED, "Nao autenticado"))
 						.accessDeniedHandler((request, response, accessDeniedException) ->
-								response.sendError(HttpStatus.FORBIDDEN.value(), "Acesso negado")))
+								writeJsonError(response, HttpStatus.FORBIDDEN, "Acesso negado")))
 				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers("/", "/actuator/health", "/actuator/info", "/api/test/**").permitAll()
 						.requestMatchers("/api/auth/login", "/auth/login").permitAll()
 						.requestMatchers("/api/auth/cadastrar-admin", "/auth/cadastrar-admin").permitAll()
@@ -89,7 +91,6 @@ public class SecurityConfig {
 						.requestMatchers(
 								"/api/auth/alterar-senha", "/auth/alterar-senha",
 								"/api/auth/me", "/auth/me").authenticated()
-						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 				.build();
@@ -117,5 +118,12 @@ public class SecurityConfig {
 				.map(String::trim)
 				.filter(item -> !item.isBlank())
 				.toList();
+	}
+
+	private void writeJsonError(jakarta.servlet.http.HttpServletResponse response, HttpStatus status, String message)
+			throws java.io.IOException {
+		response.setStatus(status.value());
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.getWriter().write("{\"message\":\"" + message + "\"}");
 	}
 }

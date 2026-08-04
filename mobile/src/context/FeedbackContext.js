@@ -81,7 +81,7 @@ export function normalizeFeedback(input, fallbackType = 'info') {
     }
     return {
       type: input.type || fallbackType,
-      message: friendlyMessage(input.message),
+      message: friendlyMessage(input),
     };
   }
   return { type: fallbackType, message: 'Não foi possível concluir a ação agora.' };
@@ -91,8 +91,16 @@ export function feedbackMeta(type) {
   return FEEDBACK_META[type] || FEEDBACK_META.info;
 }
 
-function friendlyMessage(message) {
+function friendlyMessage(input) {
+  const status = typeof input === 'object' ? input.status : null;
+  const message = typeof input === 'object' ? input.message : input;
   if (!message) return '';
+  if (status === 401) {
+    return 'Sua sessão expirou. Entre novamente para continuar.';
+  }
+  if (status === 403) {
+    return 'Você não tem permissão para realizar esta ação.';
+  }
   if (/failed to fetch|network request failed|load failed/i.test(message)) {
     return 'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.';
   }
