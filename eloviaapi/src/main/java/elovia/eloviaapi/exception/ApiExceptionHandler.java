@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -49,6 +50,16 @@ public class ApiExceptionHandler {
 	public ResponseEntity<Map<String, Object>> handleUnreadableMessage(HttpMessageNotReadableException exception) {
 		return ResponseEntity.badRequest().body(body(
 				"Dados inválidos. Confira a data informada no formato DD-MM-AAAA."));
+	}
+
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<Map<String, Object>> handleDataIntegrity(DataIntegrityViolationException exception) {
+		var cause = exception.getMostSpecificCause();
+		var message = cause != null ? cause.getMessage() : exception.getMessage();
+		if (message != null && message.contains("value too long")) {
+			return ResponseEntity.badRequest().body(body("Um dos campos preenchidos esta maior que o limite permitido."));
+		}
+		return ResponseEntity.badRequest().body(body("Nao foi possivel salvar os dados informados."));
 	}
 
 	private Map<String, Object> body(String message) {

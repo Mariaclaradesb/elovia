@@ -261,8 +261,14 @@ public class AlunoService {
 	private String normalizeFoto(String value) {
 		if (value == null || value.isBlank()) return null;
 		var foto = value.trim();
+		var storagePath = storageService.storagePathFromReference(foto);
+		if (storagePath != null && !storagePath.isBlank()) {
+			return storagePath;
+		}
 		var lower = foto.toLowerCase(Locale.ROOT);
-		if (lower.startsWith("file:") || lower.startsWith("content:") || lower.startsWith("blob:") || lower.startsWith("data:")) {
+		if (lower.startsWith("http:") || lower.startsWith("https:")
+				|| lower.startsWith("file:") || lower.startsWith("content:")
+				|| lower.startsWith("blob:") || lower.startsWith("data:")) {
 			return null;
 		}
 		return foto;
