@@ -62,14 +62,12 @@ public class ObservacaoService {
 	@Transactional
 	public ObservacaoResponse update(UUID id, ObservacaoRequest request) {
 		var observacao = findEntityById(id);
-		if (observacao.getSessao().getStatus() != StatusSessao.ABERTA) {
-			throw new BusinessException("Sessao encerrada não permite alteracoes");
+		if (!observacao.getSessao().getId().equals(request.sessaoId())) {
+			throw new BusinessException("Nao e permitido mover o registro para outro atendimento");
 		}
-		if (!observacao.getAluno().getId().equals(request.alunoId())
-				&& !sessaoService.alunoPertenceASessao(observacao.getSessao(), request.alunoId())) {
-			throw new BusinessException("Aluno não pertence a sessao");
+		if (!observacao.getAluno().getId().equals(request.alunoId())) {
+			throw new BusinessException("Nao e permitido mover o registro para outro aluno");
 		}
-		observacao.setAluno(alunoService.findEntityById(request.alunoId()));
 		fill(observacao, request);
 		return toResponse(observacao);
 	}
